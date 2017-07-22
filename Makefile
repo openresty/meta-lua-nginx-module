@@ -2,8 +2,8 @@ LEMPLATE_COMPILER?=lemplate
 SUBSYSTEM?=http
 TEMPLATE_RUNNER=utils/run_template.lua
 
-TEMPLATE_SOURCES=$(wildcard src/*.tt2)
-TEMPLATE_TARGETS=$(subst _meta_,_$(SUBSYSTEM)_, $(patsubst src/%.tt2, build/src/%, $(TEMPLATE_SOURCES)))
+TEMPLATE_SOURCES=$(wildcard src/subsystem/*.tt2)
+TEMPLATE_TARGETS=$(subst _subsystem_,_$(SUBSYSTEM)_, $(patsubst src/subsystem/%.tt2, build/src/%, $(TEMPLATE_SOURCES)))
 
 .PHONY: all
 all: $(TEMPLATE_TARGETS)

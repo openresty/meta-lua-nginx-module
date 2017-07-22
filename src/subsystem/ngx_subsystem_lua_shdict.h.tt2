@@ -1,0 +1,67 @@
+
+/*
+ * Copyright (C) Yichun Zhang (agentzh)
+ */
+
+
+#ifndef _NGX_[% subsystem FILTER upper %]_LUA_SHDICT_H_INCLUDED_
+#define _NGX_[% subsystem FILTER upper %]_LUA_SHDICT_H_INCLUDED_
+
+
+#include "ngx_[% subsystem %]_lua_common.h"
+
+
+typedef struct {
+    u_char                       color;
+    uint8_t                      value_type;
+    u_short                      key_len;
+    uint32_t                     value_len;
+    uint64_t                     expires;
+    ngx_queue_t                  queue;
+    uint32_t                     user_flags;
+    u_char                       data[1];
+} ngx_[% subsystem %]_lua_shdict_node_t;
+
+
+typedef struct {
+    ngx_queue_t                  queue;
+    uint32_t                     value_len;
+    uint8_t                      value_type;
+    u_char                       data[1];
+} ngx_[% subsystem %]_lua_shdict_list_node_t;
+
+
+typedef struct {
+    ngx_rbtree_t                  rbtree;
+    ngx_rbtree_node_t             sentinel;
+    ngx_queue_t                   lru_queue;
+} ngx_[% subsystem %]_lua_shdict_shctx_t;
+
+
+typedef struct {
+    ngx_[% subsystem %]_lua_shdict_shctx_t  *sh;
+    ngx_slab_pool_t              *shpool;
+    ngx_str_t                     name;
+    ngx_[% subsystem %]_lua_main_conf_t     *main_conf;
+    ngx_log_t                    *log;
+} ngx_[% subsystem %]_lua_shdict_ctx_t;
+
+
+typedef struct {
+    ngx_log_t                   *log;
+    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
+    ngx_cycle_t                 *cycle;
+    ngx_shm_zone_t               zone;
+} ngx_[% subsystem %]_lua_shm_zone_ctx_t;
+
+
+ngx_int_t ngx_[% subsystem %]_lua_shdict_init_zone(ngx_shm_zone_t *shm_zone, void *data);
+void ngx_[% subsystem %]_lua_shdict_rbtree_insert_value(ngx_rbtree_node_t *temp,
+    ngx_rbtree_node_t *node, ngx_rbtree_node_t *sentinel);
+void ngx_[% subsystem %]_lua_inject_shdict_api(ngx_[% subsystem %]_lua_main_conf_t *lmcf,
+    lua_State *L);
+
+
+#endif /* _NGX_[% subsystem FILTER upper %]_LUA_SHDICT_H_INCLUDED_ */
+
+/* vi:set ft=c ts=4 sw=4 et fdm=marker: */
