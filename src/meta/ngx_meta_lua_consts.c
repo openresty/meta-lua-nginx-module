@@ -15,7 +15,7 @@
 
 
 void
-ngx_http_lua_inject_core_consts(lua_State *L)
+ngx_meta_lua_inject_core_consts(lua_State *L)
 {
     /* {{{ core constants */
     lua_pushinteger(L, NGX_OK);
