@@ -5123,7 +5123,7 @@ ngx_[% subsystem %]_lua_socket_add_pending_data(ngx_[% subsystem %]_[% req_type 
     u_char          *last;
     ngx_buf_t       *b;
 
-    dd("resuming data: %d: %.*s", prefix, prefix, pat);
+    dd("resuming data: %d: [% "[%" %].*s]", prefix, prefix, pat);
 
     last = &pos[len];
 

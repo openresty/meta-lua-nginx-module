@@ -2193,8 +2193,8 @@ ngx_[% subsystem %]_lua_find_zone(u_char *name_data, size_t name_len)
 
         name = &zone[i].shm.name;
 
-        dd("name: %.*s %d", (int) name->len, name->data, (int) name->len);
-        dd("name2: %.*s %d", (int) name_len, name_data, (int) name_len);
+        dd("name: [% "[%" %].*s] %d", (int) name->len, name->data, (int) name->len);
+        dd("name2: [% "[%" %].*s] %d", (int) name_len, name_data, (int) name_len);
 
         if (name->len == name_len
             && ngx_strncmp(name->data, name_data, name_len) == 0)
