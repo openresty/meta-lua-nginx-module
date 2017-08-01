@@ -8,7 +8,8 @@ API_TEMPLATE_SOURCES=$(wildcard src/subsystem/api/*.tt2)
 API_TEMPLATE_TARGETS=$(subst _subsystem_,_$(SUBSYSTEM)_, $(patsubst src/subsystem/%.tt2, build/src/%, $(API_TEMPLATE_SOURCES)))
 
 .PHONY: all
-all: $(TEMPLATE_TARGETS) $(API_TEMPLATE_TARGETS)
+all: $(TEMPLATE_TARGETS) $(API_TEMPLATE_TARGETS) $(SUBSYSTEM_TARGETS)
+	cp src/$(SUBSYSTEM)/* build/src
 
 build/src/%: build/templates.lua
 	resty utils/run_template.lua $(SUBSYSTEM) $(@F)

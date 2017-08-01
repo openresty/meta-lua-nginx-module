@@ -7,7 +7,11 @@ template_name = template_name:gsub('ngx_.-_lua', 'ngx_subsystem_lua')
 
 local template = require('build.templates')
 local compiled = template.process(template_name .. '.tt2',
-                                  { subsystem = subsystem })
+                                  {
+                                      subsystem = subsystem,
+                                      req_type = subsystem == 'http'
+                                                 and 'request' or 'session',
+                                  })
 
 local f
 if output_name == 'ngx_http_lua_api.h' or
