@@ -11,7 +11,7 @@
 
 #include <nginx.h>
 #include <ngx_core.h>
-#include <ngx_http.h>
+#include <ngx_[% subsystem %].h>
 #include <ngx_md5.h>
 
 #include <setjmp.h>
@@ -40,9 +40,11 @@
 #endif
 
 
+[% IF subsystem == 'http' %]
 #if defined(NDK) && NDK
 #include <ndk.h>
 #endif
+[% END %]
 
 
 #if LUA_VERSION_NUM != 501
@@ -96,39 +98,53 @@
     (NGX_[% subsystem FILTER upper %]_LUA_FILE_TAG_LEN + 2 * MD5_DIGEST_LENGTH)
 
 
+[% IF subsystem == 'stream' %]
+#define NGX_STREAM_CLIENT_CLOSED_REQUEST     499
+[% END %]
+
+
+[% IF subsystem == 'http' %]
 #if defined(NDK) && NDK
 typedef struct {
     size_t       size;
     u_char      *key;
     ngx_str_t    script;
-} ngx_[% subsystem %]_lua_set_var_data_t;
+} ngx_http_lua_set_var_data_t;
 #endif
 
 
-#ifndef NGX_[% subsystem FILTER upper %]_LUA_MAX_ARGS
-#define NGX_[% subsystem FILTER upper %]_LUA_MAX_ARGS 100
+#ifndef NGX_HTTP_LUA_MAX_ARGS
+#define NGX_HTTP_LUA_MAX_ARGS 100
 #endif
 
 
-#ifndef NGX_[% subsystem FILTER upper %]_LUA_MAX_HEADERS
-#define NGX_[% subsystem FILTER upper %]_LUA_MAX_HEADERS 100
+#ifndef NGX_HTTP_LUA_MAX_HEADERS
+#define NGX_HTTP_LUA_MAX_HEADERS 100
 #endif
+[% END %]
 
 
 /* must be within 16 bit */
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SET            0x0001
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE        0x0002
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS         0x0004
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT        0x0008
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_LOG            0x0010
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_HEADER_FILTER  0x0020
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BODY_FILTER    0x0040
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER          0x0080
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_INIT_WORKER    0x0100
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER       0x0200
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT       0x0400
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_STORE 0x0800
-#define NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH 0x1000
+[% IF subsystem == 'http' %]
+#define NGX_HTTP_LUA_CONTEXT_SET            0x0001
+#define NGX_HTTP_LUA_CONTEXT_REWRITE        0x0002
+#define NGX_HTTP_LUA_CONTEXT_ACCESS         0x0004
+#define NGX_HTTP_LUA_CONTEXT_CONTENT        0x0008
+#define NGX_HTTP_LUA_CONTEXT_LOG            0x0010
+#define NGX_HTTP_LUA_CONTEXT_HEADER_FILTER  0x0020
+#define NGX_HTTP_LUA_CONTEXT_BODY_FILTER    0x0040
+#define NGX_HTTP_LUA_CONTEXT_TIMER          0x0080
+#define NGX_HTTP_LUA_CONTEXT_INIT_WORKER    0x0100
+#define NGX_HTTP_LUA_CONTEXT_BALANCER       0x0200
+#define NGX_HTTP_LUA_CONTEXT_SSL_CERT       0x0400
+#define NGX_HTTP_LUA_CONTEXT_SSL_SESS_STORE 0x0800
+#define NGX_HTTP_LUA_CONTEXT_SSL_SESS_FETCH 0x1000
+[% ELSIF subsystem == 'stream' %]
+#define NGX_STREAM_LUA_CONTEXT_CONTENT                              0x0001
+#define NGX_STREAM_LUA_CONTEXT_LOG                                  0x0002
+#define NGX_STREAM_LUA_CONTEXT_TIMER                                0x0004
+#define NGX_STREAM_LUA_CONTEXT_INIT_WORKER                          0x0008
+[% END %]
 
 
 #ifndef NGX_LUA_NO_FFI_API
@@ -141,8 +157,10 @@ typedef struct ngx_[% subsystem %]_lua_main_conf_s  ngx_[% subsystem %]_lua_main
 typedef union ngx_[% subsystem %]_lua_srv_conf_u  ngx_[% subsystem %]_lua_srv_conf_t;
 
 
-typedef struct ngx_[% subsystem %]_lua_balancer_peer_data_s
-    ngx_[% subsystem %]_lua_balancer_peer_data_t;
+[% IF subsystem == 'http' %]
+typedef struct ngx_http_lua_balancer_peer_data_s
+    ngx_http_lua_balancer_peer_data_t;
+[% END %]
 
 
 typedef struct ngx_[% subsystem %]_lua_sema_mm_s  ngx_[% subsystem %]_lua_sema_mm_t;
@@ -194,8 +212,10 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
 
     ngx_array_t         *preload_hooks; /* of ngx_[% subsystem %]_lua_preload_hook_t */
 
+[% IF subsystem == 'http' %]
     ngx_flag_t           postponed_to_rewrite_phase_end;
     ngx_flag_t           postponed_to_access_phase_end;
+[% END %]
 
     ngx_[% subsystem %]_lua_main_conf_handler_pt    init_handler;
     ngx_str_t                            init_src;
@@ -203,11 +223,13 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
     ngx_[% subsystem %]_lua_main_conf_handler_pt    init_worker_handler;
     ngx_str_t                            init_worker_src;
 
-    ngx_[% subsystem %]_lua_balancer_peer_data_t      *balancer_peer_data;
+[% IF subsystem == 'http' %]
+    ngx_http_lua_balancer_peer_data_t      *balancer_peer_data;
                     /* balancer_by_lua does not support yielding and
                      * there cannot be any conflicts among concurrent requests,
                      * thus it is safe to store the peer data in the main conf.
                      */
+[% END %]
 
     ngx_uint_t                      shm_zones_inited;
 
@@ -217,24 +239,31 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
                                                 of reqeusts */
     ngx_uint_t           malloc_trim_req_count;
 
+[% IF subsystem == 'http' %]
 #if nginx_version >= 1011011
     /* the following 2 fields are only used by ngx.req.raw_headers() for now */
     ngx_buf_t          **busy_buf_ptrs;
     ngx_int_t            busy_buf_ptr_count;
 #endif
+[% END %]
 
+[% IF subsystem == 'http' %]
     unsigned             requires_header_filter:1;
     unsigned             requires_body_filter:1;
     unsigned             requires_capture_filter:1;
     unsigned             requires_rewrite:1;
     unsigned             requires_access:1;
     unsigned             requires_log:1;
+[% END %]
     unsigned             requires_shm:1;
+[% IF subsystem == 'http' %]
     unsigned             requires_capture_log:1;
+[% END %]
 };
 
 
-union ngx_[% subsystem %]_lua_srv_conf_u {
+[% IF subsystem == 'http' %]
+union ngx_http_lua_srv_conf_u {
 #if (NGX_HTTP_SSL)
     struct {
         ngx_[% subsystem %]_lua_srv_conf_handler_pt     ssl_cert_handler;
@@ -258,6 +287,7 @@ union ngx_[% subsystem %]_lua_srv_conf_u {
         ngx_[% subsystem %]_lua_srv_conf_handler_pt  handler;
     } balancer;
 };
+[% END %]
 
 
 typedef struct {
@@ -270,6 +300,7 @@ typedef struct {
     ngx_str_t               ssl_crl;
 #endif
 
+[% IF subsystem == 'http' %]
     ngx_flag_t              force_read_body; /* whether force request body to
                                                 be read */
 
@@ -280,7 +311,11 @@ typedef struct {
 
     ngx_http_handler_pt     rewrite_handler;
     ngx_http_handler_pt     access_handler;
+[% END %]
+
     ngx_http_handler_pt     content_handler;
+
+[% IF subsystem == 'http' %]
     ngx_http_handler_pt     log_handler;
     ngx_http_handler_pt     header_filter_handler;
 
@@ -299,6 +334,7 @@ typedef struct {
                                                 file path */
 
     u_char                  *access_src_key; /* cached key for access_src */
+[% END %]
 
     u_char                  *content_chunkname;
     ngx_http_complex_value_t content_src;    /*  content_by_lua
@@ -307,7 +343,7 @@ typedef struct {
 
     u_char                 *content_src_key; /* cached key for content_src */
 
-
+[% IF subsystem == 'http' %]
     u_char                      *log_chunkname;
     ngx_http_complex_value_t     log_src;     /* log_by_lua inline script/script
                                                  file path */
@@ -324,6 +360,7 @@ typedef struct {
 
     ngx_http_complex_value_t         body_filter_src;
     u_char                          *body_filter_src_key;
+[% END %]
 
     ngx_msec_t                       keepalive_timeout;
     ngx_msec_t                       connect_timeout;
@@ -335,11 +372,22 @@ typedef struct {
 
     ngx_uint_t                       pool_size;
 
+[% IF subsystem == 'http' %]
     ngx_flag_t                       transform_underscores_in_resp_headers;
+[% END %]
+
     ngx_flag_t                       log_socket_errors;
     ngx_flag_t                       check_client_abort;
+
+[% IF subsystem == 'http' %]
     ngx_flag_t                       use_default_type;
-} ngx_[% subsystem %]_lua_loc_conf_t;
+[% END %]
+
+[% IF subsystem == 'http' %]
+} ngx_http_lua_loc_conf_t;
+[% ELSIF subsystem == 'stream' %]
+} ngx_stream_lua_srv_conf_t;
+[% END %]
 
 
 typedef enum {
@@ -369,9 +417,11 @@ struct ngx_[% subsystem %]_lua_posted_thread_s {
 };
 
 
+[% IF subsystem == 'http' %]
 enum {
     NGX_[% subsystem FILTER upper %]_LUA_SUBREQ_TRUNCATED = 1
 };
+[% END %]
 
 
 struct ngx_[% subsystem %]_lua_co_ctx_s {
@@ -384,6 +434,7 @@ struct ngx_[% subsystem %]_lua_co_ctx_s {
 
     ngx_http_cleanup_pt      cleanup;
 
+[% IF subsystem == 'http' %]
     ngx_int_t               *sr_statuses; /* all capture subrequest statuses */
 
     ngx_http_headers_out_t **sr_headers;
@@ -397,6 +448,7 @@ struct ngx_[% subsystem %]_lua_co_ctx_s {
 
     unsigned                 pending_subreqs; /* number of subrequests being
                                                  waited */
+[% END %]
 
     ngx_event_t              sleep;  /* used for ngx.sleep */
 
@@ -474,13 +526,17 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
 
     ngx_http_cleanup_t      *free_cleanup; /* free list of cleanup records */
 
+[% IF subsystem == 'http' %]
     ngx_chain_t             *body; /* buffered subrequest response body
                                       chains */
+[% END %]
 
     ngx_chain_t            **last_body; /* for the "body" field */
 
+[% IF subsystem == 'http' %]
     ngx_str_t                exec_uri;
     ngx_str_t                exec_args;
+[% END %]
 
     ngx_int_t                exit_code;
 
@@ -488,9 +544,11 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
                                              ngx_[% subsystem %]_lua_socket_tcp_upstream_t
                                              or ngx_[% subsystem %]_lua_co_ctx_t */
 
+[% IF subsystem == 'http' %]
     ngx_uint_t               index;              /* index of the current
                                                     subrequest in its parent
                                                     request */
+[% END %]
 
     ngx_[% subsystem %]_lua_posted_thread_t   *posted_threads;
 
@@ -500,7 +558,9 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
                                            (or running phase) for the current
                                            Lua chunk */
 
+[% IF subsystem == 'http' %]
     unsigned                 run_post_subrequest:1; /* whether it has run
+[% END %]
                                                        post_subrequest
                                                        (for subrequests only) */
 
@@ -554,6 +614,7 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
 } ngx_[% subsystem %]_lua_ctx_t;
 
 
+[% IF subsystem == 'http' %]
 typedef struct ngx_[% subsystem %]_lua_header_val_s  ngx_[% subsystem %]_lua_header_val_t;
 
 
@@ -577,11 +638,15 @@ typedef struct {
     ngx_[% subsystem %]_lua_set_header_pt              handler;
 
 } ngx_[% subsystem %]_lua_set_header_t;
+[% END %]
 
 
 extern ngx_module_t ngx_[% subsystem %]_lua_module;
+
+[% IF subsystem == 'http' %]
 extern ngx_http_output_header_filter_pt ngx_[% subsystem %]_lua_next_header_filter;
 extern ngx_http_output_body_filter_pt ngx_[% subsystem %]_lua_next_body_filter;
+[% END %]
 
 
 #endif /* _NGX_[% subsystem FILTER upper %]_LUA_COMMON_H_INCLUDED_ */
