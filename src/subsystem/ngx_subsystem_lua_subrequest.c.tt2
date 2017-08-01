@@ -180,7 +180,7 @@ ngx_[% subsystem %]_lua_ngx_location_capture_multi(lua_State *L)
         return luaL_error(L, "no co ctx found");
     }
 
-    ngx_log_debug2(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+    ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua location capture, uri:\"%V\" c:%ud", &r->uri,
                    r->main->count);
 
@@ -847,7 +847,7 @@ ngx_[% subsystem %]_lua_subrequest_add_extra_vars(ngx_http_request_t *sr,
 
                 v->set_handler(sr, vv, v->data);
 
-                ngx_log_debug2(NGX_LOG_DEBUG_HTTP, sr->connection->log, 0,
+                ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], sr->connection->log, 0,
                                "variable \"%V\" set to value \"%v\"", &name,
                                vv);
 
@@ -864,7 +864,7 @@ ngx_[% subsystem %]_lua_subrequest_add_extra_vars(ngx_http_request_t *sr,
                 vv->data = val;
                 vv->len = len;
 
-                ngx_log_debug2(NGX_LOG_DEBUG_HTTP, sr->connection->log, 0,
+                ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], sr->connection->log, 0,
                                "variable \"%V\" set to value \"%v\"",
                                &name, vv);
 
@@ -962,7 +962,7 @@ ngx_[% subsystem %]_lua_post_subrequest(ngx_http_request_t *r, void *data, ngx_i
         return NGX_OK;
     }
 
-    ngx_log_debug2(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+    ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua run post subrequest handler, rc:%i c:%ud", rc,
                    r->main->count);
 
@@ -987,7 +987,7 @@ ngx_[% subsystem %]_lua_post_subrequest(ngx_http_request_t *r, void *data, ngx_i
     }
 
     if (pr_ctx->entered_content_phase) {
-        ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+        ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                        "lua restoring write event handler");
 
         pr->write_event_handler = ngx_[% subsystem %]_lua_content_wev_handler;
@@ -1227,7 +1227,7 @@ ngx_[% subsystem %]_lua_handle_subreq_responses(ngx_http_request_t *r,
 
     u_char                  buf[sizeof("Mon, 28 Sep 1970 06:00:00 GMT") - 1];
 
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua handle subrequest responses");
 
     coctx = ctx->cur_co_ctx;
@@ -1532,7 +1532,7 @@ ngx_[% subsystem %]_lua_subrequest(ngx_http_request_t *r,
         sr->args = *args;
     }
 
-    ngx_log_debug2(NGX_LOG_DEBUG_HTTP, c->log, 0,
+    ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
                    "lua http subrequest \"%V?%V\"", uri, &sr->args);
 
     sr->subrequest_in_memory = (flags & NGX_HTTP_SUBREQUEST_IN_MEMORY) != 0;
@@ -1598,7 +1598,7 @@ ngx_[% subsystem %]_lua_subrequest_resume(ngx_http_request_t *r)
 
     ctx->resume_handler = ngx_[% subsystem %]_lua_wev_handler;
 
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua run subrequests done, resuming lua thread");
 
     coctx = ctx->cur_co_ctx;
@@ -1623,7 +1623,7 @@ ngx_[% subsystem %]_lua_subrequest_resume(ngx_http_request_t *r)
 
     rc = ngx_[% subsystem %]_lua_run_thread(vm, r, ctx, coctx->nsubreqs);
 
-    ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua run thread returned %d", rc);
 
     if (rc == NGX_AGAIN) {

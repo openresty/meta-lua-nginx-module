@@ -109,7 +109,7 @@ ngx_[% subsystem %]_lua_ngx_req_read_body(lua_State *L)
         return luaL_error(L, "no co ctx found");
     }
 
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua start to read buffered request body");
 
     rc = ngx_http_read_client_request_body(r, ngx_[% subsystem %]_lua_req_body_post_read);
@@ -123,7 +123,7 @@ ngx_[% subsystem %]_lua_ngx_req_read_body(lua_State *L)
         ctx->exit_code = rc;
         ctx->exited = 1;
 
-        ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+        ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                        "http read client request body returned error code %i, "
                        "exitting now", rc);
 
@@ -137,7 +137,7 @@ ngx_[% subsystem %]_lua_ngx_req_read_body(lua_State *L)
 #endif
 
     if (rc == NGX_AGAIN) {
-        ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+        ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                        "lua read buffered request body requires I/O "
                        "interruptions");
 
@@ -153,7 +153,7 @@ ngx_[% subsystem %]_lua_ngx_req_read_body(lua_State *L)
 
     /* rc == NGX_OK */
 
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua has read buffered request body in a single run");
 
     return 0;
@@ -168,7 +168,7 @@ ngx_[% subsystem %]_lua_req_body_post_read(ngx_http_request_t *r)
 
     ngx_[% subsystem %]_lua_loc_conf_t             *llcf;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua req body post read, c:%ud", r->main->count);
 
     ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
@@ -1137,7 +1137,7 @@ ngx_[% subsystem %]_lua_read_body_resume(ngx_http_request_t *r)
 
     rc = ngx_[% subsystem %]_lua_run_thread(vm, r, ctx, 0);
 
-    ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua run thread returned %d", rc);
 
     if (rc == NGX_AGAIN) {

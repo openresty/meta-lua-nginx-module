@@ -274,7 +274,7 @@ ngx_[% subsystem %]_lua_ssl_sess_store_handler(ngx_ssl_conn_t *ssl_conn,
     if (rc >= NGX_OK || rc == NGX_ERROR) {
         cctx->done = 1;
 
-        ngx_log_debug2(NGX_LOG_DEBUG_HTTP, c->log, 0,
+        ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
                        "ssl_session_store_by_lua*: handler return value: %i, "
                        "sess new cb exit code: %d", rc, cctx->exit_code);
 
