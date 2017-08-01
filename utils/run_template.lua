@@ -1,6 +1,25 @@
 local arg = arg
 local subsystem = arg[1]
 local template_name = arg[2]
+local type = type
+local ipairs = ipairs
+
+-- similar to ngx.print(), write tables recursively
+local function io_print(f, buf)
+    if type(buf) == 'table' then
+        for _, b in ipairs(buf) do
+            io_print(f, b)
+        end
+
+        return
+    end
+
+    if type(buf) ~= 'string' then
+        error('unexpected type: ' .. type(buf))
+    end
+
+    f:write(buf)
+end
 
 local output_name = template_name
 template_name = template_name:gsub('ngx_.-_lua', 'ngx_subsystem_lua')
@@ -21,5 +40,6 @@ else
     f = assert(io.open('build/src/' .. output_name, 'w'))
 end
 
-f:write(table.concat(compiled, ''))
+io_print(f, compiled)
+
 f:close()
