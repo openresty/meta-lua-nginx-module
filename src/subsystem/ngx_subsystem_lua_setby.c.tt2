@@ -26,7 +26,7 @@
 #include "ngx_[% subsystem %]_lua_util.h"
 
 
-static void ngx_[% subsystem %]_lua_set_by_lua_env(lua_State *L, ngx_http_request_t *r,
+static void ngx_[% subsystem %]_lua_set_by_lua_env(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r,
     size_t nargs, ngx_http_variable_value_t *args);
 
 
@@ -38,7 +38,7 @@ static void ngx_[% subsystem %]_lua_set_by_lua_env(lua_State *L, ngx_http_reques
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_set_by_chunk(lua_State *L, ngx_http_request_t *r, ngx_str_t *val,
+ngx_[% subsystem %]_lua_set_by_chunk(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r, ngx_str_t *val,
     ngx_http_variable_value_t *args, size_t nargs, ngx_str_t *script)
 {
     size_t           i;
@@ -175,7 +175,7 @@ ngx_[% subsystem %]_lua_setby_param_get(lua_State *L)
  *         |      ...     |
  * */
 static void
-ngx_[% subsystem %]_lua_set_by_lua_env(lua_State *L, ngx_http_request_t *r, size_t nargs,
+ngx_[% subsystem %]_lua_set_by_lua_env(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r, size_t nargs,
     ngx_http_variable_value_t *args)
 {
     /*  set nginx request pointer to current lua thread's globals table */

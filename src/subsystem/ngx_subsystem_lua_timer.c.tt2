@@ -73,7 +73,7 @@ ngx_[% subsystem %]_lua_inject_timer_api(lua_State *L)
 static int
 ngx_[% subsystem %]_lua_ngx_timer_running_count(lua_State *L)
 {
-    ngx_http_request_t          *r;
+    ngx_[% subsystem %]_[% req_type %]_t          *r;
     ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
 
     r = ngx_[% subsystem %]_lua_get_req(L);
@@ -92,7 +92,7 @@ ngx_[% subsystem %]_lua_ngx_timer_running_count(lua_State *L)
 static int
 ngx_[% subsystem %]_lua_ngx_timer_pending_count(lua_State *L)
 {
-    ngx_http_request_t          *r;
+    ngx_[% subsystem %]_[% req_type %]_t          *r;
     ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
 
     r = ngx_[% subsystem %]_lua_get_req(L);
@@ -135,7 +135,7 @@ ngx_[% subsystem %]_lua_ngx_timer_helper(lua_State *L, int every)
     lua_State               *co;
     ngx_msec_t               delay;
     ngx_event_t             *ev = NULL;
-    ngx_http_request_t      *r;
+    ngx_[% subsystem %]_[% req_type %]_t      *r;
     ngx_connection_t        *saved_c = NULL;
     ngx_[% subsystem %]_lua_ctx_t      *ctx;
 #if 0
@@ -531,7 +531,7 @@ ngx_[% subsystem %]_lua_timer_handler(ngx_event_t *ev)
     lua_State               *L;
     ngx_int_t                rc;
     ngx_connection_t        *c = NULL;
-    ngx_http_request_t      *r = NULL;
+    ngx_[% subsystem %]_[% req_type %]_t      *r = NULL;
     ngx_[% subsystem %]_lua_ctx_t      *ctx;
     ngx_http_cleanup_t      *cln;
     ngx_pool_cleanup_t      *pcln;

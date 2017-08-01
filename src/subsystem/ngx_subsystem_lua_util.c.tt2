@@ -81,7 +81,7 @@ ngx_uint_t  ngx_[% subsystem %]_lua_location_hash = 0;
 ngx_uint_t  ngx_[% subsystem %]_lua_content_length_hash = 0;
 
 
-static ngx_int_t ngx_[% subsystem %]_lua_send_http10_headers(ngx_http_request_t *r,
+static ngx_int_t ngx_[% subsystem %]_lua_send_http10_headers(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx);
 static void ngx_[% subsystem %]_lua_init_registry(lua_State *L, ngx_log_t *log);
 static void ngx_[% subsystem %]_lua_init_globals(lua_State *L, ngx_cycle_t *cycle,
@@ -89,12 +89,12 @@ static void ngx_[% subsystem %]_lua_init_globals(lua_State *L, ngx_cycle_t *cycl
 static void ngx_[% subsystem %]_lua_set_path(ngx_cycle_t *cycle, lua_State *L, int tab_idx,
     const char *fieldname, const char *path, const char *default_path,
     ngx_log_t *log);
-static ngx_int_t ngx_[% subsystem %]_lua_handle_exec(lua_State *L, ngx_http_request_t *r,
+static ngx_int_t ngx_[% subsystem %]_lua_handle_exec(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx);
-static ngx_int_t ngx_[% subsystem %]_lua_handle_exit(lua_State *L, ngx_http_request_t *r,
+static ngx_int_t ngx_[% subsystem %]_lua_handle_exit(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx);
 static ngx_int_t ngx_[% subsystem %]_lua_handle_rewrite_jump(lua_State *L,
-    ngx_http_request_t *r, ngx_[% subsystem %]_lua_ctx_t *ctx);
+    ngx_[% subsystem %]_[% req_type %]_t *r, ngx_[% subsystem %]_lua_ctx_t *ctx);
 static int ngx_[% subsystem %]_lua_thread_traceback(lua_State *L, lua_State *co,
     ngx_[% subsystem %]_lua_co_ctx_t *coctx);
 static void ngx_[% subsystem %]_lua_inject_ngx_api(lua_State *L,
@@ -102,22 +102,22 @@ static void ngx_[% subsystem %]_lua_inject_ngx_api(lua_State *L,
 static void ngx_[% subsystem %]_lua_inject_arg_api(lua_State *L);
 static int ngx_[% subsystem %]_lua_param_get(lua_State *L);
 static int ngx_[% subsystem %]_lua_param_set(lua_State *L);
-static ngx_int_t ngx_[% subsystem %]_lua_output_filter(ngx_http_request_t *r,
+static ngx_int_t ngx_[% subsystem %]_lua_output_filter(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_chain_t *in);
-static ngx_int_t ngx_[% subsystem %]_lua_send_special(ngx_http_request_t *r,
+static ngx_int_t ngx_[% subsystem %]_lua_send_special(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_uint_t flags);
-static void ngx_[% subsystem %]_lua_finalize_threads(ngx_http_request_t *r,
+static void ngx_[% subsystem %]_lua_finalize_threads(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx, lua_State *L);
-static ngx_int_t ngx_[% subsystem %]_lua_post_zombie_thread(ngx_http_request_t *r,
+static ngx_int_t ngx_[% subsystem %]_lua_post_zombie_thread(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_co_ctx_t *parent, ngx_[% subsystem %]_lua_co_ctx_t *thread);
-static void ngx_[% subsystem %]_lua_cleanup_zombie_child_uthreads(ngx_http_request_t *r,
+static void ngx_[% subsystem %]_lua_cleanup_zombie_child_uthreads(ngx_[% subsystem %]_[% req_type %]_t *r,
     lua_State *L, ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_[% subsystem %]_lua_co_ctx_t *coctx);
-static ngx_int_t ngx_[% subsystem %]_lua_on_abort_resume(ngx_http_request_t *r);
-static void ngx_[% subsystem %]_lua_close_fake_request(ngx_http_request_t *r);
-static ngx_int_t ngx_[% subsystem %]_lua_flush_pending_output(ngx_http_request_t *r,
+static ngx_int_t ngx_[% subsystem %]_lua_on_abort_resume(ngx_[% subsystem %]_[% req_type %]_t *r);
+static void ngx_[% subsystem %]_lua_close_fake_request(ngx_[% subsystem %]_[% req_type %]_t *r);
+static ngx_int_t ngx_[% subsystem %]_lua_flush_pending_output(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx);
 static ngx_int_t
-    ngx_[% subsystem %]_lua_process_flushing_coroutines(ngx_http_request_t *r,
+    ngx_[% subsystem %]_lua_process_flushing_coroutines(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx);
 static lua_State *ngx_[% subsystem %]_lua_new_state(lua_State *parent_vm,
     ngx_cycle_t *cycle, ngx_[% subsystem %]_lua_main_conf_t *lmcf, ngx_log_t *log);
@@ -303,7 +303,7 @@ ngx_[% subsystem %]_lua_new_state(lua_State *parent_vm, ngx_cycle_t *cycle,
 
 
 lua_State *
-ngx_[% subsystem %]_lua_new_thread(ngx_http_request_t *r, lua_State *L, int *ref)
+ngx_[% subsystem %]_lua_new_thread(ngx_[% subsystem %]_[% req_type %]_t *r, lua_State *L, int *ref)
 {
     int              base;
     lua_State       *co;
@@ -346,7 +346,7 @@ ngx_[% subsystem %]_lua_new_thread(ngx_http_request_t *r, lua_State *L, int *ref
 
 
 void
-ngx_[% subsystem %]_lua_del_thread(ngx_http_request_t *r, lua_State *L,
+ngx_[% subsystem %]_lua_del_thread(ngx_[% subsystem %]_[% req_type %]_t *r, lua_State *L,
     ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_[% subsystem %]_lua_co_ctx_t *coctx)
 {
     if (coctx->co_ref == LUA_NOREF) {
@@ -396,7 +396,7 @@ ngx_[% subsystem %]_lua_rebase_path(ngx_pool_t *pool, u_char *src, size_t len)
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_send_header_if_needed(ngx_http_request_t *r,
+ngx_[% subsystem %]_lua_send_header_if_needed(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
     ngx_int_t            rc;
@@ -430,7 +430,7 @@ ngx_[% subsystem %]_lua_send_header_if_needed(ngx_http_request_t *r,
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_send_chain_link(ngx_http_request_t *r, ngx_[% subsystem %]_lua_ctx_t *ctx,
+ngx_[% subsystem %]_lua_send_chain_link(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_[% subsystem %]_lua_ctx_t *ctx,
     ngx_chain_t *in)
 {
     ngx_int_t                     rc;
@@ -550,10 +550,10 @@ ngx_[% subsystem %]_lua_send_chain_link(ngx_http_request_t *r, ngx_[% subsystem 
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_send_special(ngx_http_request_t *r, ngx_uint_t flags)
+ngx_[% subsystem %]_lua_send_special(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_uint_t flags)
 {
     ngx_int_t            rc;
-    ngx_http_request_t  *ar; /* active request */
+    ngx_[% subsystem %]_[% req_type %]_t  *ar; /* active request */
 
     ar = r->connection->data;
 
@@ -572,11 +572,11 @@ ngx_[% subsystem %]_lua_send_special(ngx_http_request_t *r, ngx_uint_t flags)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_output_filter(ngx_http_request_t *r, ngx_chain_t *in)
+ngx_[% subsystem %]_lua_output_filter(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_chain_t *in)
 {
     ngx_int_t            rc;
     ngx_[% subsystem %]_lua_ctx_t  *ctx;
-    ngx_http_request_t  *ar; /* active request */
+    ngx_[% subsystem %]_[% req_type %]_t  *ar; /* active request */
 
     ar = r->connection->data;
 
@@ -611,7 +611,7 @@ ngx_[% subsystem %]_lua_output_filter(ngx_http_request_t *r, ngx_chain_t *in)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_send_http10_headers(ngx_http_request_t *r,
+ngx_[% subsystem %]_lua_send_http10_headers(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
     off_t                size;
@@ -772,7 +772,7 @@ ngx_[% subsystem %]_lua_discard_bufs(ngx_pool_t *pool, ngx_chain_t *in)
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_add_copy_chain(ngx_http_request_t *r, ngx_[% subsystem %]_lua_ctx_t *ctx,
+ngx_[% subsystem %]_lua_add_copy_chain(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_[% subsystem %]_lua_ctx_t *ctx,
     ngx_chain_t ***plast, ngx_chain_t *in, ngx_int_t *eof)
 {
     ngx_chain_t     *cl;
@@ -824,7 +824,7 @@ ngx_[% subsystem %]_lua_add_copy_chain(ngx_http_request_t *r, ngx_[% subsystem %
 
 
 void
-ngx_[% subsystem %]_lua_reset_ctx(ngx_http_request_t *r, lua_State *L,
+ngx_[% subsystem %]_lua_reset_ctx(ngx_[% subsystem %]_[% req_type %]_t *r, lua_State *L,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
     ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
@@ -860,7 +860,7 @@ ngx_[% subsystem %]_lua_reset_ctx(ngx_http_request_t *r, lua_State *L,
 
 /* post read callback for rewrite and access phases */
 void
-ngx_[% subsystem %]_lua_generic_phase_post_read(ngx_http_request_t *r)
+ngx_[% subsystem %]_lua_generic_phase_post_read(ngx_[% subsystem %]_[% req_type %]_t *r)
 {
     ngx_[% subsystem %]_lua_ctx_t  *ctx;
 
@@ -895,7 +895,7 @@ void
 ngx_[% subsystem %]_lua_request_cleanup(ngx_[% subsystem %]_lua_ctx_t *ctx, int forcible)
 {
     lua_State                   *L;
-    ngx_http_request_t          *r;
+    ngx_[% subsystem %]_[% req_type %]_t          *r;
     ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
 
     /*  force coroutine handling the request quit */
@@ -943,7 +943,7 @@ ngx_[% subsystem %]_lua_request_cleanup(ngx_[% subsystem %]_lua_ctx_t *ctx, int 
  *  >= 200          HTTP status code
  */
 ngx_int_t
-ngx_[% subsystem %]_lua_run_thread(lua_State *L, ngx_http_request_t *r,
+ngx_[% subsystem %]_lua_run_thread(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx, volatile int nrets)
 {
     ngx_[% subsystem %]_lua_co_ctx_t   *next_coctx, *parent_coctx, *orig_coctx;
@@ -1491,7 +1491,7 @@ done:
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_wev_handler(ngx_http_request_t *r)
+ngx_[% subsystem %]_lua_wev_handler(ngx_[% subsystem %]_[% req_type %]_t *r)
 {
     ngx_int_t                    rc;
     ngx_event_t                 *wev;
@@ -1593,7 +1593,7 @@ useless:
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_process_flushing_coroutines(ngx_http_request_t *r,
+ngx_[% subsystem %]_lua_process_flushing_coroutines(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
     ngx_int_t                    rc, n;
@@ -1671,7 +1671,7 @@ ngx_[% subsystem %]_lua_process_flushing_coroutines(ngx_http_request_t *r,
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_flush_pending_output(ngx_http_request_t *r,
+ngx_[% subsystem %]_lua_flush_pending_output(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
     ngx_int_t           rc;
@@ -2124,7 +2124,7 @@ ngx_[% subsystem %]_lua_inject_req_api(ngx_log_t *log, lua_State *L)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_handle_exec(lua_State *L, ngx_http_request_t *r,
+ngx_[% subsystem %]_lua_handle_exec(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
     ngx_int_t               rc;
@@ -2222,7 +2222,7 @@ ngx_[% subsystem %]_lua_handle_exec(lua_State *L, ngx_http_request_t *r,
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_handle_exit(lua_State *L, ngx_http_request_t *r,
+ngx_[% subsystem %]_lua_handle_exit(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
     ngx_int_t           rc;
@@ -2310,7 +2310,7 @@ ngx_[% subsystem %]_lua_handle_exit(lua_State *L, ngx_http_request_t *r,
 
 
 void
-ngx_[% subsystem %]_lua_process_args_option(ngx_http_request_t *r, lua_State *L,
+ngx_[% subsystem %]_lua_process_args_option(ngx_[% subsystem %]_[% req_type %]_t *r, lua_State *L,
     int table, ngx_str_t *args)
 {
     u_char              *key;
@@ -2582,7 +2582,7 @@ ngx_[% subsystem %]_lua_process_args_option(ngx_http_request_t *r, lua_State *L,
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_handle_rewrite_jump(lua_State *L, ngx_http_request_t *r,
+ngx_[% subsystem %]_lua_handle_rewrite_jump(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
     ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
@@ -2938,7 +2938,7 @@ static int
 ngx_[% subsystem %]_lua_param_get(lua_State *L)
 {
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
-    ngx_http_request_t          *r;
+    ngx_[% subsystem %]_[% req_type %]_t          *r;
 
     r = ngx_[% subsystem %]_lua_get_req(L);
     if (r == NULL) {
@@ -2967,7 +2967,7 @@ static int
 ngx_[% subsystem %]_lua_param_set(lua_State *L)
 {
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
-    ngx_http_request_t          *r;
+    ngx_[% subsystem %]_[% req_type %]_t          *r;
 
     r = ngx_[% subsystem %]_lua_get_req(L);
     if (r == NULL) {
@@ -3027,7 +3027,7 @@ ngx_[% subsystem %]_lua_get_co_ctx(lua_State *L, ngx_[% subsystem %]_lua_ctx_t *
 
 
 ngx_[% subsystem %]_lua_co_ctx_t *
-ngx_[% subsystem %]_lua_create_co_ctx(ngx_http_request_t *r, ngx_[% subsystem %]_lua_ctx_t *ctx)
+ngx_[% subsystem %]_lua_create_co_ctx(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
     ngx_[% subsystem %]_lua_co_ctx_t       *coctx;
 
@@ -3055,7 +3055,7 @@ ngx_[% subsystem %]_lua_create_co_ctx(ngx_http_request_t *r, ngx_[% subsystem %]
 /* this is for callers other than the content handler */
 ngx_int_t
 ngx_[% subsystem %]_lua_run_posted_threads(ngx_connection_t *c, lua_State *L,
-    ngx_http_request_t *r, ngx_[% subsystem %]_lua_ctx_t *ctx)
+    ngx_[% subsystem %]_[% req_type %]_t *r, ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
     ngx_int_t                        rc;
     ngx_[% subsystem %]_lua_posted_thread_t    *pt;
@@ -3106,7 +3106,7 @@ ngx_[% subsystem %]_lua_run_posted_threads(ngx_connection_t *c, lua_State *L,
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_post_thread(ngx_http_request_t *r, ngx_[% subsystem %]_lua_ctx_t *ctx,
+ngx_[% subsystem %]_lua_post_thread(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_[% subsystem %]_lua_ctx_t *ctx,
     ngx_[% subsystem %]_lua_co_ctx_t *coctx)
 {
     ngx_[% subsystem %]_lua_posted_thread_t  **p;
@@ -3129,7 +3129,7 @@ ngx_[% subsystem %]_lua_post_thread(ngx_http_request_t *r, ngx_[% subsystem %]_l
 
 
 static void
-ngx_[% subsystem %]_lua_finalize_threads(ngx_http_request_t *r,
+ngx_[% subsystem %]_lua_finalize_threads(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx, lua_State *L)
 {
 #ifdef NGX_LUA_USE_ASSERT
@@ -3242,7 +3242,7 @@ ngx_[% subsystem %]_lua_finalize_threads(ngx_http_request_t *r,
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_post_zombie_thread(ngx_http_request_t *r,
+ngx_[% subsystem %]_lua_post_zombie_thread(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_co_ctx_t *parent, ngx_[% subsystem %]_lua_co_ctx_t *thread)
 {
     ngx_[% subsystem %]_lua_posted_thread_t  **p;
@@ -3265,7 +3265,7 @@ ngx_[% subsystem %]_lua_post_zombie_thread(ngx_http_request_t *r,
 
 
 static void
-ngx_[% subsystem %]_lua_cleanup_zombie_child_uthreads(ngx_http_request_t *r,
+ngx_[% subsystem %]_lua_cleanup_zombie_child_uthreads(ngx_[% subsystem %]_[% req_type %]_t *r,
     lua_State *L, ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_[% subsystem %]_lua_co_ctx_t *coctx)
 {
     ngx_[% subsystem %]_lua_posted_thread_t   *pt;
@@ -3282,7 +3282,7 @@ ngx_[% subsystem %]_lua_cleanup_zombie_child_uthreads(ngx_http_request_t *r,
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_check_broken_connection(ngx_http_request_t *r, ngx_event_t *ev)
+ngx_[% subsystem %]_lua_check_broken_connection(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_event_t *ev)
 {
     int                  n;
     char                 buf[1];
@@ -3389,7 +3389,7 @@ ngx_[% subsystem %]_lua_check_broken_connection(ngx_http_request_t *r, ngx_event
 
 
 void
-ngx_[% subsystem %]_lua_rd_check_broken_connection(ngx_http_request_t *r)
+ngx_[% subsystem %]_lua_rd_check_broken_connection(ngx_[% subsystem %]_[% req_type %]_t *r)
 {
     ngx_int_t                   rc;
     ngx_event_t                *rev;
@@ -3457,7 +3457,7 @@ ngx_[% subsystem %]_lua_rd_check_broken_connection(ngx_http_request_t *r)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_on_abort_resume(ngx_http_request_t *r)
+ngx_[% subsystem %]_lua_on_abort_resume(ngx_[% subsystem %]_[% req_type %]_t *r)
 {
     lua_State                   *vm;
     ngx_int_t                    rc;
@@ -3505,7 +3505,7 @@ ngx_[% subsystem %]_lua_on_abort_resume(ngx_http_request_t *r)
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_test_expect(ngx_http_request_t *r)
+ngx_[% subsystem %]_lua_test_expect(ngx_[% subsystem %]_[% req_type %]_t *r)
 {
     ngx_int_t   n;
     ngx_str_t  *expect;
@@ -3547,7 +3547,7 @@ ngx_[% subsystem %]_lua_test_expect(ngx_http_request_t *r)
 
 
 void
-ngx_[% subsystem %]_lua_finalize_request(ngx_http_request_t *r, ngx_int_t rc)
+ngx_[% subsystem %]_lua_finalize_request(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_int_t rc)
 {
     ngx_[% subsystem %]_lua_ctx_t              *ctx;
 
@@ -3566,7 +3566,7 @@ ngx_[% subsystem %]_lua_finalize_request(ngx_http_request_t *r, ngx_int_t rc)
 
 
 void
-ngx_[% subsystem %]_lua_finalize_fake_request(ngx_http_request_t *r, ngx_int_t rc)
+ngx_[% subsystem %]_lua_finalize_fake_request(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_int_t rc)
 {
     ngx_connection_t          *c;
 #if (NGX_HTTP_SSL)
@@ -3623,7 +3623,7 @@ ngx_[% subsystem %]_lua_finalize_fake_request(ngx_http_request_t *r, ngx_int_t r
 
 
 static void
-ngx_[% subsystem %]_lua_close_fake_request(ngx_http_request_t *r)
+ngx_[% subsystem %]_lua_close_fake_request(ngx_[% subsystem %]_[% req_type %]_t *r)
 {
     ngx_connection_t  *c;
 
@@ -3650,7 +3650,7 @@ ngx_[% subsystem %]_lua_close_fake_request(ngx_http_request_t *r)
 
 
 void
-ngx_[% subsystem %]_lua_free_fake_request(ngx_http_request_t *r)
+ngx_[% subsystem %]_lua_free_fake_request(ngx_[% subsystem %]_[% req_type %]_t *r)
 {
     ngx_log_t                 *log;
     ngx_http_cleanup_t        *cln;
@@ -3893,12 +3893,12 @@ failed:
 }
 
 
-ngx_http_request_t *
+ngx_[% subsystem %]_[% req_type %]_t *
 ngx_[% subsystem %]_lua_create_fake_request(ngx_connection_t *c)
 {
-    ngx_http_request_t      *r;
+    ngx_[% subsystem %]_[% req_type %]_t      *r;
 
-    r = ngx_pcalloc(c->pool, sizeof(ngx_http_request_t));
+    r = ngx_pcalloc(c->pool, sizeof(ngx_[% subsystem %]_[% req_type %]_t));
     if (r == NULL) {
         return NULL;
     }
@@ -4030,7 +4030,7 @@ ngx_[% subsystem %]_lua_do_call(ngx_log_t *log, lua_State *L)
 static int
 ngx_[% subsystem %]_lua_get_raw_phase_context(lua_State *L)
 {
-    ngx_http_request_t      *r;
+    ngx_[% subsystem %]_[% req_type %]_t      *r;
     ngx_[% subsystem %]_lua_ctx_t      *ctx;
 
     r = lua_touserdata(L, 1);
@@ -4049,7 +4049,7 @@ ngx_[% subsystem %]_lua_get_raw_phase_context(lua_State *L)
 
 
 ngx_http_cleanup_t *
-ngx_[% subsystem %]_lua_cleanup_add(ngx_http_request_t *r, size_t size)
+ngx_[% subsystem %]_lua_cleanup_add(ngx_[% subsystem %]_[% req_type %]_t *r, size_t size)
 {
     ngx_http_cleanup_t  *cln;
     ngx_[% subsystem %]_lua_ctx_t  *ctx;
@@ -4082,7 +4082,7 @@ ngx_[% subsystem %]_lua_cleanup_add(ngx_http_request_t *r, size_t size)
 
 
 void
-ngx_[% subsystem %]_lua_cleanup_free(ngx_http_request_t *r, ngx_http_cleanup_pt *cleanup)
+ngx_[% subsystem %]_lua_cleanup_free(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_http_cleanup_pt *cleanup)
 {
     ngx_http_cleanup_t  **last;
     ngx_http_cleanup_t   *cln;

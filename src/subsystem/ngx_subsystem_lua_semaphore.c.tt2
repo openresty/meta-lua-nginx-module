@@ -26,11 +26,11 @@ ngx_int_t ngx_[% subsystem %]_lua_sema_mm_init(ngx_conf_t *cf,
 void ngx_[% subsystem %]_lua_sema_mm_cleanup(void *data);
 static ngx_[% subsystem %]_lua_sema_t *ngx_[% subsystem %]_lua_alloc_sema(void);
 static void ngx_[% subsystem %]_lua_free_sema(ngx_[% subsystem %]_lua_sema_t *sem);
-static ngx_int_t ngx_[% subsystem %]_lua_sema_resume(ngx_http_request_t *r);
+static ngx_int_t ngx_[% subsystem %]_lua_sema_resume(ngx_[% subsystem %]_[% req_type %]_t *r);
 int ngx_[% subsystem %]_lua_ffi_sema_new(ngx_[% subsystem %]_lua_sema_t **psem,
     int n, char **errmsg);
 int ngx_[% subsystem %]_lua_ffi_sema_post(ngx_[% subsystem %]_lua_sema_t *sem, int n);
-int ngx_[% subsystem %]_lua_ffi_sema_wait(ngx_http_request_t *r,
+int ngx_[% subsystem %]_lua_ffi_sema_wait(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_sema_t *sem, int wait_ms, u_char *err, size_t *errlen);
 static void ngx_[% subsystem %]_lua_sema_cleanup(void *data);
 static void ngx_[% subsystem %]_lua_sema_handler(ngx_event_t *ev);
@@ -253,7 +253,7 @@ ngx_[% subsystem %]_lua_free_sema(ngx_[% subsystem %]_lua_sema_t *sem)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_sema_resume(ngx_http_request_t *r)
+ngx_[% subsystem %]_lua_sema_resume(ngx_[% subsystem %]_[% req_type %]_t *r)
 {
     lua_State                   *vm;
     ngx_connection_t            *c;
@@ -352,7 +352,7 @@ ngx_[% subsystem %]_lua_ffi_sema_post(ngx_[% subsystem %]_lua_sema_t *sem, int n
 
 
 int
-ngx_[% subsystem %]_lua_ffi_sema_wait(ngx_http_request_t *r,
+ngx_[% subsystem %]_lua_ffi_sema_wait(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_sema_t *sem, int wait_ms, u_char *err, size_t *errlen)
 {
     ngx_[% subsystem %]_lua_ctx_t           *ctx;
@@ -459,7 +459,7 @@ static void
 ngx_[% subsystem %]_lua_sema_handler(ngx_event_t *ev)
 {
     ngx_[% subsystem %]_lua_sema_t         *sem;
-    ngx_http_request_t          *r;
+    ngx_[% subsystem %]_[% req_type %]_t          *r;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
     ngx_[% subsystem %]_lua_co_ctx_t       *wait_co_ctx;
     ngx_connection_t            *c;
@@ -510,7 +510,7 @@ static void
 ngx_[% subsystem %]_lua_sema_timeout_handler(ngx_event_t *ev)
 {
     ngx_[% subsystem %]_lua_co_ctx_t       *wait_co_ctx;
-    ngx_http_request_t          *r;
+    ngx_[% subsystem %]_[% req_type %]_t          *r;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
     ngx_connection_t            *c;
     ngx_[% subsystem %]_lua_sema_t         *sem;

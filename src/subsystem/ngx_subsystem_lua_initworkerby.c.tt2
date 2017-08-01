@@ -31,7 +31,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
     ngx_list_part_t             *part;
     ngx_connection_t            *c = NULL;
     ngx_http_module_t           *module;
-    ngx_http_request_t          *r = NULL;
+    ngx_[% subsystem %]_[% req_type %]_t          *r = NULL;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
     ngx_http_conf_ctx_t         *conf_ctx, http_ctx;
     ngx_[% subsystem %]_lua_loc_conf_t     *top_llcf;

@@ -150,7 +150,7 @@ typedef struct ngx_[% subsystem %]_lua_sema_mm_s  ngx_[% subsystem %]_lua_sema_m
 
 typedef ngx_int_t (*ngx_[% subsystem %]_lua_main_conf_handler_pt)(ngx_log_t *log,
     ngx_[% subsystem %]_lua_main_conf_t *lmcf, lua_State *L);
-typedef ngx_int_t (*ngx_[% subsystem %]_lua_srv_conf_handler_pt)(ngx_http_request_t *r,
+typedef ngx_int_t (*ngx_[% subsystem %]_lua_srv_conf_handler_pt)(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_srv_conf_t *lscf, lua_State *L);
 
 
@@ -443,7 +443,7 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
     /* for lua_coce_cache off: */
     ngx_[% subsystem %]_lua_vm_state_t  *vm_state;
 
-    ngx_http_request_t      *request;
+    ngx_[% subsystem %]_[% req_type %]_t      *request;
     ngx_http_handler_pt      resume_handler;
 
     ngx_[% subsystem %]_lua_co_ctx_t   *cur_co_ctx; /* co ctx for the current coroutine */
@@ -557,7 +557,7 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
 typedef struct ngx_[% subsystem %]_lua_header_val_s  ngx_[% subsystem %]_lua_header_val_t;
 
 
-typedef ngx_int_t (*ngx_[% subsystem %]_lua_set_header_pt)(ngx_http_request_t *r,
+typedef ngx_int_t (*ngx_[% subsystem %]_lua_set_header_pt)(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_header_val_t *hv, ngx_str_t *value);
 
 

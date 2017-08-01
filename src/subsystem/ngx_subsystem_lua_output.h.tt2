@@ -19,7 +19,7 @@ size_t ngx_[% subsystem %]_lua_calc_strlen_in_table(lua_State *L, int index, int
 
 u_char *ngx_[% subsystem %]_lua_copy_str_in_table(lua_State *L, int index, u_char *dst);
 
-ngx_int_t ngx_[% subsystem %]_lua_flush_resume_helper(ngx_http_request_t *r,
+ngx_int_t ngx_[% subsystem %]_lua_flush_resume_helper(ngx_[% subsystem %]_[% req_type %]_t *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx);
 
 

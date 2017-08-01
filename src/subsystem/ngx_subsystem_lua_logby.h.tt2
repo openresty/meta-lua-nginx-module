@@ -11,9 +11,9 @@
 #include "ngx_[% subsystem %]_lua_common.h"
 
 
-ngx_int_t ngx_[% subsystem %]_lua_log_handler(ngx_http_request_t *r);
-ngx_int_t ngx_[% subsystem %]_lua_log_handler_inline(ngx_http_request_t *r);
-ngx_int_t ngx_[% subsystem %]_lua_log_handler_file(ngx_http_request_t *r);
+ngx_int_t ngx_[% subsystem %]_lua_log_handler(ngx_[% subsystem %]_[% req_type %]_t *r);
+ngx_int_t ngx_[% subsystem %]_lua_log_handler_inline(ngx_[% subsystem %]_[% req_type %]_t *r);
+ngx_int_t ngx_[% subsystem %]_lua_log_handler_file(ngx_[% subsystem %]_[% req_type %]_t *r);
 void ngx_[% subsystem %]_lua_inject_logby_ngx_api(ngx_conf_t *cf, lua_State *L);
 
 
