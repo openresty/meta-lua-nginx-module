@@ -9,7 +9,7 @@
 #define _NGX_[% subsystem FILTER upper %]_LUA_TIME_H_INCLUDED_
 
 
-#include "ngx_meta_lua_common.h"
+#include "ngx_[% subsystem %]_lua_common.h"
 
 
 [% IF subsystem == 'http' %]

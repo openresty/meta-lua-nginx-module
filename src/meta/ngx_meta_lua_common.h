@@ -39,8 +39,8 @@
 #endif
 
 
-#if defined(NDK) && NDK
-#include <ndk.h>
+#ifndef NGX_META_LUA_MAX_ARGS
+#define NGX_META_LUA_MAX_ARGS 100
 #endif
 
 

@@ -48,7 +48,6 @@ static int ngx_meta_lua_ngx_decode_base64(lua_State *L);
 static int ngx_meta_lua_ngx_encode_base64(lua_State *L);
 static int ngx_meta_lua_ngx_crc32_short(lua_State *L);
 static int ngx_meta_lua_ngx_crc32_long(lua_State *L);
-static int ngx_meta_lua_ngx_encode_args(lua_State *L);
 static int ngx_meta_lua_ngx_decode_args(lua_State *L);
 #if (NGX_OPENSSL)
 static int ngx_meta_lua_ngx_hmac_sha1(lua_State *L);
@@ -63,9 +62,6 @@ ngx_meta_lua_inject_string_api(lua_State *L)
 
     lua_pushcfunction(L, ngx_meta_lua_ngx_unescape_uri);
     lua_setfield(L, -2, "unescape_uri");
-
-    lua_pushcfunction(L, ngx_meta_lua_ngx_encode_args);
-    lua_setfield(L, -2, "encode_args");
 
     lua_pushcfunction(L, ngx_meta_lua_ngx_decode_args);
     lua_setfield(L, -2, "decode_args");
@@ -573,23 +569,6 @@ ngx_meta_lua_ngx_crc32_long(lua_State *L)
     p = (u_char *) luaL_checklstring(L, 1, &len);
 
     lua_pushnumber(L, (lua_Number) ngx_crc32_long(p, len));
-    return 1;
-}
-
-
-static int
-ngx_meta_lua_ngx_encode_args(lua_State *L)
-{
-    ngx_str_t                    args;
-
-    if (lua_gettop(L) != 1) {
-        return luaL_error(L, "expecting 1 argument but seen %d",
-                          lua_gettop(L));
-    }
-
-    luaL_checktype(L, 1, LUA_TTABLE);
-    ngx_meta_lua_process_args_option(NULL, L, 1, &args);
-    lua_pushlstring(L, (char *) args.data, args.len);
     return 1;
 }
 

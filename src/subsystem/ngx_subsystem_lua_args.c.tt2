@@ -12,6 +12,7 @@
 
 
 #include "ngx_[% subsystem %]_lua_args.h"
+#include "ngx_[% subsystem %]_lua_util.h"
 
 
 [% IF subsystem == 'http' %]
@@ -130,7 +131,7 @@ ngx_http_lua_ngx_req_get_uri_args(lua_State *L)
 
     last = buf + r->args.len;
 
-    retval = ngx_http_lua_parse_args(L, buf, last, max);
+    retval = ngx_meta_lua_parse_args(L, buf, last, max);
 
     ngx_pfree(r->pool, buf);
 
@@ -224,7 +225,7 @@ ngx_http_lua_ngx_req_get_post_args(lua_State *L)
 
     last = buf + len;
 
-    retval = ngx_http_lua_parse_args(L, buf, last, max);
+    retval = ngx_meta_lua_parse_args(L, buf, last, max);
 
     ngx_pfree(r->pool, buf);
 

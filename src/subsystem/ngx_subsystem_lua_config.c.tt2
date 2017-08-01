@@ -12,6 +12,7 @@
 
 #include "ngx_[% subsystem %]_lua_config.h"
 #include "api/ngx_[% subsystem %]_lua_api.h"
+#include "ngx_meta_lua_config.h"
 
 
 void

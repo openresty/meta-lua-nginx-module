@@ -12,7 +12,7 @@
 
 
 #include "ngx_meta_lua_exception.h"
-#include "ngx_meta_lua_util.h"
+/*#include "ngx_meta_lua_util.h"*/
 
 
 /*  longjmp mark for restoring nginx execution after Lua VM crashing */

@@ -20,7 +20,6 @@ static int ngx_meta_lua_ngx_time(lua_State *L);
 static int ngx_meta_lua_ngx_now(lua_State *L);
 static int ngx_meta_lua_ngx_localtime(lua_State *L);
 static int ngx_meta_lua_ngx_utctime(lua_State *L);
-static int ngx_meta_lua_ngx_cookie_time(lua_State *L);
 static int ngx_meta_lua_ngx_update_time(lua_State *L);
 
 

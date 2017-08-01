@@ -15,8 +15,6 @@
 ngx_int_t ngx_meta_lua_cache_loadbuffer(ngx_log_t *log, lua_State *L,
     const u_char *src, size_t src_len, const u_char *cache_key,
     const char *name);
-ngx_int_t ngx_meta_lua_cache_loadfile(ngx_log_t *log, lua_State *L,
-    const u_char *script, const u_char *cache_key);
 
 
 #endif /* _NGX_META_LUA_CACHE_H_INCLUDED_ */
