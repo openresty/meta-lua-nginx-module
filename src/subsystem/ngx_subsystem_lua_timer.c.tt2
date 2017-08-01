@@ -633,7 +633,7 @@ ngx_[% subsystem %]_lua_timer_handler(ngx_event_t *ev)
 
     L = ngx_[% subsystem %]_lua_get_lua_vm(r, ctx);
 
-    cln = ngx_http_cleanup_add(r, 0);
+    cln = ngx_[% subsystem %]_cleanup_add(r, 0);
     if (cln == NULL) {
         goto failed;
     }

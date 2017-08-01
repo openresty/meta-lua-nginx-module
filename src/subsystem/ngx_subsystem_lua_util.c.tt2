@@ -4077,7 +4077,7 @@ ngx_[% subsystem %]_lua_cleanup_add(ngx_http_request_t *r, size_t size)
         }
     }
 
-    return ngx_http_cleanup_add(r, size);
+    return ngx_[% subsystem %]_cleanup_add(r, size);
 }
 
 

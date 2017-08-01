@@ -259,7 +259,7 @@ ngx_[% subsystem %]_lua_header_filter(ngx_http_request_t *r)
     }
 
     if (ctx->cleanup == NULL) {
-        cln = ngx_http_cleanup_add(r, 0);
+        cln = ngx_[% subsystem %]_cleanup_add(r, 0);
         if (cln == NULL) {
             return NGX_ERROR;
         }

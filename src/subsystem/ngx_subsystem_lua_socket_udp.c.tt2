@@ -677,7 +677,7 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler(ngx_http_request_t *r,
     }
 
     if (u->cleanup == NULL) {
-        cln = ngx_http_cleanup_add(r, 0);
+        cln = ngx_[% subsystem %]_cleanup_add(r, 0);
         if (cln == NULL) {
             u->ft_type |= NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_ERROR;
             lua_pushnil(L);

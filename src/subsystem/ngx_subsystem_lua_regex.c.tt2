@@ -955,7 +955,7 @@ compiled:
         lua_setfield(L, -2, "__gc");
         lua_setmetatable(L, -2);
 
-        cln = ngx_http_cleanup_add(r, 0);
+        cln = ngx_[% subsystem %]_cleanup_add(r, 0);
         if (cln == NULL) {
             msg = "no memory";
             goto error;
