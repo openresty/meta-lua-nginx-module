@@ -118,7 +118,7 @@ ngx_[% subsystem %]_lua_log_handler(ngx_http_request_t *r)
         return NGX_DECLINED;
     }
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     dd("ctx = %p", ctx);
 

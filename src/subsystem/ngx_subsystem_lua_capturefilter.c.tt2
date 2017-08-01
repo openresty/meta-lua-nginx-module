@@ -53,7 +53,7 @@ ngx_[% subsystem %]_lua_capture_header_filter(ngx_http_request_t *r)
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
                    "lua capture header filter, uri \"%V\"", &r->uri);
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     dd("old ctx: %p", ctx);
 
@@ -125,7 +125,7 @@ ngx_[% subsystem %]_lua_capture_body_filter(ngx_http_request_t *r, ngx_chain_t *
         return ngx_[% subsystem %]_lua_next_body_filter(r, NULL);
     }
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     if (!ctx || !ctx->capture) {
         dd("no ctx or no capture %.*s", (int) r->uri.len, r->uri.data);
@@ -148,7 +148,7 @@ ngx_[% subsystem %]_lua_capture_body_filter(ngx_http_request_t *r, ngx_chain_t *
         return NGX_ERROR;
     }
 
-    pr_ctx = ngx_http_get_module_ctx(r->parent, ngx_[% subsystem %]_lua_module);
+    pr_ctx = ngx_[% subsystem %]_get_module_ctx(r->parent, ngx_[% subsystem %]_lua_module);
     if (pr_ctx == NULL) {
         return NGX_ERROR;
     }

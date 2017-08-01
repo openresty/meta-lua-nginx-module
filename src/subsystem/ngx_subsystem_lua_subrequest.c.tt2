@@ -166,7 +166,7 @@ ngx_[% subsystem %]_lua_ngx_location_capture_multi(lua_State *L)
         return luaL_error(L, "no request object found");
     }
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
@@ -970,7 +970,7 @@ ngx_[% subsystem %]_lua_post_subrequest(ngx_http_request_t *r, void *data, ngx_i
 
     pr = r->parent;
 
-    pr_ctx = ngx_http_get_module_ctx(pr, ngx_[% subsystem %]_lua_module);
+    pr_ctx = ngx_[% subsystem %]_get_module_ctx(pr, ngx_[% subsystem %]_lua_module);
     if (pr_ctx == NULL) {
         return NGX_ERROR;
     }
@@ -1591,7 +1591,7 @@ ngx_[% subsystem %]_lua_subrequest_resume(ngx_http_request_t *r)
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
     ngx_[% subsystem %]_lua_co_ctx_t       *coctx;
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return NGX_ERROR;
     }

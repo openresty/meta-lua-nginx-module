@@ -346,7 +346,7 @@ ngx_[% subsystem %]_lua_ssl_sess_store_by_chunk(lua_State *L, ngx_http_request_t
     ngx_int_t                rc;
     ngx_[% subsystem %]_lua_ctx_t      *ctx;
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     if (ctx == NULL) {
         ctx = ngx_[% subsystem %]_lua_create_ctx(r);

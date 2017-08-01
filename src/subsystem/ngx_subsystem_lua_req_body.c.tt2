@@ -95,7 +95,7 @@ ngx_[% subsystem %]_lua_ngx_req_read_body(lua_State *L)
     }
 #endif
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
@@ -171,7 +171,7 @@ ngx_[% subsystem %]_lua_req_body_post_read(ngx_http_request_t *r)
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
                    "lua req body post read, c:%ud", r->main->count);
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     if (ctx->waiting_more_body) {
         ctx->waiting_more_body = 0;
@@ -1128,7 +1128,7 @@ ngx_[% subsystem %]_lua_read_body_resume(ngx_http_request_t *r)
     ngx_connection_t            *c;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     ctx->resume_handler = ngx_[% subsystem %]_lua_wev_handler;
 
@@ -1174,7 +1174,7 @@ ngx_[% subsystem %]_lua_req_body_cleanup(void *data)
         ngx_del_timer(r->connection->read);
     }
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return;
     }

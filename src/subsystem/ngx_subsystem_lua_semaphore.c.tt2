@@ -260,7 +260,7 @@ ngx_[% subsystem %]_lua_sema_resume(ngx_http_request_t *r)
     ngx_int_t                    rc;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return NGX_ERROR;
     }
@@ -370,7 +370,7 @@ ngx_[% subsystem %]_lua_ffi_sema_wait(ngx_http_request_t *r,
 #endif
                    );
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         *errlen = ngx_snprintf(err, *errlen, "no request ctx found") - err;
         return NGX_ERROR;
@@ -484,7 +484,7 @@ ngx_[% subsystem %]_lua_sema_handler(ngx_event_t *ev)
         r = ngx_[% subsystem %]_lua_get_req(wait_co_ctx->co);
         c = r->connection;
 
-        ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
         ngx_[% subsystem %]_lua_assert(ctx != NULL);
 
         sem->resource_count--;
@@ -528,7 +528,7 @@ ngx_[% subsystem %]_lua_sema_timeout_handler(ngx_event_t *ev)
     r = ngx_[% subsystem %]_lua_get_req(wait_co_ctx->co);
     c = r->connection;
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     ngx_[% subsystem %]_lua_assert(ctx != NULL);
 
     ctx->cur_co_ctx = wait_co_ctx;

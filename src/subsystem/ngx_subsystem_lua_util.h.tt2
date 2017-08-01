@@ -321,7 +321,7 @@ ngx_[% subsystem %]_lua_get_lua_vm(ngx_http_request_t *r, ngx_[% subsystem %]_lu
     ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
 
     if (ctx == NULL) {
-        ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     }
 
     if (ctx && ctx->vm_state) {

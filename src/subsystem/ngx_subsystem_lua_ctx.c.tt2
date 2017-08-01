@@ -36,7 +36,7 @@ ngx_[% subsystem %]_lua_ngx_get_ctx(lua_State *L)
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -81,7 +81,7 @@ ngx_[% subsystem %]_lua_ngx_set_ctx(lua_State *L)
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -136,7 +136,7 @@ ngx_[% subsystem %]_lua_ffi_get_ctx_ref(ngx_http_request_t *r)
 {
     ngx_[% subsystem %]_lua_ctx_t  *ctx;
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return NGX_[% subsystem FILTER upper %]_LUA_FFI_NO_REQ_CTX;
     }
@@ -150,7 +150,7 @@ ngx_[% subsystem %]_lua_ffi_set_ctx_ref(ngx_http_request_t *r, int ref)
 {
     ngx_[% subsystem %]_lua_ctx_t  *ctx;
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return NGX_[% subsystem FILTER upper %]_LUA_FFI_NO_REQ_CTX;
     }
@@ -175,7 +175,7 @@ ngx_[% subsystem %]_lua_ngx_ctx_add_cleanup(ngx_http_request_t *r, int ref)
 
     ngx_[% subsystem %]_lua_ngx_ctx_cleanup_data_t    *data;
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     L = ngx_[% subsystem %]_lua_get_lua_vm(r, ctx);
 
     cln = ngx_pool_cleanup_add(r->pool,

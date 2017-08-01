@@ -94,7 +94,7 @@ ngx_[% subsystem %]_lua_ngx_exec(lua_State *L)
 
     uri.len = len;
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
@@ -230,7 +230,7 @@ ngx_[% subsystem %]_lua_ngx_redirect(lua_State *L)
         return luaL_error(L, "no request object found");
     }
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -309,7 +309,7 @@ ngx_[% subsystem %]_lua_ngx_exit(lua_State *L)
         return luaL_error(L, "no request object found");
     }
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -408,7 +408,7 @@ ngx_[% subsystem %]_lua_on_abort(lua_State *L)
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -459,7 +459,7 @@ ngx_[% subsystem %]_lua_ffi_exit(ngx_http_request_t *r, int status, u_char *err,
 {
     ngx_[% subsystem %]_lua_ctx_t       *ctx;
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         *errlen = ngx_snprintf(err, *errlen, "no request ctx found") - err;
         return NGX_ERROR;

@@ -168,7 +168,7 @@ ngx_[% subsystem %]_lua_ngx_timer_helper(lua_State *L, int every)
         return luaL_error(L, "no request");
     }
 
-    ctx = ngx_http_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     if (ngx_exiting && delay > 0) {
         lua_pushnil(L);
