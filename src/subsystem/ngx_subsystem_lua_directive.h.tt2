@@ -21,6 +21,8 @@ char *ngx_[% subsystem %]_lua_content_by_lua_block(ngx_conf_t *cf, ngx_command_t
     void *conf);
 char *ngx_[% subsystem %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf);
+
+[% IF subsystem == 'http' %]
 char *ngx_[% subsystem %]_lua_rewrite_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf);
 char *ngx_[% subsystem %]_lua_rewrite_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
@@ -41,6 +43,8 @@ char *ngx_[% subsystem %]_lua_body_filter_by_lua_block(ngx_conf_t *cf,
     ngx_command_t *cmd, void *conf);
 char *ngx_[% subsystem %]_lua_body_filter_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf);
+[% END %]
+
 char *ngx_[% subsystem %]_lua_init_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf);
 char *ngx_[% subsystem %]_lua_init_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
@@ -51,6 +55,7 @@ char *ngx_[% subsystem %]_lua_init_worker_by_lua(ngx_conf_t *cf, ngx_command_t *
     void *conf);
 char *ngx_[% subsystem %]_lua_code_cache(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 
+[% IF subsystem == 'http' %]
 #if defined(NDK) && NDK
 
 char *ngx_[% subsystem %]_lua_set_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,
@@ -64,13 +69,16 @@ ngx_int_t ngx_[% subsystem %]_lua_filter_set_by_lua_file(ngx_[% subsystem %]_[% 
     ngx_str_t *val, ngx_http_variable_value_t *v, void *data);
 
 #endif
+[% END %]
 
+[% IF subsystem == 'http' %]
 char *ngx_[% subsystem %]_lua_rewrite_no_postpone(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf);
 char *ngx_[% subsystem %]_lua_conf_lua_block_parse(ngx_conf_t *cf,
     ngx_command_t *cmd);
 char *ngx_[% subsystem %]_lua_capture_error_log(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf);
+[% END %]
 
 
 #endif /* _NGX_[% subsystem FILTER upper %]_LUA_DIRECTIVE_H_INCLUDED_ */

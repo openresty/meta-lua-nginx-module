@@ -154,7 +154,9 @@ typedef struct {
 
 
 typedef struct ngx_[% subsystem %]_lua_main_conf_s  ngx_[% subsystem %]_lua_main_conf_t;
+[% IF subsystem == 'http' %]
 typedef union ngx_[% subsystem %]_lua_srv_conf_u  ngx_[% subsystem %]_lua_srv_conf_t;
+[% END %]
 
 
 [% IF subsystem == 'http' %]
@@ -313,7 +315,7 @@ typedef struct {
     ngx_http_handler_pt     access_handler;
 [% END %]
 
-    ngx_http_handler_pt     content_handler;
+    ngx_[% subsystem %]_handler_pt     content_handler;
 
 [% IF subsystem == 'http' %]
     ngx_http_handler_pt     log_handler;
