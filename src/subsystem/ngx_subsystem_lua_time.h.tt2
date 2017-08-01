@@ -12,9 +12,7 @@
 #include "ngx_[% subsystem %]_lua_common.h"
 
 
-[% IF subsystem == 'http' %]
-void ngx_http_lua_inject_time_api(lua_State *L);
-[% END %]
+void ngx_[% subsystem %]_lua_inject_time_api(lua_State *L);
 void ngx_[% subsystem %]_lua_inject_req_time_api(lua_State *L);
 
 
