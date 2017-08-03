@@ -73,12 +73,15 @@ ngx_[% subsystem %]_lua_coroutine_create_helper(lua_State *L, ngx_[% subsystem %
     luaL_argcheck(L, lua_isfunction(L, 1) && !lua_iscfunction(L, 1), 1,
                   "Lua function expected");
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
+[% IF subsystem == 'http' %]
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH);
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH
+[% END %]
+        );
 
     vm = ngx_[% subsystem %]_lua_get_lua_vm(r, ctx);
 
@@ -150,12 +153,15 @@ ngx_[% subsystem %]_lua_coroutine_resume(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
+[% IF subsystem == 'http' %]
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH);
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH
+[% END %]
+        );
 
     p_coctx = ctx->cur_co_ctx;
     if (p_coctx == NULL) {
@@ -211,12 +217,15 @@ ngx_[% subsystem %]_lua_coroutine_yield(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
+[% IF subsystem == 'http' %]
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH);
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH
+[% END %]
+        );
 
     coctx = ctx->cur_co_ctx;
 
@@ -361,12 +370,15 @@ ngx_[% subsystem %]_lua_coroutine_status(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
+[% IF subsystem == 'http' %]
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH);
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH
+[% END %]
+        );
 
     coctx = ngx_[% subsystem %]_lua_get_co_ctx(co, ctx);
     if (coctx == NULL) {
