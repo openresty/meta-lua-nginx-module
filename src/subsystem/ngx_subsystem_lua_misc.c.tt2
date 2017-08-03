@@ -18,7 +18,10 @@
 
 static int ngx_[% subsystem %]_lua_ngx_get(lua_State *L);
 static int ngx_[% subsystem %]_lua_ngx_set(lua_State *L);
+
+[% IF subsystem == 'http' %]
 static int ngx_[% subsystem %]_lua_ngx_req_is_internal(lua_State *L);
+[% END %]
 
 
 void
@@ -42,6 +45,7 @@ ngx_[% subsystem %]_lua_inject_req_misc_api(lua_State *L)
 }
 
 
+[% IF subsystem == 'http' %]
 static int
 ngx_[% subsystem %]_lua_ngx_req_is_internal(lua_State *L)
 {
@@ -55,6 +59,7 @@ ngx_[% subsystem %]_lua_ngx_req_is_internal(lua_State *L)
     lua_pushboolean(L, r->internal == 1);
     return 1;
 }
+[% END %]
 
 
 static int
@@ -82,6 +87,7 @@ ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
 
     dd("ngx get %s", p);
 
+[% IF subsystem == 'http' %]
     if (len == sizeof("status") - 1
         && ngx_strncmp(p, "status", sizeof("status") - 1) == 0)
     {
@@ -103,6 +109,7 @@ ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
         lua_pushinteger(L, status);
         return 1;
     }
+[% END %]
 
     if (len == sizeof("ctx") - 1
         && ngx_strncmp(p, "ctx", sizeof("ctx") - 1) == 0)
@@ -110,6 +117,7 @@ ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
         return ngx_[% subsystem %]_lua_ngx_get_ctx(L);
     }
 
+[% IF subsystem == 'http' %]
     if (len == sizeof("is_subrequest") - 1
         && ngx_strncmp(p, "is_subrequest", sizeof("is_subrequest") - 1) == 0)
     {
@@ -127,6 +135,7 @@ ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
         lua_pushboolean(L, r->header_sent || ctx->header_sent);
         return 1;
     }
+[% END %]
 
     dd("key %s not matched", p);
 
@@ -145,6 +154,7 @@ ngx_[% subsystem %]_lua_ngx_set(lua_State *L)
     /* we skip the first argument that is the table */
     p = (u_char *) luaL_checklstring(L, 2, &len);
 
+[% IF subsystem == 'http' %]
     if (len == sizeof("status") - 1
         && ngx_strncmp(p, "status", sizeof("status") - 1) == 0)
     {
@@ -183,6 +193,7 @@ ngx_[% subsystem %]_lua_ngx_set(lua_State *L)
 
         return 0;
     }
+[% END %]
 
     if (len == sizeof("ctx") - 1
         && ngx_strncmp(p, "ctx", sizeof("ctx") - 1) == 0)
