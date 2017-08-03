@@ -44,6 +44,7 @@ ngx_[% subsystem %]_lua_ngx_get_phase(lua_State *L)
         lua_pushliteral(L, "init_worker");
         break;
 
+[% IF subsystem == 'http' %]
     case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SET:
         lua_pushliteral(L, "set");
         break;
@@ -55,11 +56,13 @@ ngx_[% subsystem %]_lua_ngx_get_phase(lua_State *L)
     case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS:
         lua_pushliteral(L, "access");
         break;
+[% END %]
 
     case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT:
         lua_pushliteral(L, "content");
         break;
 
+[% IF subsystem == 'http' %]
     case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_LOG:
         lua_pushliteral(L, "log");
         break;
@@ -71,11 +74,13 @@ ngx_[% subsystem %]_lua_ngx_get_phase(lua_State *L)
     case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BODY_FILTER:
         lua_pushliteral(L, "body_filter");
         break;
+[% END %]
 
     case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER:
         lua_pushliteral(L, "timer");
         break;
 
+[% IF subsystem == 'http' %]
     case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER:
         lua_pushliteral(L, "balancer");
         break;
@@ -91,6 +96,7 @@ ngx_[% subsystem %]_lua_ngx_get_phase(lua_State *L)
     case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH:
         lua_pushliteral(L, "ssl_session_fetch");
         break;
+[% END %]
 
     default:
         return luaL_error(L, "unknown phase: %#x", (int) ctx->context);
