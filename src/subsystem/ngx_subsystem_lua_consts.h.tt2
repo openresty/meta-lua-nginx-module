@@ -11,7 +11,11 @@
 #include "ngx_[% subsystem %]_lua_common.h"
 
 
-void ngx_[% subsystem %]_lua_inject_http_consts(lua_State *L);
+[% IF subsystem == 'http' %]
+void ngx_http_lua_inject_http_consts(lua_State *L);
+[% END %]
+
+
 void ngx_[% subsystem %]_lua_inject_core_consts(lua_State *L);
 
 

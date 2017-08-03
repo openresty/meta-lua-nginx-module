@@ -717,7 +717,9 @@ ngx_[% subsystem %]_lua_inject_ngx_api(lua_State *L, ngx_[% subsystem %]_lua_mai
 
     ngx_[% subsystem %]_lua_inject_arg_api(L);
 
-    ngx_[% subsystem %]_lua_inject_http_consts(L);
+    [% IF subsystem == 'http' %]
+    ngx_http_lua_inject_http_consts(L);
+    [% END %]
     ngx_[% subsystem %]_lua_inject_core_consts(L);
 
     ngx_[% subsystem %]_lua_inject_log_api(L);
