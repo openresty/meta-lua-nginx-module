@@ -38,7 +38,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
     ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
     ngx_http_core_loc_conf_t    *clcf, *top_clcf;
 
-    lmcf = ngx_http_cycle_get_module_main_conf(cycle, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% subsystem %]_cycle_get_module_main_conf(cycle, ngx_[% subsystem %]_lua_module);
 
     if (lmcf == NULL
         || lmcf->init_worker_handler == NULL

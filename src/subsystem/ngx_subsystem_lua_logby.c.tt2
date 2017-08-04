@@ -78,7 +78,7 @@ ngx_[% subsystem %]_lua_log_handler(ngx_[% subsystem %]_[% req_type %]_t *r)
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
 
 #if (NGX_[% subsystem FILTER upper %]_LUA_HAVE_MALLOC_TRIM)
-    lmcf = ngx_http_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
     trim_cycle = lmcf->malloc_trim_cycle;
 

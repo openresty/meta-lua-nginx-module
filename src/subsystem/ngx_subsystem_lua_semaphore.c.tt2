@@ -83,7 +83,7 @@ ngx_[% subsystem %]_lua_alloc_sema(void)
 
     ngx_[% subsystem %]_lua_assert(ngx_cycle && ngx_cycle->conf_ctx);
 
-    lmcf = ngx_http_cycle_get_module_main_conf(ngx_cycle,
+    lmcf = ngx_[% subsystem %]_cycle_get_module_main_conf(ngx_cycle,
                                                ngx_[% subsystem %]_lua_module);
 
     mm = lmcf->sema_mm;

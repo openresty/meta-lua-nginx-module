@@ -208,7 +208,7 @@ ngx_[% subsystem %]_lua_var_set(lua_State *L)
 
     /* we fetch the variable itself */
 
-    cmcf = ngx_http_get_module_main_conf(r, ngx_http_core_module);
+    cmcf = ngx_[% subsystem %]_get_module_main_conf(r, ngx_http_core_module);
 
     v = ngx_hash_find(&cmcf->variables_hash, hash, name.data, name.len);
 
@@ -388,7 +388,7 @@ ngx_[% subsystem %]_lua_ffi_var_set(ngx_[% subsystem %]_[% req_type %]_t *r, u_c
 
     /* we fetch the variable itself */
 
-    cmcf = ngx_http_get_module_main_conf(r, ngx_http_core_module);
+    cmcf = ngx_[% subsystem %]_get_module_main_conf(r, ngx_http_core_module);
 
     v = ngx_hash_find(&cmcf->variables_hash, hash, lowcase_buf, name_len);
 
