@@ -183,7 +183,7 @@ ngx_[% subsystem %]_lua_var_set(lua_State *L)
     case LUA_TSTRING:
         p = (u_char *) luaL_checklstring(L, 3, &len);
 
-        val = ngx_palloc(r->connection->pool, len);
+        val = ngx_palloc(r->pool, len);
         if (val == NULL) {
             return luaL_error(L, "memory allocation error");
         }
@@ -221,7 +221,7 @@ ngx_[% subsystem %]_lua_var_set(lua_State *L)
 
             dd("set variables with set_handler");
 
-            vv = ngx_palloc(r->connection->pool, sizeof(ngx_[% subsystem %]_variable_value_t));
+            vv = ngx_palloc(r->pool, sizeof(ngx_[% subsystem %]_variable_value_t));
             if (vv == NULL) {
                 return luaL_error(L, "no memory");
             }
@@ -405,7 +405,7 @@ ngx_[% subsystem %]_lua_ffi_var_set(ngx_[% subsystem %]_[% req_type %]_t *r, u_c
             dd("set variables with set_handler");
 
             if (value != NULL && value_len) {
-                vv = ngx_palloc(r->connection->pool, sizeof(ngx_[% subsystem %]_variable_value_t)
+                vv = ngx_palloc(r->pool, sizeof(ngx_[% subsystem %]_variable_value_t)
                                 + value_len);
                 if (vv == NULL) {
                     goto nomem;
@@ -416,7 +416,7 @@ ngx_[% subsystem %]_lua_ffi_var_set(ngx_[% subsystem %]_[% req_type %]_t *r, u_c
                 value = p;
 
             } else {
-                vv = ngx_palloc(r->connection->pool, sizeof(ngx_[% subsystem %]_variable_value_t));
+                vv = ngx_palloc(r->pool, sizeof(ngx_[% subsystem %]_variable_value_t));
                 if (vv == NULL) {
                     goto nomem;
                 }
@@ -456,7 +456,7 @@ ngx_[% subsystem %]_lua_ffi_var_set(ngx_[% subsystem %]_[% req_type %]_t *r, u_c
                 vv->len = 0;
 
             } else {
-                p = ngx_palloc(r->connection->pool, value_len);
+                p = ngx_palloc(r->pool, value_len);
                 if (p == NULL) {
                     goto nomem;
                 }
