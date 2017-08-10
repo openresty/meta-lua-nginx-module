@@ -11,34 +11,34 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_setby.h"
-#include "ngx_[% subsystem %]_lua_exception.h"
-#include "ngx_[% subsystem %]_lua_util.h"
-#include "ngx_[% subsystem %]_lua_pcrefix.h"
-#include "ngx_[% subsystem %]_lua_time.h"
-#include "ngx_[% subsystem %]_lua_log.h"
-#include "ngx_[% subsystem %]_lua_regex.h"
-#include "ngx_[% subsystem %]_lua_variable.h"
-#include "ngx_[% subsystem %]_lua_string.h"
-#include "ngx_[% subsystem %]_lua_misc.h"
-#include "ngx_[% subsystem %]_lua_consts.h"
-#include "ngx_[% subsystem %]_lua_shdict.h"
-#include "ngx_[% subsystem %]_lua_util.h"
+#include "ngx_http_lua_setby.h"
+#include "ngx_http_lua_exception.h"
+#include "ngx_http_lua_util.h"
+#include "ngx_http_lua_pcrefix.h"
+#include "ngx_http_lua_time.h"
+#include "ngx_http_lua_log.h"
+#include "ngx_http_lua_regex.h"
+#include "ngx_http_lua_variable.h"
+#include "ngx_http_lua_string.h"
+#include "ngx_http_lua_misc.h"
+#include "ngx_http_lua_consts.h"
+#include "ngx_http_lua_shdict.h"
+#include "ngx_http_lua_util.h"
 
 
-static void ngx_[% subsystem %]_lua_set_by_lua_env(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r,
+static void ngx_http_lua_set_by_lua_env(lua_State *L, ngx_http_request_t *r,
     size_t nargs, ngx_http_variable_value_t *args);
 
 
 /* keys in Lua thread for fetching args and nargs in set_by_lua* */
 
-#define ngx_[% subsystem %]_lua_nargs_key  "__ngx_nargs"
+#define ngx_http_lua_nargs_key  "__ngx_nargs"
 
-#define ngx_[% subsystem %]_lua_args_key  "__ngx_args"
+#define ngx_http_lua_args_key  "__ngx_args"
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_set_by_chunk(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r, ngx_str_t *val,
+ngx_http_lua_set_by_chunk(lua_State *L, ngx_http_request_t *r, ngx_str_t *val,
     ngx_http_variable_value_t *args, size_t nargs, ngx_str_t *script)
 {
     size_t           i;
@@ -54,12 +54,12 @@ ngx_[% subsystem %]_lua_set_by_chunk(lua_State *L, ngx_[% subsystem %]_[% req_ty
 
     dd("set Lua VM panic handler");
 
-    lua_atpanic(L, ngx_[% subsystem %]_lua_atpanic);
+    lua_atpanic(L, ngx_http_lua_atpanic);
 
     NGX_LUA_EXCEPTION_TRY {
         dd("initialize nginx context in Lua VM, code chunk at "
            "stack top    sp = 1");
-        ngx_[% subsystem %]_lua_set_by_lua_env(L, r, nargs, args);
+        ngx_http_lua_set_by_lua_env(L, r, nargs, args);
 
         /*  passing directive arguments to the user code */
         for (i = 0; i < nargs; i++) {
@@ -68,10 +68,10 @@ ngx_[% subsystem %]_lua_set_by_chunk(lua_State *L, ngx_[% subsystem %]_[% req_ty
 
 #if (NGX_PCRE)
         /* XXX: work-around to nginx regex subsystem */
-        old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(r->pool);
+        old_pool = ngx_http_lua_pcre_malloc_init(r->pool);
 #endif
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_traceback);
+        lua_pushcfunction(L, ngx_http_lua_traceback);
         lua_insert(L, 1);  /* put it under chunk and args */
 
         dd("protected call user code");
@@ -84,7 +84,7 @@ ngx_[% subsystem %]_lua_set_by_chunk(lua_State *L, ngx_[% subsystem %]_[% req_ty
 
 #if (NGX_PCRE)
         /* XXX: work-around to nginx regex subsystem */
-        ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+        ngx_http_lua_pcre_malloc_done(old_pool);
 #endif
 
         if (rc != 0) {
@@ -134,7 +134,7 @@ ngx_[% subsystem %]_lua_set_by_chunk(lua_State *L, ngx_[% subsystem %]_[% req_ty
 
 
 int
-ngx_[% subsystem %]_lua_setby_param_get(lua_State *L)
+ngx_http_lua_setby_param_get(lua_State *L)
 {
     int         idx;
     int         n;
@@ -145,11 +145,11 @@ ngx_[% subsystem %]_lua_setby_param_get(lua_State *L)
     idx--;
 
     /*  get number of args from globals */
-    lua_getglobal(L, ngx_[% subsystem %]_lua_nargs_key);
+    lua_getglobal(L, ngx_http_lua_nargs_key);
     n = (int) lua_tointeger(L, -1);
 
     /*  get args from globals */
-    lua_getglobal(L, ngx_[% subsystem %]_lua_args_key);
+    lua_getglobal(L, ngx_http_lua_args_key);
     v = lua_touserdata(L, -1);
 
     if (idx < 0 || idx > n - 1) {
@@ -175,17 +175,17 @@ ngx_[% subsystem %]_lua_setby_param_get(lua_State *L)
  *         |      ...     |
  * */
 static void
-ngx_[% subsystem %]_lua_set_by_lua_env(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r, size_t nargs,
+ngx_http_lua_set_by_lua_env(lua_State *L, ngx_http_request_t *r, size_t nargs,
     ngx_http_variable_value_t *args)
 {
     /*  set nginx request pointer to current lua thread's globals table */
-    ngx_[% subsystem %]_lua_set_req(L, r);
+    ngx_http_lua_set_req(L, r);
 
     lua_pushinteger(L, nargs);
-    lua_setglobal(L, ngx_[% subsystem %]_lua_nargs_key);
+    lua_setglobal(L, ngx_http_lua_nargs_key);
 
     lua_pushlightuserdata(L, args);
-    lua_setglobal(L, ngx_[% subsystem %]_lua_args_key);
+    lua_setglobal(L, ngx_http_lua_args_key);
 
     /**
      * we want to create empty environment for current script
@@ -200,12 +200,12 @@ ngx_[% subsystem %]_lua_set_by_lua_env(lua_State *L, ngx_[% subsystem %]_[% req_
      * all variables created in the script-env will be thrown away at the end
      * of the script run.
      * */
-    ngx_[% subsystem %]_lua_create_new_globals_table(L, 0 /* narr */, 1 /* nrec */);
+    ngx_http_lua_create_new_globals_table(L, 0 /* narr */, 1 /* nrec */);
 
     /*  {{{ make new env inheriting main thread's globals table */
     /* the metatable for the new env */
     lua_createtable(L, 0 /* narr */, 1 /* nrec */);
-    ngx_[% subsystem %]_lua_get_globals_table(L);
+    ngx_http_lua_get_globals_table(L);
     lua_setfield(L, -2, "__index");
     lua_setmetatable(L, -2);    /*  setmetatable(newt, {__index = _G}) */
     /*  }}} */

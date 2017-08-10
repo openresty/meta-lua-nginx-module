@@ -16,26 +16,26 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_util.h"
-#include "ngx_[% subsystem %]_lua_semaphore.h"
-#include "ngx_[% subsystem %]_lua_contentby.h"
+#include "ngx_http_lua_util.h"
+#include "ngx_http_lua_semaphore.h"
+#include "ngx_http_lua_contentby.h"
 
 
-ngx_int_t ngx_[% subsystem %]_lua_sema_mm_init(ngx_conf_t *cf,
-    ngx_[% subsystem %]_lua_main_conf_t *lmcf);
-void ngx_[% subsystem %]_lua_sema_mm_cleanup(void *data);
-static ngx_[% subsystem %]_lua_sema_t *ngx_[% subsystem %]_lua_alloc_sema(void);
-static void ngx_[% subsystem %]_lua_free_sema(ngx_[% subsystem %]_lua_sema_t *sem);
-static ngx_int_t ngx_[% subsystem %]_lua_sema_resume(ngx_[% subsystem %]_[% req_type %]_t *r);
-int ngx_[% subsystem %]_lua_ffi_sema_new(ngx_[% subsystem %]_lua_sema_t **psem,
+ngx_int_t ngx_http_lua_sema_mm_init(ngx_conf_t *cf,
+    ngx_http_lua_main_conf_t *lmcf);
+void ngx_http_lua_sema_mm_cleanup(void *data);
+static ngx_http_lua_sema_t *ngx_http_lua_alloc_sema(void);
+static void ngx_http_lua_free_sema(ngx_http_lua_sema_t *sem);
+static ngx_int_t ngx_http_lua_sema_resume(ngx_http_request_t *r);
+int ngx_http_lua_ffi_sema_new(ngx_http_lua_sema_t **psem,
     int n, char **errmsg);
-int ngx_[% subsystem %]_lua_ffi_sema_post(ngx_[% subsystem %]_lua_sema_t *sem, int n);
-int ngx_[% subsystem %]_lua_ffi_sema_wait(ngx_[% subsystem %]_[% req_type %]_t *r,
-    ngx_[% subsystem %]_lua_sema_t *sem, int wait_ms, u_char *err, size_t *errlen);
-static void ngx_[% subsystem %]_lua_sema_cleanup(void *data);
-static void ngx_[% subsystem %]_lua_sema_handler(ngx_event_t *ev);
-static void ngx_[% subsystem %]_lua_sema_timeout_handler(ngx_event_t *ev);
-void ngx_[% subsystem %]_lua_ffi_sema_gc(ngx_[% subsystem %]_lua_sema_t *sem);
+int ngx_http_lua_ffi_sema_post(ngx_http_lua_sema_t *sem, int n);
+int ngx_http_lua_ffi_sema_wait(ngx_http_request_t *r,
+    ngx_http_lua_sema_t *sem, int wait_ms, u_char *err, size_t *errlen);
+static void ngx_http_lua_sema_cleanup(void *data);
+static void ngx_http_lua_sema_handler(ngx_event_t *ev);
+static void ngx_http_lua_sema_timeout_handler(ngx_event_t *ev);
+void ngx_http_lua_ffi_sema_gc(ngx_http_lua_sema_t *sem);
 
 
 enum {
@@ -45,11 +45,11 @@ enum {
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_sema_mm_init(ngx_conf_t *cf, ngx_[% subsystem %]_lua_main_conf_t *lmcf)
+ngx_http_lua_sema_mm_init(ngx_conf_t *cf, ngx_http_lua_main_conf_t *lmcf)
 {
-    ngx_[% subsystem %]_lua_sema_mm_t *mm;
+    ngx_http_lua_sema_mm_t *mm;
 
-    mm = ngx_palloc(cf->pool, sizeof(ngx_[% subsystem %]_lua_sema_mm_t));
+    mm = ngx_palloc(cf->pool, sizeof(ngx_http_lua_sema_mm_t));
     if (mm == NULL) {
         return NGX_ERROR;
     }
@@ -63,7 +63,7 @@ ngx_[% subsystem %]_lua_sema_mm_init(ngx_conf_t *cf, ngx_[% subsystem %]_lua_mai
     mm->used = 0;
 
     /* it's better to be 4096, but it needs some space for
-     * ngx_[% subsystem %]_lua_sema_mm_block_t, one is enough, so it is 4095
+     * ngx_http_lua_sema_mm_block_t, one is enough, so it is 4095
      */
     mm->num_per_block = 4095;
 
@@ -71,20 +71,20 @@ ngx_[% subsystem %]_lua_sema_mm_init(ngx_conf_t *cf, ngx_[% subsystem %]_lua_mai
 }
 
 
-static ngx_[% subsystem %]_lua_sema_t *
-ngx_[% subsystem %]_lua_alloc_sema(void)
+static ngx_http_lua_sema_t *
+ngx_http_lua_alloc_sema(void)
 {
     ngx_uint_t                           i, n;
     ngx_queue_t                         *q;
-    ngx_[% subsystem %]_lua_sema_t                 *sem, *iter;
-    ngx_[% subsystem %]_lua_sema_mm_t              *mm;
-    ngx_[% subsystem %]_lua_main_conf_t            *lmcf;
-    ngx_[% subsystem %]_lua_sema_mm_block_t        *block;
+    ngx_http_lua_sema_t                 *sem, *iter;
+    ngx_http_lua_sema_mm_t              *mm;
+    ngx_http_lua_main_conf_t            *lmcf;
+    ngx_http_lua_sema_mm_block_t        *block;
 
-    ngx_[% subsystem %]_lua_assert(ngx_cycle && ngx_cycle->conf_ctx);
+    ngx_http_lua_assert(ngx_cycle && ngx_cycle->conf_ctx);
 
-    lmcf = ngx_[% subsystem %]_cycle_get_module_main_conf(ngx_cycle,
-                                               ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_http_cycle_get_module_main_conf(ngx_cycle,
+                                               ngx_http_lua_module);
 
     mm = lmcf->sema_mm;
 
@@ -92,19 +92,19 @@ ngx_[% subsystem %]_lua_alloc_sema(void)
         q = ngx_queue_head(&mm->free_queue);
         ngx_queue_remove(q);
 
-        sem = ngx_queue_data(q, ngx_[% subsystem %]_lua_sema_t, chain);
+        sem = ngx_queue_data(q, ngx_http_lua_sema_t, chain);
 
         sem->block->used++;
 
         ngx_memzero(&sem->sem_event, sizeof(ngx_event_t));
 
-        sem->sem_event.handler = ngx_[% subsystem %]_lua_sema_handler;
+        sem->sem_event.handler = ngx_http_lua_sema_handler;
         sem->sem_event.data = sem;
         sem->sem_event.log = ngx_cycle->log;
 
         mm->used++;
 
-        ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+        ngx_log_debug1(NGX_LOG_DEBUG_HTTP, ngx_cycle->log, 0,
                        "from head of free queue, alloc semaphore: %p", sem);
 
         return sem;
@@ -112,12 +112,12 @@ ngx_[% subsystem %]_lua_alloc_sema(void)
 
     /* free_queue is empty */
 
-    n = sizeof(ngx_[% subsystem %]_lua_sema_mm_block_t)
-        + mm->num_per_block * sizeof(ngx_[% subsystem %]_lua_sema_t);
+    n = sizeof(ngx_http_lua_sema_mm_block_t)
+        + mm->num_per_block * sizeof(ngx_http_lua_sema_t);
 
     dd("block size: %d, item size: %d",
-       (int) sizeof(ngx_[% subsystem %]_lua_sema_mm_block_t),
-       (int) sizeof(ngx_[% subsystem %]_lua_sema_t));
+       (int) sizeof(ngx_http_lua_sema_mm_block_t),
+       (int) sizeof(ngx_http_lua_sema_t));
 
     block = ngx_alloc(n, ngx_cycle->log);
     if (block == NULL) {
@@ -131,13 +131,13 @@ ngx_[% subsystem %]_lua_alloc_sema(void)
     block->mm = mm;
     block->epoch = mm->cur_epoch;
 
-    sem = (ngx_[% subsystem %]_lua_sema_t *) (block + 1);
+    sem = (ngx_http_lua_sema_t *) (block + 1);
     sem->block = block;
     sem->block->used = 1;
 
     ngx_memzero(&sem->sem_event, sizeof(ngx_event_t));
 
-    sem->sem_event.handler = ngx_[% subsystem %]_lua_sema_handler;
+    sem->sem_event.handler = ngx_http_lua_sema_handler;
     sem->sem_event.data = sem;
     sem->sem_event.log = ngx_cycle->log;
 
@@ -146,7 +146,7 @@ ngx_[% subsystem %]_lua_alloc_sema(void)
         ngx_queue_insert_tail(&mm->free_queue, &iter->chain);
     }
 
-    ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+    ngx_log_debug2(NGX_LOG_DEBUG_HTTP, ngx_cycle->log, 0,
                    "new block, alloc semaphore: %p block: %p", sem, block);
 
     return sem;
@@ -154,26 +154,26 @@ ngx_[% subsystem %]_lua_alloc_sema(void)
 
 
 void
-ngx_[% subsystem %]_lua_sema_mm_cleanup(void *data)
+ngx_http_lua_sema_mm_cleanup(void *data)
 {
     ngx_uint_t                           i;
     ngx_queue_t                         *q;
-    ngx_[% subsystem %]_lua_sema_t                 *sem, *iter;
-    ngx_[% subsystem %]_lua_sema_mm_t              *mm;
-    ngx_[% subsystem %]_lua_main_conf_t            *lmcf;
-    ngx_[% subsystem %]_lua_sema_mm_block_t        *block;
+    ngx_http_lua_sema_t                 *sem, *iter;
+    ngx_http_lua_sema_mm_t              *mm;
+    ngx_http_lua_main_conf_t            *lmcf;
+    ngx_http_lua_sema_mm_block_t        *block;
 
-    lmcf = (ngx_[% subsystem %]_lua_main_conf_t *) data;
+    lmcf = (ngx_http_lua_main_conf_t *) data;
     mm = lmcf->sema_mm;
 
     while (!ngx_queue_empty(&mm->free_queue)) {
         q = ngx_queue_head(&mm->free_queue);
 
-        sem = ngx_queue_data(q, ngx_[% subsystem %]_lua_sema_t, chain);
+        sem = ngx_queue_data(q, ngx_http_lua_sema_t, chain);
         block = sem->block;
 
         if (block->used == 0) {
-            iter = (ngx_[% subsystem %]_lua_sema_t *) (block + 1);
+            iter = (ngx_http_lua_sema_t *) (block + 1);
 
             for (i = 0; i < block->mm->num_per_block; i++, iter++) {
                 ngx_queue_remove(&iter->chain);
@@ -199,12 +199,12 @@ ngx_[% subsystem %]_lua_sema_mm_cleanup(void *data)
 
 
 static void
-ngx_[% subsystem %]_lua_free_sema(ngx_[% subsystem %]_lua_sema_t *sem)
+ngx_http_lua_free_sema(ngx_http_lua_sema_t *sem)
 {
-    ngx_[% subsystem %]_lua_sema_t            *iter;
+    ngx_http_lua_sema_t            *iter;
     ngx_uint_t                      i, mid_epoch;
-    ngx_[% subsystem %]_lua_sema_mm_block_t   *block;
-    ngx_[% subsystem %]_lua_sema_mm_t         *mm;
+    ngx_http_lua_sema_mm_block_t   *block;
+    ngx_http_lua_sema_mm_t         *mm;
 
     block = sem->block;
     block->used--;
@@ -216,14 +216,14 @@ ngx_[% subsystem %]_lua_free_sema(ngx_[% subsystem %]_lua_sema_t *sem)
 
     if (block->epoch < mid_epoch) {
         ngx_queue_insert_tail(&mm->free_queue, &sem->chain);
-        ngx_log_debug4(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+        ngx_log_debug4(NGX_LOG_DEBUG_HTTP, ngx_cycle->log, 0,
                        "add to free queue tail semaphore: %p epoch: %d"
                        "mid_epoch: %d cur_epoch: %d", sem, (int) block->epoch,
                        (int) mid_epoch, (int) mm->cur_epoch);
 
     } else {
         ngx_queue_insert_head(&mm->free_queue, &sem->chain);
-        ngx_log_debug4(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+        ngx_log_debug4(NGX_LOG_DEBUG_HTTP, ngx_cycle->log, 0,
                        "add to free queue head semaphore: %p epoch: %d"
                        "mid_epoch: %d cur_epoch: %d", sem, (int) block->epoch,
                        (int) mid_epoch, (int) mm->cur_epoch);
@@ -236,7 +236,7 @@ ngx_[% subsystem %]_lua_free_sema(ngx_[% subsystem %]_lua_sema_t *sem)
         && block->epoch < mid_epoch)
     {
         /* load <= 50% and it's on the older side */
-        iter = (ngx_[% subsystem %]_lua_sema_t *) (block + 1);
+        iter = (ngx_http_lua_sema_t *) (block + 1);
 
         for (i = 0; i < mm->num_per_block; i++, iter++) {
             ngx_queue_remove(&iter->chain);
@@ -244,7 +244,7 @@ ngx_[% subsystem %]_lua_free_sema(ngx_[% subsystem %]_lua_sema_t *sem)
 
         mm->total -= mm->num_per_block;
 
-        ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+        ngx_log_debug1(NGX_LOG_DEBUG_HTTP, ngx_cycle->log, 0,
                        "free semaphore block: %p", block);
 
         ngx_free(block);
@@ -253,22 +253,22 @@ ngx_[% subsystem %]_lua_free_sema(ngx_[% subsystem %]_lua_sema_t *sem)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_sema_resume(ngx_[% subsystem %]_[% req_type %]_t *r)
+ngx_http_lua_sema_resume(ngx_http_request_t *r)
 {
     lua_State                   *vm;
     ngx_connection_t            *c;
     ngx_int_t                    rc;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
+    ngx_http_lua_ctx_t          *ctx;
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_http_get_module_ctx(r, ngx_http_lua_module);
     if (ctx == NULL) {
         return NGX_ERROR;
     }
 
-    ctx->resume_handler = ngx_[% subsystem %]_lua_wev_handler;
+    ctx->resume_handler = ngx_http_lua_wev_handler;
 
     c = r->connection;
-    vm = ngx_[% subsystem %]_lua_get_lua_vm(r, ctx);
+    vm = ngx_http_lua_get_lua_vm(r, ctx);
 
     if (ctx->cur_co_ctx->sem_resume_status == SEMAPHORE_WAIT_SUCC) {
         lua_pushboolean(ctx->cur_co_ctx->co, 1);
@@ -279,24 +279,24 @@ ngx_[% subsystem %]_lua_sema_resume(ngx_[% subsystem %]_[% req_type %]_t *r)
         lua_pushliteral(ctx->cur_co_ctx->co, "timeout");
     }
 
-    rc = ngx_[% subsystem %]_lua_run_thread(vm, r, ctx, 2);
+    rc = ngx_http_lua_run_thread(vm, r, ctx, 2);
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
                    "lua run thread returned %d", rc);
 
     if (rc == NGX_AGAIN) {
-        return ngx_[% subsystem %]_lua_run_posted_threads(c, vm, r, ctx);
+        return ngx_http_lua_run_posted_threads(c, vm, r, ctx);
     }
 
     if (rc == NGX_DONE) {
-        ngx_[% subsystem %]_lua_finalize_request(r, NGX_DONE);
-        return ngx_[% subsystem %]_lua_run_posted_threads(c, vm, r, ctx);
+        ngx_http_lua_finalize_request(r, NGX_DONE);
+        return ngx_http_lua_run_posted_threads(c, vm, r, ctx);
     }
 
     /* rc == NGX_ERROR || rc >= NGX_OK */
 
     if (ctx->entered_content_phase) {
-        ngx_[% subsystem %]_lua_finalize_request(r, rc);
+        ngx_http_lua_finalize_request(r, rc);
         return NGX_DONE;
     }
 
@@ -305,12 +305,12 @@ ngx_[% subsystem %]_lua_sema_resume(ngx_[% subsystem %]_[% req_type %]_t *r)
 
 
 int
-ngx_[% subsystem %]_lua_ffi_sema_new(ngx_[% subsystem %]_lua_sema_t **psem,
+ngx_http_lua_ffi_sema_new(ngx_http_lua_sema_t **psem,
     int n, char **errmsg)
 {
-    ngx_[% subsystem %]_lua_sema_t    *sem;
+    ngx_http_lua_sema_t    *sem;
 
-    sem = ngx_[% subsystem %]_lua_alloc_sema();
+    sem = ngx_http_lua_alloc_sema();
     if (sem == NULL) {
         *errmsg = "no memory";
         return NGX_ERROR;
@@ -322,7 +322,7 @@ ngx_[% subsystem %]_lua_ffi_sema_new(ngx_[% subsystem %]_lua_sema_t **psem,
     sem->wait_count = 0;
     *psem = sem;
 
-    ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+    ngx_log_debug2(NGX_LOG_DEBUG_HTTP, ngx_cycle->log, 0,
                    "http lua semaphore new: %p, resources: %d",
                    sem, sem->resource_count);
 
@@ -331,9 +331,9 @@ ngx_[% subsystem %]_lua_ffi_sema_new(ngx_[% subsystem %]_lua_sema_t **psem,
 
 
 int
-ngx_[% subsystem %]_lua_ffi_sema_post(ngx_[% subsystem %]_lua_sema_t *sem, int n)
+ngx_http_lua_ffi_sema_post(ngx_http_lua_sema_t *sem, int n)
 {
-    ngx_log_debug3(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+    ngx_log_debug3(NGX_LOG_DEBUG_HTTP, ngx_cycle->log, 0,
                    "http lua semaphore post: %p, n: %d, resources: %d",
                    sem, n, sem->resource_count);
 
@@ -352,14 +352,14 @@ ngx_[% subsystem %]_lua_ffi_sema_post(ngx_[% subsystem %]_lua_sema_t *sem, int n
 
 
 int
-ngx_[% subsystem %]_lua_ffi_sema_wait(ngx_[% subsystem %]_[% req_type %]_t *r,
-    ngx_[% subsystem %]_lua_sema_t *sem, int wait_ms, u_char *err, size_t *errlen)
+ngx_http_lua_ffi_sema_wait(ngx_http_request_t *r,
+    ngx_http_lua_sema_t *sem, int wait_ms, u_char *err, size_t *errlen)
 {
-    ngx_[% subsystem %]_lua_ctx_t           *ctx;
-    ngx_[% subsystem %]_lua_co_ctx_t        *wait_co_ctx;
+    ngx_http_lua_ctx_t           *ctx;
+    ngx_http_lua_co_ctx_t        *wait_co_ctx;
     ngx_int_t                     rc;
 
-    ngx_log_debug4(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+    ngx_log_debug4(NGX_LOG_DEBUG_HTTP, ngx_cycle->log, 0,
                    "http lua semaphore wait: %p, timeout: %d, "
                    "resources: %d, event posted: %d",
                    sem, wait_ms, sem->resource_count,
@@ -370,17 +370,17 @@ ngx_[% subsystem %]_lua_ffi_sema_wait(ngx_[% subsystem %]_[% req_type %]_t *r,
 #endif
                    );
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_http_get_module_ctx(r, ngx_http_lua_module);
     if (ctx == NULL) {
         *errlen = ngx_snprintf(err, *errlen, "no request ctx found") - err;
         return NGX_ERROR;
     }
 
-    rc = ngx_[% subsystem %]_lua_ffi_check_context(ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                                        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                                        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
-                                        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
-                                        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT,
+    rc = ngx_http_lua_ffi_check_context(ctx, NGX_HTTP_LUA_CONTEXT_REWRITE
+                                        | NGX_HTTP_LUA_CONTEXT_ACCESS
+                                        | NGX_HTTP_LUA_CONTEXT_CONTENT
+                                        | NGX_HTTP_LUA_CONTEXT_TIMER
+                                        | NGX_HTTP_LUA_CONTEXT_SSL_CERT,
                                         err, errlen);
 
     if (rc != NGX_OK) {
@@ -388,7 +388,7 @@ ngx_[% subsystem %]_lua_ffi_sema_wait(ngx_[% subsystem %]_[% req_type %]_t *r,
     }
 
     /* we keep the order, will first resume the thread waiting for the
-     * longest time in ngx_[% subsystem %]_lua_sema_handler
+     * longest time in ngx_http_lua_sema_handler
      */
 
     if (ngx_queue_empty(&sem->wait_queue) && sem->resource_count > 0) {
@@ -403,21 +403,21 @@ ngx_[% subsystem %]_lua_ffi_sema_wait(ngx_[% subsystem %]_[% req_type %]_t *r,
     sem->wait_count++;
     wait_co_ctx = ctx->cur_co_ctx;
 
-    wait_co_ctx->sleep.handler = ngx_[% subsystem %]_lua_sema_timeout_handler;
+    wait_co_ctx->sleep.handler = ngx_http_lua_sema_timeout_handler;
     wait_co_ctx->sleep.data = ctx->cur_co_ctx;
     wait_co_ctx->sleep.log = r->connection->log;
 
     ngx_add_timer(&wait_co_ctx->sleep, (ngx_msec_t) wait_ms);
 
-    dd("ngx_[% subsystem %]_lua_ffi_sema_wait add timer coctx:%p wait: %d(ms)",
+    dd("ngx_http_lua_ffi_sema_wait add timer coctx:%p wait: %d(ms)",
        wait_co_ctx, wait_ms);
 
     ngx_queue_insert_tail(&sem->wait_queue, &wait_co_ctx->sem_wait_queue);
 
     wait_co_ctx->data = sem;
-    wait_co_ctx->cleanup = ngx_[% subsystem %]_lua_sema_cleanup;
+    wait_co_ctx->cleanup = ngx_http_lua_sema_cleanup;
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, ngx_cycle->log, 0,
                    "http lua semaphore wait yielding");
 
     return NGX_AGAIN;
@@ -425,22 +425,22 @@ ngx_[% subsystem %]_lua_ffi_sema_wait(ngx_[% subsystem %]_[% req_type %]_t *r,
 
 
 int
-ngx_[% subsystem %]_lua_ffi_sema_count(ngx_[% subsystem %]_lua_sema_t *sem)
+ngx_http_lua_ffi_sema_count(ngx_http_lua_sema_t *sem)
 {
     return sem->resource_count - sem->wait_count;
 }
 
 
 static void
-ngx_[% subsystem %]_lua_sema_cleanup(void *data)
+ngx_http_lua_sema_cleanup(void *data)
 {
-    ngx_[% subsystem %]_lua_co_ctx_t          *coctx = data;
+    ngx_http_lua_co_ctx_t          *coctx = data;
     ngx_queue_t                    *q;
-    ngx_[% subsystem %]_lua_sema_t            *sem;
+    ngx_http_lua_sema_t            *sem;
 
     sem = coctx->data;
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, ngx_cycle->log, 0,
                    "http lua semaphore cleanup");
 
     if (coctx->sleep.timer_set) {
@@ -456,12 +456,12 @@ ngx_[% subsystem %]_lua_sema_cleanup(void *data)
 
 
 static void
-ngx_[% subsystem %]_lua_sema_handler(ngx_event_t *ev)
+ngx_http_lua_sema_handler(ngx_event_t *ev)
 {
-    ngx_[% subsystem %]_lua_sema_t         *sem;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
-    ngx_[% subsystem %]_lua_co_ctx_t       *wait_co_ctx;
+    ngx_http_lua_sema_t         *sem;
+    ngx_http_request_t          *r;
+    ngx_http_lua_ctx_t          *ctx;
+    ngx_http_lua_co_ctx_t       *wait_co_ctx;
     ngx_connection_t            *c;
     ngx_queue_t                 *q;
 
@@ -474,18 +474,18 @@ ngx_[% subsystem %]_lua_sema_handler(ngx_event_t *ev)
 
         sem->wait_count--;
 
-        wait_co_ctx = ngx_queue_data(q, ngx_[% subsystem %]_lua_co_ctx_t, sem_wait_queue);
+        wait_co_ctx = ngx_queue_data(q, ngx_http_lua_co_ctx_t, sem_wait_queue);
         wait_co_ctx->cleanup = NULL;
 
         if (wait_co_ctx->sleep.timer_set) {
             ngx_del_timer(&wait_co_ctx->sleep);
         }
 
-        r = ngx_[% subsystem %]_lua_get_req(wait_co_ctx->co);
+        r = ngx_http_lua_get_req(wait_co_ctx->co);
         c = r->connection;
 
-        ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
-        ngx_[% subsystem %]_lua_assert(ctx != NULL);
+        ctx = ngx_http_get_module_ctx(r, ngx_http_lua_module);
+        ngx_http_lua_assert(ctx != NULL);
 
         sem->resource_count--;
 
@@ -494,10 +494,10 @@ ngx_[% subsystem %]_lua_sema_handler(ngx_event_t *ev)
         wait_co_ctx->sem_resume_status = SEMAPHORE_WAIT_SUCC;
 
         if (ctx->entered_content_phase) {
-            (void) ngx_[% subsystem %]_lua_sema_resume(r);
+            (void) ngx_http_lua_sema_resume(r);
 
         } else {
-            ctx->resume_handler = ngx_[% subsystem %]_lua_sema_resume;
+            ctx->resume_handler = ngx_http_lua_sema_resume;
             ngx_http_core_run_phases(r);
         }
 
@@ -507,39 +507,39 @@ ngx_[% subsystem %]_lua_sema_handler(ngx_event_t *ev)
 
 
 static void
-ngx_[% subsystem %]_lua_sema_timeout_handler(ngx_event_t *ev)
+ngx_http_lua_sema_timeout_handler(ngx_event_t *ev)
 {
-    ngx_[% subsystem %]_lua_co_ctx_t       *wait_co_ctx;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
+    ngx_http_lua_co_ctx_t       *wait_co_ctx;
+    ngx_http_request_t          *r;
+    ngx_http_lua_ctx_t          *ctx;
     ngx_connection_t            *c;
-    ngx_[% subsystem %]_lua_sema_t         *sem;
+    ngx_http_lua_sema_t         *sem;
 
     wait_co_ctx = ev->data;
     wait_co_ctx->cleanup = NULL;
 
-    dd("ngx_[% subsystem %]_lua_sema_timeout_handler timeout coctx:%p", wait_co_ctx);
+    dd("ngx_http_lua_sema_timeout_handler timeout coctx:%p", wait_co_ctx);
 
     sem = wait_co_ctx->data;
 
     ngx_queue_remove(&wait_co_ctx->sem_wait_queue);
     sem->wait_count--;
 
-    r = ngx_[% subsystem %]_lua_get_req(wait_co_ctx->co);
+    r = ngx_http_lua_get_req(wait_co_ctx->co);
     c = r->connection;
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
-    ngx_[% subsystem %]_lua_assert(ctx != NULL);
+    ctx = ngx_http_get_module_ctx(r, ngx_http_lua_module);
+    ngx_http_lua_assert(ctx != NULL);
 
     ctx->cur_co_ctx = wait_co_ctx;
 
     wait_co_ctx->sem_resume_status = SEMAPHORE_WAIT_TIMEOUT;
 
     if (ctx->entered_content_phase) {
-        (void) ngx_[% subsystem %]_lua_sema_resume(r);
+        (void) ngx_http_lua_sema_resume(r);
 
     } else {
-        ctx->resume_handler = ngx_[% subsystem %]_lua_sema_resume;
+        ctx->resume_handler = ngx_http_lua_sema_resume;
         ngx_http_core_run_phases(r);
     }
 
@@ -548,9 +548,9 @@ ngx_[% subsystem %]_lua_sema_timeout_handler(ngx_event_t *ev)
 
 
 void
-ngx_[% subsystem %]_lua_ffi_sema_gc(ngx_[% subsystem %]_lua_sema_t *sem)
+ngx_http_lua_ffi_sema_gc(ngx_http_lua_sema_t *sem)
 {
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_HTTP, ngx_cycle->log, 0,
                    "in lua gc, semaphore %p", sem);
 
     if (sem == NULL) {
@@ -567,7 +567,7 @@ ngx_[% subsystem %]_lua_ffi_sema_gc(ngx_[% subsystem %]_lua_sema_t *sem)
                       "destroyed", sem);
     }
 
-    ngx_[% subsystem %]_lua_free_sema(sem);
+    ngx_http_lua_free_sema(sem);
 }
 
 
