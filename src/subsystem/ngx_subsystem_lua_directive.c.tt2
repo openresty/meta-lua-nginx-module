@@ -433,7 +433,7 @@ ngx_[% subsystem %]_lua_filter_set_by_lua_file(ngx_[% subsystem %]_[% req_type %
     return NGX_OK;
 }
 #endif /* defined(NDK) && NDK */
-[% END %]
+[% END # http %]
 
 
 [% IF subsystem == 'http' %]
@@ -806,7 +806,11 @@ ngx_[% subsystem %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
     lmcf->requires_capture_filter = 1;
 
     /*  register location content handler */
+    [% IF subsystem == 'http' %]
     cxcf = ngx_http_conf_get_module_loc_conf(cf, ngx_http_core_module);
+    [% ELSIF subsystem == 'stream' %]
+    cxcf = ngx_stream_conf_get_module_srv_conf(cf, ngx_stream_core_module);
+    [% END %]
     if (cxcf == NULL) {
         return NGX_CONF_ERROR;
     }

@@ -160,7 +160,11 @@ ngx_[% subsystem %]_lua_content_handler(ngx_[% subsystem %]_[% req_type %]_t *r)
                    "lua content handler, uri:\"%V\" c:%ud", &r->uri,
                    r->main->count);
 
+[% IF subsystem == 'http' %]
     llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+[% ELSIF subsystem == 'stream' %]
+    llcf = ngx_stream_lua_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+[% END %]
 
     if (llcf->content_handler == NULL) {
         dd("no content handler found");
@@ -191,6 +195,7 @@ ngx_[% subsystem %]_lua_content_handler(ngx_[% subsystem %]_[% req_type %]_t *r)
         return rc;
     }
 
+[% IF subsystem == 'http' %]
     if (llcf->force_read_body && !ctx->read_body_done) {
         r->request_body_in_single_buf = 1;
         r->request_body_in_persistent_file = 1;
@@ -213,6 +218,7 @@ ngx_[% subsystem %]_lua_content_handler(ngx_[% subsystem %]_[% req_type %]_t *r)
             return NGX_DONE;
         }
     }
+[% END # http %]
 
     dd("setting entered");
 
@@ -252,7 +258,11 @@ ngx_[% subsystem %]_lua_content_handler_file(ngx_[% subsystem %]_[% req_type %]_
     ngx_[% subsystem %]_lua_loc_conf_t         *llcf;
     ngx_str_t                        eval_src;
 
+[% IF subsystem == 'http' %]
     llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+[% ELSIF subsystem == 'stream' %]
+    llcf = ngx_stream_lua_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+[% END %]
 
     if (ngx_http_complex_value(r, &llcf->content_src, &eval_src) != NGX_OK) {
         return NGX_ERROR;
@@ -292,7 +302,11 @@ ngx_[% subsystem %]_lua_content_handler_inline(ngx_[% subsystem %]_[% req_type %
     ngx_int_t                    rc;
     ngx_[% subsystem %]_lua_loc_conf_t     *llcf;
 
+[% IF subsystem == 'http' %]
     llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+[% ELSIF subsystem == 'stream' %]
+    llcf = ngx_stream_lua_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+[% END %]
 
     L = ngx_[% subsystem %]_lua_get_lua_vm(r, NULL);
 
