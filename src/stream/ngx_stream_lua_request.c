@@ -1,7 +1,7 @@
 #include <ngx_config.h>
 #include <ngx_core.h>
 #include <ngx_stream.h>
-#include <ngx_stream_lua_request.h>
+#include "ngx_stream_lua_request.h"
 
 
 ngx_stream_lua_cleanup_t *

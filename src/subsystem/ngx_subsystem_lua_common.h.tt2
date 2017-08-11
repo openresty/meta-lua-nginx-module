@@ -22,6 +22,11 @@
 #include <lauxlib.h>
 
 
+[% IF subsystem == 'stream' %]
+#include "ngx_stream_lua_request.h"
+[% END %]
+
+
 #if (NGX_PCRE)
 
 #include <pcre.h>
