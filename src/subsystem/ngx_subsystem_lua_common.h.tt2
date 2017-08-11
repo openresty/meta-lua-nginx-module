@@ -160,7 +160,7 @@ typedef struct {
 
 typedef struct ngx_[% subsystem %]_lua_main_conf_s  ngx_[% subsystem %]_lua_main_conf_t;
 [% IF subsystem == 'http' %]
-typedef union ngx_[% subsystem %]_lua_srv_conf_u  ngx_[% subsystem %]_lua_srv_conf_t;
+typedef union ngx_http_lua_srv_conf_u  ngx_http_lua_srv_conf_t;
 [% END %]
 
 
@@ -175,8 +175,10 @@ typedef struct ngx_[% subsystem %]_lua_sema_mm_s  ngx_[% subsystem %]_lua_sema_m
 
 typedef ngx_int_t (*ngx_[% subsystem %]_lua_main_conf_handler_pt)(ngx_log_t *log,
     ngx_[% subsystem %]_lua_main_conf_t *lmcf, lua_State *L);
+[% IF subsystem == 'http' %]
 typedef ngx_int_t (*ngx_[% subsystem %]_lua_srv_conf_handler_pt)([% req_type %] *r,
     ngx_[% subsystem %]_lua_srv_conf_t *lscf, lua_State *L);
+[% END %]
 
 
 typedef struct {
@@ -344,7 +346,7 @@ typedef struct {
 [% END %]
 
     u_char                  *content_chunkname;
-    ngx_http_complex_value_t content_src;    /*  content_by_lua
+    ngx_[% subsystem %]_complex_value_t content_src;    /*  content_by_lua
                                                 inline script/script
                                                 file path */
 
@@ -439,7 +441,11 @@ struct ngx_[% subsystem %]_lua_co_ctx_s {
 
     ngx_[% subsystem %]_lua_posted_thread_t    *zombie_child_threads;
 
+[% IF subsystem == 'http' %]
     ngx_http_cleanup_pt      cleanup;
+[% ELSIF subsystem == 'stream' %]
+    ngx_stream_lua_cleanup_pt      cleanup;
+[% END %]
 
 [% IF subsystem == 'http' %]
     ngx_int_t               *sr_statuses; /* all capture subrequest statuses */
@@ -503,7 +509,7 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
     ngx_[% subsystem %]_lua_vm_state_t  *vm_state;
 
     [% req_type %]      *request;
-    ngx_http_handler_pt      resume_handler;
+    ngx_[% subsystem %]_handler_pt      resume_handler;
 
     ngx_[% subsystem %]_lua_co_ctx_t   *cur_co_ctx; /* co ctx for the current coroutine */
 
@@ -529,9 +535,15 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
     ngx_chain_t             *busy_bufs;
     ngx_chain_t             *free_recv_bufs;
 
+[% IF subsystem == 'http' %]
     ngx_http_cleanup_pt     *cleanup;
 
     ngx_http_cleanup_t      *free_cleanup; /* free list of cleanup records */
+[% ELSIF subsystem == 'stream' %]
+    ngx_stream_lua_cleanup_pt     *cleanup;
+
+    ngx_stream_lua_cleanup_t      *free_cleanup; /* free list of cleanup records */
+[% END %]
 
 [% IF subsystem == 'http' %]
     ngx_chain_t             *body; /* buffered subrequest response body
@@ -567,9 +579,9 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
 
 [% IF subsystem == 'http' %]
     unsigned                 run_post_subrequest:1; /* whether it has run
-[% END %]
                                                        post_subrequest
                                                        (for subrequests only) */
+[% END %]
 
     unsigned                 waiting_more_body:1;   /* 1: waiting for more
                                                        request body data;
