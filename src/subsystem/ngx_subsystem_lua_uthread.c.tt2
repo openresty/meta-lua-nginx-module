@@ -50,7 +50,7 @@ static int
 ngx_[% subsystem %]_lua_uthread_spawn(lua_State *L)
 {
     int                           n;
-    ngx_[% subsystem %]_[% req_type %]_t           *r;
+    [% req_type %]           *r;
     ngx_[% subsystem %]_lua_ctx_t           *ctx;
     ngx_[% subsystem %]_lua_co_ctx_t        *coctx = NULL;
 
@@ -109,7 +109,7 @@ ngx_[% subsystem %]_lua_uthread_wait(lua_State *L)
 {
     int                          i, nargs, nrets;
     lua_State                   *sub_co;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
     ngx_[% subsystem %]_lua_co_ctx_t       *coctx, *sub_coctx;
 
@@ -207,7 +207,7 @@ static int
 ngx_[% subsystem %]_lua_uthread_kill(lua_State *L)
 {
     lua_State                   *sub_co;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
     ngx_[% subsystem %]_lua_co_ctx_t       *coctx, *sub_coctx;
 

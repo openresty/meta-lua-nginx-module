@@ -46,7 +46,7 @@ typedef struct ngx_[% subsystem %]_lua_block_parser_ctx_s
 #include "ngx_[% subsystem %]_lua_setby.h"
 
 
-static ngx_int_t ngx_[% subsystem %]_lua_set_by_lua_init(ngx_[% subsystem %]_[% req_type %]_t *r);
+static ngx_int_t ngx_[% subsystem %]_lua_set_by_lua_init([% req_type %] *r);
 #endif
 [% END %]
 
@@ -350,7 +350,7 @@ ngx_[% subsystem %]_lua_set_by_lua_file(ngx_conf_t *cf, ngx_command_t *cmd, void
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_filter_set_by_lua_inline(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_str_t *val,
+ngx_[% subsystem %]_lua_filter_set_by_lua_inline([% req_type %] *r, ngx_str_t *val,
     ngx_http_variable_value_t *v, void *data)
 {
     lua_State                   *L;
@@ -384,7 +384,7 @@ ngx_[% subsystem %]_lua_filter_set_by_lua_inline(ngx_[% subsystem %]_[% req_type
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_filter_set_by_lua_file(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_str_t *val,
+ngx_[% subsystem %]_lua_filter_set_by_lua_file([% req_type %] *r, ngx_str_t *val,
     ngx_http_variable_value_t *v, void *data)
 {
     lua_State                   *L;
@@ -1263,7 +1263,7 @@ ngx_[% subsystem %]_lua_init_worker_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 [% IF subsystem == 'http' %]
 #if defined(NDK) && NDK
 static ngx_int_t
-ngx_[% subsystem %]_lua_set_by_lua_init(ngx_[% subsystem %]_[% req_type %]_t *r)
+ngx_[% subsystem %]_lua_set_by_lua_init([% req_type %] *r)
 {
     lua_State                   *L;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;

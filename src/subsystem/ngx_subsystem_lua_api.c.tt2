@@ -27,7 +27,7 @@ ngx_[% subsystem %]_lua_get_global_state(ngx_conf_t *cf)
 }
 
 
-ngx_[% subsystem %]_[% req_type %]_t *
+[% req_type %] *
 ngx_[% subsystem %]_lua_get_request(lua_State *L)
 {
     return ngx_[% subsystem %]_lua_get_req(L);

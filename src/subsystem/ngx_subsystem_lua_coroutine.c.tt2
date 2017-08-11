@@ -45,7 +45,7 @@ static const ngx_str_t
 static int
 ngx_[% subsystem %]_lua_coroutine_create(lua_State *L)
 {
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
 
     r = ngx_[% subsystem %]_lua_get_req(L);
@@ -63,7 +63,7 @@ ngx_[% subsystem %]_lua_coroutine_create(lua_State *L)
 
 
 int
-ngx_[% subsystem %]_lua_coroutine_create_helper(lua_State *L, ngx_[% subsystem %]_[% req_type %]_t *r,
+ngx_[% subsystem %]_lua_coroutine_create_helper(lua_State *L, [% req_type %] *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_[% subsystem %]_lua_co_ctx_t **pcoctx)
 {
     lua_State                     *vm;  /* the Lua VM */
@@ -134,7 +134,7 @@ static int
 ngx_[% subsystem %]_lua_coroutine_resume(lua_State *L)
 {
     lua_State                   *co;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
     ngx_[% subsystem %]_lua_co_ctx_t       *coctx;
     ngx_[% subsystem %]_lua_co_ctx_t       *p_coctx; /* parent co ctx */
@@ -203,7 +203,7 @@ ngx_[% subsystem %]_lua_coroutine_resume(lua_State *L)
 static int
 ngx_[% subsystem %]_lua_coroutine_yield(lua_State *L)
 {
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
     ngx_[% subsystem %]_lua_co_ctx_t       *coctx;
 
@@ -352,7 +352,7 @@ static int
 ngx_[% subsystem %]_lua_coroutine_status(lua_State *L)
 {
     lua_State                     *co;  /* new coroutine to be created */
-    ngx_[% subsystem %]_[% req_type %]_t            *r;
+    [% req_type %]            *r;
     ngx_[% subsystem %]_lua_ctx_t            *ctx;
     ngx_[% subsystem %]_lua_co_ctx_t         *coctx; /* co ctx for the new coroutine */
 

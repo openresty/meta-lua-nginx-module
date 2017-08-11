@@ -49,7 +49,7 @@ ngx_[% subsystem %]_lua_inject_req_misc_api(lua_State *L)
 static int
 ngx_[% subsystem %]_lua_ngx_req_is_internal(lua_State *L)
 {
-    ngx_[% subsystem %]_[% req_type %]_t  *r;
+    [% req_type %]  *r;
 
     r = ngx_[% subsystem %]_lua_get_req(L);
     if (r == NULL) {
@@ -66,7 +66,7 @@ static int
 ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
 {
     int                          status;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     u_char                      *p;
     size_t                       len;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
@@ -147,7 +147,7 @@ ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
 static int
 ngx_[% subsystem %]_lua_ngx_set(lua_State *L)
 {
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     u_char                      *p;
     size_t                       len;
 
@@ -213,7 +213,7 @@ ngx_[% subsystem %]_lua_ngx_set(lua_State *L)
 
 #ifndef NGX_LUA_NO_FFI_API
 int
-ngx_[% subsystem %]_lua_ffi_get_resp_status(ngx_[% subsystem %]_[% req_type %]_t *r)
+ngx_[% subsystem %]_lua_ffi_get_resp_status([% req_type %] *r)
 {
     if (r->connection->fd == (ngx_socket_t) -1) {
         return NGX_[% subsystem FILTER upper %]_LUA_FFI_BAD_CONTEXT;
@@ -235,7 +235,7 @@ ngx_[% subsystem %]_lua_ffi_get_resp_status(ngx_[% subsystem %]_[% req_type %]_t
 
 
 int
-ngx_[% subsystem %]_lua_ffi_set_resp_status(ngx_[% subsystem %]_[% req_type %]_t *r, int status)
+ngx_[% subsystem %]_lua_ffi_set_resp_status([% req_type %] *r, int status)
 {
     if (r->connection->fd == (ngx_socket_t) -1) {
         return NGX_[% subsystem FILTER upper %]_LUA_FFI_BAD_CONTEXT;
@@ -271,7 +271,7 @@ ngx_[% subsystem %]_lua_ffi_set_resp_status(ngx_[% subsystem %]_[% req_type %]_t
 
 
 int
-ngx_[% subsystem %]_lua_ffi_is_subrequest(ngx_[% subsystem %]_[% req_type %]_t *r)
+ngx_[% subsystem %]_lua_ffi_is_subrequest([% req_type %] *r)
 {
     if (r->connection->fd == (ngx_socket_t) -1) {
         return NGX_[% subsystem FILTER upper %]_LUA_FFI_BAD_CONTEXT;
@@ -282,7 +282,7 @@ ngx_[% subsystem %]_lua_ffi_is_subrequest(ngx_[% subsystem %]_[% req_type %]_t *
 
 
 int
-ngx_[% subsystem %]_lua_ffi_headers_sent(ngx_[% subsystem %]_[% req_type %]_t *r)
+ngx_[% subsystem %]_lua_ffi_headers_sent([% req_type %] *r)
 {
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
 

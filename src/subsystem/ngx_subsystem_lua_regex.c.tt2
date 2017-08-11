@@ -73,7 +73,7 @@ typedef struct {
 
 typedef struct {
     ngx_http_cleanup_pt     *cleanup;
-    ngx_[% subsystem %]_[% req_type %]_t      *request;
+    [% req_type %]      *request;
     pcre                    *regex;
     pcre_extra              *regex_sd;
     int                      ncaptures;
@@ -133,7 +133,7 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
 {
     /* u_char                      *p; */
     int                          res_tb_idx = 0;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     ngx_str_t                    subj;
     ngx_str_t                    pat;
     ngx_str_t                    opts;
@@ -664,7 +664,7 @@ static int
 ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
 {
     ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     ngx_str_t                    subj;
     ngx_str_t                    pat;
     ngx_str_t                    opts;
@@ -1002,7 +1002,7 @@ static int
 ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L)
 {
     ngx_[% subsystem %]_lua_regex_ctx_t    *ctx;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     int                         *cap;
     ngx_int_t                    rc;
     ngx_uint_t                   n;
@@ -1296,7 +1296,7 @@ static int
 ngx_[% subsystem %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
 {
     ngx_[% subsystem %]_lua_regex_t        *re;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     ngx_str_t                    subj;
     ngx_str_t                    pat;
     ngx_str_t                    opts;

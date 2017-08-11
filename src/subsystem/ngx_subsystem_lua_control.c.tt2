@@ -61,7 +61,7 @@ static int
 ngx_[% subsystem %]_lua_ngx_exec(lua_State *L)
 {
     int                          n;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
     ngx_str_t                    uri;
     ngx_str_t                    args, user_args;
@@ -204,7 +204,7 @@ ngx_[% subsystem %]_lua_ngx_redirect(lua_State *L)
     u_char                      *uri;
     size_t                       len;
     ngx_table_elt_t             *h;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
 
     n = lua_gettop(L);
 
@@ -305,7 +305,7 @@ static int
 ngx_[% subsystem %]_lua_ngx_exit(lua_State *L)
 {
     ngx_int_t                    rc;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
 
     if (lua_gettop(L) != 1) {
@@ -413,7 +413,7 @@ ngx_[% subsystem %]_lua_ngx_exit(lua_State *L)
 static int
 ngx_[% subsystem %]_lua_on_abort(lua_State *L)
 {
-    ngx_[% subsystem %]_[% req_type %]_t           *r;
+    [% req_type %]           *r;
     ngx_[% subsystem %]_lua_ctx_t           *ctx;
     ngx_[% subsystem %]_lua_co_ctx_t        *coctx = NULL;
     ngx_[% subsystem %]_lua_loc_conf_t      *llcf;
@@ -469,7 +469,7 @@ ngx_[% subsystem %]_lua_on_abort(lua_State *L)
 
 #ifndef NGX_LUA_NO_FFI_API
 int
-ngx_[% subsystem %]_lua_ffi_exit(ngx_[% subsystem %]_[% req_type %]_t *r, int status, u_char *err,
+ngx_[% subsystem %]_lua_ffi_exit([% req_type %] *r, int status, u_char *err,
     size_t *errlen)
 {
     ngx_[% subsystem %]_lua_ctx_t       *ctx;

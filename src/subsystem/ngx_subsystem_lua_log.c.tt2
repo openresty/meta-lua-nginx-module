@@ -34,7 +34,7 @@ int
 ngx_[% subsystem %]_lua_ngx_log(lua_State *L)
 {
     ngx_log_t                   *log;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     const char                  *msg;
     int                          level;
 
@@ -71,7 +71,7 @@ int
 ngx_[% subsystem %]_lua_print(lua_State *L)
 {
     ngx_log_t                   *log;
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
 
     r = ngx_[% subsystem %]_lua_get_req(L);
 
@@ -408,7 +408,7 @@ ngx_[% subsystem %]_lua_ffi_errlog_get_msg(char **log, int *loglevel, u_char *er
 
 
 int
-ngx_[% subsystem %]_lua_ffi_errlog_get_sys_filter_level(ngx_[% subsystem %]_[% req_type %]_t *r)
+ngx_[% subsystem %]_lua_ffi_errlog_get_sys_filter_level([% req_type %] *r)
 {
     ngx_log_t                   *log;
     int                          log_level;

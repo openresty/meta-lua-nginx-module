@@ -103,7 +103,7 @@ ngx_[% subsystem %]_lua_compile_complex_value(ngx_[% subsystem %]_lua_compile_co
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_complex_value(ngx_[% subsystem %]_[% req_type %]_t *r, ngx_str_t *subj,
+ngx_[% subsystem %]_lua_complex_value([% req_type %] *r, ngx_str_t *subj,
     size_t offset, ngx_int_t count, int *cap,
     ngx_[% subsystem %]_lua_complex_value_t *val, luaL_Buffer *luabuf)
 {

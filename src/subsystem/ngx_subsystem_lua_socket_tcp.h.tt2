@@ -27,12 +27,12 @@ typedef struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s
 
 
 typedef
-    int (*ngx_[% subsystem %]_lua_socket_tcp_retval_handler)(ngx_[% subsystem %]_[% req_type %]_t *r,
+    int (*ngx_[% subsystem %]_lua_socket_tcp_retval_handler)([% req_type %] *r,
         ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L);
 
 
 typedef void (*ngx_[% subsystem %]_lua_socket_tcp_upstream_handler_pt)
-    (ngx_[% subsystem %]_[% req_type %]_t *r, ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
+    ([% req_type %] *r, ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
 
 
 typedef struct {
@@ -61,7 +61,7 @@ struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s {
 
     ngx_[% subsystem %]_lua_loc_conf_t         *conf;
     ngx_http_cleanup_pt             *cleanup;
-    ngx_[% subsystem %]_[% req_type %]_t              *request;
+    [% req_type %]              *request;
     ngx_peer_connection_t            peer;
 
     ngx_msec_t                       read_timeout;

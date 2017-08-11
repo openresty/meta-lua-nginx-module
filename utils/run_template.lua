@@ -29,7 +29,8 @@ local compiled = template.process(template_name .. '.tt2',
                                   {
                                       subsystem = subsystem,
                                       req_type = subsystem == 'http'
-                                                 and 'request' or 'session',
+                                          and 'ngx_http_request_t'
+                                          or 'ngx_stream_lua_request_t',
                                   })
 
 local f

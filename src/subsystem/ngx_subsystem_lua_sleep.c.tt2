@@ -19,7 +19,7 @@
 static int ngx_[% subsystem %]_lua_ngx_sleep(lua_State *L);
 static void ngx_[% subsystem %]_lua_sleep_handler(ngx_event_t *ev);
 static void ngx_[% subsystem %]_lua_sleep_cleanup(void *data);
-static ngx_int_t ngx_[% subsystem %]_lua_sleep_resume(ngx_[% subsystem %]_[% req_type %]_t *r);
+static ngx_int_t ngx_[% subsystem %]_lua_sleep_resume([% req_type %] *r);
 
 
 static int
@@ -27,7 +27,7 @@ ngx_[% subsystem %]_lua_ngx_sleep(lua_State *L)
 {
     int                          n;
     ngx_int_t                    delay; /* in msec */
-    ngx_[% subsystem %]_[% req_type %]_t          *r;
+    [% req_type %]          *r;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
     ngx_[% subsystem %]_lua_co_ctx_t       *coctx;
 
@@ -103,7 +103,7 @@ void
 ngx_[% subsystem %]_lua_sleep_handler(ngx_event_t *ev)
 {
     ngx_connection_t        *c;
-    ngx_[% subsystem %]_[% req_type %]_t      *r;
+    [% req_type %]      *r;
     ngx_[% subsystem %]_lua_ctx_t      *ctx;
     ngx_http_log_ctx_t      *log_ctx;
     ngx_[% subsystem %]_lua_co_ctx_t   *coctx;
@@ -175,7 +175,7 @@ ngx_[% subsystem %]_lua_sleep_cleanup(void *data)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_sleep_resume(ngx_[% subsystem %]_[% req_type %]_t *r)
+ngx_[% subsystem %]_lua_sleep_resume([% req_type %] *r)
 {
     lua_State                   *vm;
     ngx_connection_t            *c;
