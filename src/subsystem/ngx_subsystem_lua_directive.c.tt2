@@ -785,7 +785,7 @@ ngx_[% subsystem %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
 [% ELSIF subsystem == 'stream' %]
         lxcf->content_src = value[1];
 
-        p = ngx_palloc(cf->pool, NGX_HTTP_LUA_FILE_KEY_LEN + 1);
+        p = ngx_palloc(cf->pool, NGX_STREAM_LUA_FILE_KEY_LEN + 1);
         if (p == NULL) {
             return NGX_CONF_ERROR;
         }
