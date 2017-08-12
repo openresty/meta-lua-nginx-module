@@ -1,6 +1,7 @@
 #include <ngx_config.h>
 #include <ngx_core.h>
 #include <ngx_stream.h>
+#include "ngx_stream_lua_common.h"
 #include "ngx_stream_lua_request.h"
 
 
@@ -79,4 +80,38 @@ ngx_stream_lua_free_request(ngx_stream_lua_request_t *r)
     r->pool = NULL;
 
     ngx_destroy_pool(pool);
+}
+
+static void
+ngx_stream_lua_request_handler(ngx_event_t *ev)
+{
+    ngx_connection_t          *c;
+    ngx_stream_session_t      *s;
+    ngx_stream_lua_request_t  *r;
+    ngx_stream_lua_ctx_t      *ctx;
+
+    c = ev->data;
+    s = c->data;
+
+    if (ev->delayed && ev->timedout) {
+        ev->delayed = 0;
+        ev->timedout = 0;
+    }
+
+    ctx = ngx_stream_get_module_ctx(s, ngx_stream_lua_module);
+    if (ctx == NULL) {
+        return;
+    }
+
+    r = ctx->request;
+
+    ngx_log_debug1(NGX_LOG_DEBUG_STREAM, c->log, 0,
+                   "session run request: \"%p\"", r);
+
+    if (ev->write) {
+        r->write_event_handler(r);
+
+    } else {
+        r->read_event_handler(r);
+    }
 }

@@ -549,9 +549,9 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
 [% IF subsystem == 'http' %]
     ngx_chain_t             *body; /* buffered subrequest response body
                                       chains */
-[% END %]
 
     ngx_chain_t            **last_body; /* for the "body" field */
+[% END %]
 
 [% IF subsystem == 'http' %]
     ngx_str_t                exec_uri;

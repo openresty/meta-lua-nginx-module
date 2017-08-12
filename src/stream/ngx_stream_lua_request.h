@@ -15,11 +15,16 @@ struct ngx_stream_lua_cleanup_s {
 
 typedef struct ngx_stream_lua_request_s     ngx_stream_lua_request_t;
 
+typedef void (*ngx_stream_lua_event_handler_pt)(ngx_stream_lua_request_t *r);
+
 struct ngx_stream_lua_request_s {
     ngx_connection_t                     *connection;
     ngx_stream_session_t                 *session;
     ngx_pool_t                           *pool;
     ngx_stream_lua_cleanup_t             *cleanup;
+
+    ngx_stream_lua_event_handler_pt       read_event_handler;
+    ngx_stream_lua_event_handler_pt       write_event_handler;
 };
 
 
