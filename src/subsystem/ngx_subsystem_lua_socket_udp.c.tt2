@@ -274,7 +274,7 @@ ngx_[% subsystem %]_lua_socket_udp_setpeername(lua_State *L)
     ngx_memzero(u, sizeof(ngx_[% subsystem %]_lua_socket_udp_upstream_t));
 
     u->request = r; /* set the controlling request */
-    llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
     u->conf = llcf;
 
@@ -344,7 +344,7 @@ ngx_[% subsystem %]_lua_socket_udp_setpeername(lua_State *L)
         return rc;
     }
 
-    clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
+    clcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_http_core_module);
 
     temp.name = host;
     rctx = ngx_resolve_start(clcf->resolver, &temp);
@@ -807,7 +807,7 @@ ngx_[% subsystem %]_lua_socket_udp_send(lua_State *L)
     lua_pop(L, 1);
 
     if (u == NULL || u->udp_connection.connection == NULL) {
-        llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
@@ -938,7 +938,7 @@ ngx_[% subsystem %]_lua_socket_udp_receive(lua_State *L)
     lua_pop(L, 1);
 
     if (u == NULL || u->udp_connection.connection == NULL) {
-        llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
@@ -1206,7 +1206,7 @@ ngx_[% subsystem %]_lua_socket_udp_read_handler([% req_type %] *r,
     if (c->read->timedout) {
         c->read->timedout = 0;
 
-        llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,

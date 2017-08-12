@@ -92,7 +92,7 @@ ngx_[% subsystem %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
 
     ctx->context = NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT;
 
-    llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
     if (llcf->check_client_abort) {
         r->read_event_handler = ngx_[% subsystem %]_lua_rd_check_broken_connection;
@@ -161,7 +161,7 @@ ngx_[% subsystem %]_lua_content_handler([% req_type %] *r)
                    r->main->count);
 
 [% IF subsystem == 'http' %]
-    llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 [% ELSIF subsystem == 'stream' %]
     llcf = ngx_stream_lua_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 [% END %]
@@ -259,7 +259,7 @@ ngx_[% subsystem %]_lua_content_handler_file([% req_type %] *r)
     ngx_str_t                        eval_src;
 
 [% IF subsystem == 'http' %]
-    llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 [% ELSIF subsystem == 'stream' %]
     llcf = ngx_stream_lua_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 [% END %]
@@ -303,7 +303,7 @@ ngx_[% subsystem %]_lua_content_handler_inline([% req_type %] *r)
     ngx_[% subsystem %]_lua_loc_conf_t     *llcf;
 
 [% IF subsystem == 'http' %]
-    llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 [% ELSIF subsystem == 'stream' %]
     llcf = ngx_stream_lua_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 [% END %]

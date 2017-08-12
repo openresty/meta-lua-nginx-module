@@ -17,9 +17,10 @@
 #include "ngx_[% subsystem %]_lua_initby.h"
 #include "ngx_[% subsystem %]_lua_initworkerby.h"
 #include "ngx_[% subsystem %]_lua_probe.h"
-#include "ngx_[% subsystem %]_lua_semaphore.h"
+
 
 [% IF subsystem == 'http' %]
+#include "ngx_[% subsystem %]_lua_semaphore.h"
 #include "ngx_[% subsystem %]_lua_balancer.h"
 #include "ngx_[% subsystem %]_lua_ssl_certby.h"
 #include "ngx_[% subsystem %]_lua_ssl_session_storeby.h"
@@ -1046,10 +1047,10 @@ ngx_[% subsystem %]_lua_init_main_conf(ngx_conf_t *cf, void *conf)
 static void *
 ngx_[% subsystem %]_lua_create_srv_conf(ngx_conf_t *cf)
 {
-    ngx_[% subsystem %]_lua_srv_conf_t     *lscf;
+    ngx_[% subsystem %]_lua_srv_conf_t     *conf;
 
-    lscf = ngx_pcalloc(cf->pool, sizeof(ngx_[% subsystem %]_lua_srv_conf_t));
-    if (lscf == NULL) {
+    conf = ngx_pcalloc(cf->pool, sizeof(ngx_[% subsystem %]_lua_srv_conf_t));
+    if (conf == NULL) {
         return NULL;
     }
 
@@ -1075,7 +1076,7 @@ ngx_[% subsystem %]_lua_create_srv_conf(ngx_conf_t *cf)
         [% INCLUDE init_common_conf %]
     [% END %]
 
-    return lscf;
+    return conf;
 }
 
 

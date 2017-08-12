@@ -18,29 +18,19 @@
 #include "ngx_[% subsystem %]_lua_pcrefix.h"
 #include "ngx_[% subsystem %]_lua_regex.h"
 #include "ngx_[% subsystem %]_lua_args.h"
-#include "ngx_[% subsystem %]_lua_uri.h"
-#include "ngx_[% subsystem %]_lua_req_body.h"
-#include "ngx_[% subsystem %]_lua_headers.h"
 #include "ngx_[% subsystem %]_lua_output.h"
 #include "ngx_[% subsystem %]_lua_time.h"
 #include "ngx_[% subsystem %]_lua_control.h"
-#include "ngx_[% subsystem %]_lua_ndk.h"
-#include "ngx_[% subsystem %]_lua_subrequest.h"
 #include "ngx_[% subsystem %]_lua_log.h"
 #include "ngx_[% subsystem %]_lua_variable.h"
 #include "ngx_[% subsystem %]_lua_string.h"
 #include "ngx_[% subsystem %]_lua_misc.h"
 #include "ngx_[% subsystem %]_lua_consts.h"
-#include "ngx_[% subsystem %]_lua_req_method.h"
 #include "ngx_[% subsystem %]_lua_shdict.h"
 #include "ngx_[% subsystem %]_lua_coroutine.h"
 #include "ngx_[% subsystem %]_lua_socket_tcp.h"
 #include "ngx_[% subsystem %]_lua_socket_udp.h"
 #include "ngx_[% subsystem %]_lua_sleep.h"
-#include "ngx_[% subsystem %]_lua_setby.h"
-#include "ngx_[% subsystem %]_lua_headerfilterby.h"
-#include "ngx_[% subsystem %]_lua_bodyfilterby.h"
-#include "ngx_[% subsystem %]_lua_logby.h"
 #include "ngx_[% subsystem %]_lua_phase.h"
 #include "ngx_[% subsystem %]_lua_probe.h"
 #include "ngx_[% subsystem %]_lua_uthread.h"
@@ -49,9 +39,23 @@
 #include "ngx_[% subsystem %]_lua_config.h"
 #include "ngx_[% subsystem %]_lua_worker.h"
 #include "ngx_[% subsystem %]_lua_socket_tcp.h"
+
+
+[% IF subsystem == 'http' %]
+#include "ngx_[% subsystem %]_lua_uri.h"
+#include "ngx_[% subsystem %]_lua_req_body.h"
+#include "ngx_[% subsystem %]_lua_headers.h"
 #include "ngx_[% subsystem %]_lua_ssl_certby.h"
 #include "ngx_[% subsystem %]_lua_ssl.h"
 #include "ngx_[% subsystem %]_lua_log_ringbuf.h"
+#include "ngx_[% subsystem %]_lua_setby.h"
+#include "ngx_[% subsystem %]_lua_headerfilterby.h"
+#include "ngx_[% subsystem %]_lua_bodyfilterby.h"
+#include "ngx_[% subsystem %]_lua_logby.h"
+#include "ngx_[% subsystem %]_lua_ndk.h"
+#include "ngx_[% subsystem %]_lua_subrequest.h"
+#include "ngx_[% subsystem %]_lua_req_method.h"
+[% END %]
 
 
 #if 1
@@ -449,7 +453,7 @@ ngx_[% subsystem %]_lua_send_chain_link([% req_type %] *r, ngx_[% subsystem %]_l
         r->header_only = 1;
     }
 
-    llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
     if (llcf->http10_buffering
         && !ctx->buffering
@@ -1516,7 +1520,7 @@ ngx_[% subsystem %]_lua_wev_handler([% req_type %] *r)
                    "writing_raw_req_socket:%ud",
                    wev->timedout, wev->ready, ctx->writing_raw_req_socket);
 
-    clcf = ngx_http_get_module_loc_conf(r->main, ngx_http_core_module);
+    clcf = ngx_[% req_subsystem %]_get_module_loc_conf(r->main, ngx_http_core_module);
 
     if (wev->timedout && !ctx->writing_raw_req_socket) {
         if (!wev->delayed) {
@@ -1712,7 +1716,7 @@ ngx_[% subsystem %]_lua_flush_pending_output([% req_type %] *r,
 
     if (c->buffered & NGX_HTTP_LOWLEVEL_BUFFERED) {
 
-        clcf = ngx_http_get_module_loc_conf(r->main, ngx_http_core_module);
+        clcf = ngx_[% req_subsystem %]_get_module_loc_conf(r->main, ngx_http_core_module);
 
         if (!wev->delayed) {
             ngx_add_timer(wev, clcf->send_timeout);

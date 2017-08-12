@@ -581,7 +581,7 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
 
     u->request = r; /* set the controlling request */
 
-    llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
     u->conf = llcf;
 
@@ -702,7 +702,7 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
         return rc;
     }
 
-    clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
+    clcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_http_core_module);
 
     temp.name = host;
     rctx = ngx_resolve_start(clcf->resolver, &temp);
@@ -1498,7 +1498,7 @@ ngx_[% subsystem %]_lua_ssl_handshake_handler(ngx_connection_t *c)
                 err = lua_pushfstring(L, "%d: %s", (int) rc,
                                       X509_verify_cert_error_string(rc));
 
-                llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+                llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
                 if (llcf->log_socket_errors) {
                     ngx_log_error(NGX_LOG_ERR, dc->log, 0, "lua ssl "
                                   "certificate verify error: (%s)", err);
@@ -1515,7 +1515,7 @@ ngx_[% subsystem %]_lua_ssl_handshake_handler(ngx_connection_t *c)
                 lua_pushnil(L);
                 lua_pushliteral(L, "certificate host mismatch");
 
-                llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+                llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
                 if (llcf->log_socket_errors) {
                     ngx_log_error(NGX_LOG_ERR, dc->log, 0, "lua ssl "
                                   "certificate does not match host \"%V\"",
@@ -1741,7 +1741,7 @@ ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
 
     if (u == NULL || u->peer.connection == NULL || u->read_closed) {
 
-        llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
@@ -2095,7 +2095,7 @@ ngx_[% subsystem %]_lua_socket_tcp_read([% req_type %] *r,
                     && r->request_body->rest == 0)
                 {
 
-                    llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+                    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
                     if (llcf->check_client_abort) {
                         rc = ngx_[% subsystem %]_lua_check_broken_connection(r, rev);
@@ -2272,7 +2272,7 @@ success:
 
             if (u->raw_downstream || u->body_downstream) {
 
-                llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+                llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
                 if (llcf->check_client_abort) {
 
@@ -2372,7 +2372,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
     dd("tcp send: u=%p, u->write_closed=%d", u, (unsigned) u->write_closed);
 
     if (u == NULL || u->peer.connection == NULL || u->write_closed) {
-        llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
@@ -2457,7 +2457,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
 
     /* mimic ngx_http_upstream_init_request here */
 
-    clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
+    clcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_http_core_module);
     c = u->peer.connection;
 
     if (clcf->tcp_nodelay && c->tcp_nodelay == NGX_TCP_NODELAY_UNSET) {
@@ -2470,7 +2470,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
                        (const void *) &tcp_nodelay, sizeof(int))
             == -1)
         {
-            llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+            llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
             if (llcf->log_socket_errors) {
                 ngx_connection_error(c, ngx_socket_errno,
                                      "setsockopt(TCP_NODELAY) "
@@ -2568,7 +2568,7 @@ ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler([% req_type %] *r,
 
 #if 1
     if (u->raw_downstream || u->body_downstream) {
-        llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
         if (llcf->check_client_abort) {
 
@@ -2845,7 +2845,7 @@ ngx_[% subsystem %]_lua_socket_read_handler([% req_type %] *r,
     if (c->read->timedout) {
         c->read->timedout = 0;
 
-        llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
@@ -2882,7 +2882,7 @@ ngx_[% subsystem %]_lua_socket_send_handler([% req_type %] *r,
                    "lua tcp socket send handler");
 
     if (c->write->timedout) {
-        llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
@@ -3246,7 +3246,7 @@ ngx_[% subsystem %]_lua_socket_connected_handler([% req_type %] *r,
 
     if (c->write->timedout) {
 
-        llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
@@ -3553,7 +3553,7 @@ ngx_[% subsystem %]_lua_socket_test_connect([% req_type %] *r, ngx_connection_t 
         }
 
         if (ev) {
-            llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+            llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
             if (llcf->log_socket_errors) {
                 (void) ngx_connection_error(c, ev->kq_errno,
                                             "kevent() reported that "
@@ -3580,7 +3580,7 @@ ngx_[% subsystem %]_lua_socket_test_connect([% req_type %] *r, ngx_connection_t 
         }
 
         if (err) {
-            llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+            llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
             if (llcf->log_socket_errors) {
                 (void) ngx_connection_error(c, err, "connect() failed");
             }
@@ -4360,7 +4360,7 @@ ngx_[% subsystem %]_lua_req_socket(lua_State *L)
 
     u->request = r;
 
-    llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
     u->conf = llcf;
 
@@ -4576,7 +4576,7 @@ ngx_[% subsystem %]_lua_socket_tcp_setkeepalive(lua_State *L)
 
     /* stack: obj timeout? size? cache key */
 
-    llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
     if (spool == NULL) {
         /* create a new socket pool for the current peer key */
