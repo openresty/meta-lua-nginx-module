@@ -2116,14 +2116,17 @@ ngx_[% subsystem %]_lua_inject_req_api(ngx_log_t *log, lua_State *L)
 
     lua_createtable(L, 0 /* narr */, 24 /* nrec */);    /* .req */
 
+    ngx_[% subsystem %]_lua_inject_req_socket_api(L);
+
+[% IF subsystem == 'http' %]
     ngx_[% subsystem %]_lua_inject_req_header_api(L);
     ngx_[% subsystem %]_lua_inject_req_uri_api(log, L);
     ngx_[% subsystem %]_lua_inject_req_args_api(L);
     ngx_[% subsystem %]_lua_inject_req_body_api(L);
-    ngx_[% subsystem %]_lua_inject_req_socket_api(L);
     ngx_[% subsystem %]_lua_inject_req_method_api(L);
     ngx_[% subsystem %]_lua_inject_req_time_api(L);
     ngx_[% subsystem %]_lua_inject_req_misc_api(L);
+[% END %]
 
     lua_setfield(L, -2, "req");
 }
