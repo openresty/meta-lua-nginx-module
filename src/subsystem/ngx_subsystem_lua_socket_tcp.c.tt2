@@ -387,7 +387,7 @@ ngx_[% subsystem %]_lua_socket_tcp(lua_State *L)
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
@@ -446,7 +446,7 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
@@ -815,7 +815,7 @@ ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
     ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
                    "lua tcp socket resolve handler");
 
-    lctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    lctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (lctx == NULL) {
         return;
     }
@@ -1112,7 +1112,7 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
     u->writer.last = &u->writer.out;
 #endif
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     coctx = ctx->cur_co_ctx;
 
@@ -1293,7 +1293,7 @@ ngx_[% subsystem %]_lua_socket_tcp_sslhandshake(lua_State *L)
         return 2;
     }
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
@@ -1465,7 +1465,7 @@ ngx_[% subsystem %]_lua_ssl_handshake_handler(ngx_connection_t *c)
     u = c->data;
     r = u->request;
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return;
     }
@@ -1835,7 +1835,7 @@ ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
 
     u->input_filter_ctx = u;
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     if (u->bufs_in == NULL) {
         u->bufs_in =
@@ -2425,7 +2425,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
         return 1;
     }
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     cl = ngx_[% subsystem %]_lua_chain_get_free_buf(r->connection->log, r->pool,
                                          &ctx->free_bufs, len);
@@ -2564,7 +2564,7 @@ ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler([% req_type %] *r,
     ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua tcp socket receive return value handler");
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
 #if 1
     if (u->raw_downstream || u->body_downstream) {
@@ -2914,7 +2914,7 @@ ngx_[% subsystem %]_lua_socket_send([% req_type %] *r,
     ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua tcp socket send data");
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         ngx_[% subsystem %]_lua_socket_handle_write_error(r, u,
                                                NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_ERROR);
@@ -3014,7 +3014,7 @@ ngx_[% subsystem %]_lua_socket_handle_conn_success([% req_type %] *r,
         coctx->cleanup = NULL;
         u->write_co_ctx = NULL;
 
-        ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
         if (ctx == NULL) {
             return;
         }
@@ -3051,7 +3051,7 @@ ngx_[% subsystem %]_lua_socket_handle_read_success([% req_type %] *r,
         coctx->cleanup = NULL;
         u->read_co_ctx = NULL;
 
-        ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
         if (ctx == NULL) {
             return;
         }
@@ -3088,7 +3088,7 @@ ngx_[% subsystem %]_lua_socket_handle_write_success([% req_type %] *r,
         coctx->cleanup = NULL;
         u->write_co_ctx = NULL;
 
-        ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
         if (ctx == NULL) {
             return;
         }
@@ -3136,7 +3136,7 @@ ngx_[% subsystem %]_lua_socket_handle_conn_error([% req_type %] *r,
         coctx->cleanup = NULL;
         u->write_co_ctx = NULL;
 
-        ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
         ctx->resume_handler = ngx_[% subsystem %]_lua_socket_tcp_conn_resume;
         ctx->cur_co_ctx = coctx;
@@ -3177,7 +3177,7 @@ ngx_[% subsystem %]_lua_socket_handle_read_error([% req_type %] *r,
         coctx->cleanup = NULL;
         u->read_co_ctx = NULL;
 
-        ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
         ctx->resume_handler = ngx_[% subsystem %]_lua_socket_tcp_read_resume;
         ctx->cur_co_ctx = coctx;
@@ -3218,7 +3218,7 @@ ngx_[% subsystem %]_lua_socket_handle_write_error([% req_type %] *r,
         coctx->cleanup = NULL;
         u->write_co_ctx = NULL;
 
-        ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
         ctx->resume_handler = ngx_[% subsystem %]_lua_socket_tcp_write_resume;
         ctx->cur_co_ctx = coctx;
@@ -3328,7 +3328,7 @@ ngx_[% subsystem %]_lua_socket_tcp_finalize_read_part([% req_type %] *r,
 
     u->read_closed = 1;
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     if (ctx && u->bufs_in) {
 
@@ -3394,7 +3394,7 @@ ngx_[% subsystem %]_lua_socket_tcp_finalize_write_part([% req_type %] *r,
 
     u->write_closed = 1;
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     if (u->raw_downstream || u->body_downstream) {
         if (ctx && ctx->writing_raw_req_socket) {
@@ -3772,7 +3772,7 @@ ngx_[% subsystem %]_lua_socket_receiveuntil_iterator(lua_State *L)
 
     u->input_filter_ctx = cp;
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     if (u->bufs_in == NULL) {
         u->bufs_in =
@@ -4215,7 +4215,7 @@ ngx_[% subsystem %]_lua_req_socket(lua_State *L)
     }
 #endif
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
@@ -4416,7 +4416,7 @@ ngx_[% subsystem %]_lua_req_socket_rev_handler([% req_type %] *r)
     ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua request socket read event handler");
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         r->read_event_handler = ngx_http_block_reading;
         return;
@@ -5097,7 +5097,7 @@ ngx_[% subsystem %]_lua_socket_add_input_buffer([% req_type %] *r,
     ngx_chain_t             *cl;
     ngx_[% subsystem %]_lua_ctx_t      *ctx;
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     cl = ngx_[% subsystem %]_lua_chain_get_free_buf(r->connection->log, r->pool,
                                          &ctx->free_recv_bufs,
@@ -5163,7 +5163,7 @@ static ngx_int_t ngx_[% subsystem %]_lua_socket_insert_buffer([% req_type %] *r,
         size = prefix;
     }
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     new_cl = ngx_[% subsystem %]_lua_chain_get_free_buf(r->connection->log, r->pool,
                                              &ctx->free_recv_bufs,
@@ -5242,7 +5242,7 @@ ngx_[% subsystem %]_lua_socket_tcp_resume_helper([% req_type %] *r, int socket_o
 
     ngx_[% subsystem %]_lua_socket_tcp_upstream_t      *u;
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return NGX_ERROR;
     }

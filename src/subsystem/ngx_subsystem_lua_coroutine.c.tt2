@@ -53,7 +53,7 @@ ngx_[% subsystem %]_lua_coroutine_create(lua_State *L)
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -148,7 +148,7 @@ ngx_[% subsystem %]_lua_coroutine_resume(lua_State *L)
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -212,7 +212,7 @@ ngx_[% subsystem %]_lua_coroutine_yield(lua_State *L)
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -365,7 +365,7 @@ ngx_[% subsystem %]_lua_coroutine_status(lua_State *L)
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
