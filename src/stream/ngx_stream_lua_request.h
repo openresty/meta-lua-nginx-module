@@ -23,4 +23,16 @@ struct ngx_stream_lua_request_s {
 };
 
 
+#define ngx_stream_lua_get_module_ctx(r, module)  \
+    ngx_stream_get_module_ctx((r)->session, module)
+#define ngx_stream_lua_set_ctx(r, c, module)      \
+    ngx_stream_set_ctx((r)->session, c, module)
+#define ngx_stream_lua_get_module_main_conf(r, module)      \
+    ngx_stream_get_module_main_conf((r)->session, module)
+#define ngx_stream_lua_get_module_srv_conf(r, module)       \
+    ngx_stream_get_module_srv_conf((r)->session, module)
+#define ngx_stream_lua_get_module_loc_conf                  \
+    ngx_stream_lua_get_module_srv_conf
+
+
 #endif /* _NGX_STREAM_LUA_REQUEST_H_INCLUDED_ */

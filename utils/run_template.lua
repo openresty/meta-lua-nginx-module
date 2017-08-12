@@ -28,6 +28,8 @@ local template = require('build.templates')
 local compiled = template.process(template_name .. '.tt2',
                                   {
                                       subsystem = subsystem,
+                                      req_subsystem = subsystem == 'http'
+                                          and 'http' or 'stream_lua',
                                       req_type = subsystem == 'http'
                                           and 'ngx_http_request_t'
                                           or 'ngx_stream_lua_request_t',

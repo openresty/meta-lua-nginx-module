@@ -309,12 +309,11 @@ typedef struct {
     ngx_str_t               ssl_crl;
 #endif
 
-[% IF subsystem == 'http' %]
-    ngx_flag_t              force_read_body; /* whether force request body to
-                                                be read */
-
     ngx_flag_t              enable_code_cache; /* whether to enable
                                                   code cache */
+
+[% IF subsystem == 'http' %]
+    ngx_flag_t              force_read_body; /* whether force request body to
 
     ngx_flag_t              http10_buffering;
 
@@ -396,6 +395,8 @@ typedef struct {
 } ngx_http_lua_loc_conf_t;
 [% ELSIF subsystem == 'stream' %]
 } ngx_stream_lua_srv_conf_t;
+
+typedef ngx_stream_lua_srv_conf_t ngx_stream_lua_loc_conf_t;
 [% END %]
 
 

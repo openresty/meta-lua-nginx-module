@@ -75,23 +75,31 @@ extern char ngx_[% subsystem %]_lua_headers_metatable_key;
 #endif
 
 
-#define ngx_[% subsystem %]_lua_context_name(c)                                         \
-    ((c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SET ? "set_by_lua*"                         \
-     : (c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE ? "rewrite_by_lua*"               \
-     : (c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS ? "access_by_lua*"                 \
-     : (c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT ? "content_by_lua*"               \
-     : (c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_LOG ? "log_by_lua*"                       \
-     : (c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_HEADER_FILTER ? "header_filter_by_lua*"   \
-     : (c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BODY_FILTER ? "body_filter_by_lua*"       \
-     : (c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER ? "ngx.timer"                       \
-     : (c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_INIT_WORKER ? "init_worker_by_lua*"       \
-     : (c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER ? "balancer_by_lua*"             \
-     : (c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT ? "ssl_certificate_by_lua*"      \
-     : (c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_STORE ?                          \
+[% IF subsystem == 'http' %]
+#define ngx_http_lua_context_name(c)                                         \
+    ((c) == NGX_HTTP_LUA_CONTEXT_SET ? "set_by_lua*"                         \
+     : (c) == NGX_HTTP_LUA_CONTEXT_REWRITE ? "rewrite_by_lua*"               \
+     : (c) == NGX_HTTP_LUA_CONTEXT_ACCESS ? "access_by_lua*"                 \
+     : (c) == NGX_HTTP_LUA_CONTEXT_CONTENT ? "content_by_lua*"               \
+     : (c) == NGX_HTTP_LUA_CONTEXT_LOG ? "log_by_lua*"                       \
+     : (c) == NGX_HTTP_LUA_CONTEXT_HEADER_FILTER ? "header_filter_by_lua*"   \
+     : (c) == NGX_HTTP_LUA_CONTEXT_BODY_FILTER ? "body_filter_by_lua*"       \
+     : (c) == NGX_HTTP_LUA_CONTEXT_TIMER ? "ngx.timer"                       \
+     : (c) == NGX_HTTP_LUA_CONTEXT_INIT_WORKER ? "init_worker_by_lua*"       \
+     : (c) == NGX_HTTP_LUA_CONTEXT_BALANCER ? "balancer_by_lua*"             \
+     : (c) == NGX_HTTP_LUA_CONTEXT_SSL_CERT ? "ssl_certificate_by_lua*"      \
+     : (c) == NGX_HTTP_LUA_CONTEXT_SSL_SESS_STORE ?                          \
                                                  "ssl_session_store_by_lua*" \
-     : (c) == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH ?                          \
+     : (c) == NGX_HTTP_LUA_CONTEXT_SSL_SESS_FETCH ?                          \
                                                  "ssl_session_fetch_by_lua*" \
      : "(unknown)")
+[% ELSIF subsystem == 'stream' %]
+#define ngx_stream_lua_context_name(c)                                         \
+    ((c) == NGX_STREAM_LUA_CONTEXT_CONTENT ? "content_by_lua*"               \
+     : (c) == NGX_STREAM_LUA_CONTEXT_TIMER ? "ngx.timer"                       \
+     : (c) == NGX_STREAM_LUA_CONTEXT_INIT_WORKER ? "init_worker_by_lua*"       \
+     : "(unknown)")
+[% END %]
 
 
 #define ngx_[% subsystem %]_lua_check_context(L, ctx, flags)                            \
@@ -243,11 +251,17 @@ ngx_int_t ngx_[% subsystem %]_lua_report(ngx_log_t *log, lua_State *L, int statu
 
 int ngx_[% subsystem %]_lua_do_call(ngx_log_t *log, lua_State *L);
 
-ngx_http_cleanup_t *ngx_[% subsystem %]_lua_cleanup_add([% req_type %] *r,
+[% IF subsystem == 'http' %]
+[% cleanup_pt = 'ngx_http_cleanup_pt' %]
+[% ELSIF subsystem == 'stream' %]
+[% cleanup_pt = 'ngx_stream_lua_cleanup_t' %]
+[% END %]
+
+[% cleanup_pt %] *ngx_[% subsystem %]_lua_cleanup_add([% req_type %] *r,
     size_t size);
 
 void ngx_[% subsystem %]_lua_cleanup_free([% req_type %] *r,
-    ngx_http_cleanup_pt *cleanup);
+    [% cleanup_pt %] *cleanup);
 
 
 #define ngx_[% subsystem %]_lua_check_if_abortable(L, ctx)                             \
@@ -282,11 +296,13 @@ ngx_[% subsystem %]_lua_create_ctx([% req_type %] *r)
     }
 
     ngx_[% subsystem %]_lua_init_ctx(r, ctx);
-    ngx_http_set_ctx(r, ctx, ngx_[% subsystem %]_lua_module);
 
-    llcf = ngx_http_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    ngx_[% req_subsystem %]_set_ctx(r, ctx, ngx_[% subsystem %]_lua_module);
+
+    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+
     if (!llcf->enable_code_cache && r->connection->fd != (ngx_socket_t) -1) {
-        lmcf = ngx_[% subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+        lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
         dd("lmcf: %p", lmcf);
 
@@ -321,7 +337,7 @@ ngx_[% subsystem %]_lua_get_lua_vm([% req_type %] *r, ngx_[% subsystem %]_lua_ct
     ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
 
     if (ctx == NULL) {
-        ctx = ngx_[% subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     }
 
     if (ctx && ctx->vm_state) {
