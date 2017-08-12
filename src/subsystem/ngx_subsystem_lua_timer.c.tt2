@@ -81,7 +81,7 @@ ngx_[% subsystem %]_lua_ngx_timer_running_count(lua_State *L)
         return luaL_error(L, "no request");
     }
 
-    lmcf = ngx_[% subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
     lua_pushnumber(L, lmcf->running_timers);
 
@@ -100,7 +100,7 @@ ngx_[% subsystem %]_lua_ngx_timer_pending_count(lua_State *L)
         return luaL_error(L, "no request");
     }
 
-    lmcf = ngx_[% subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
     lua_pushnumber(L, lmcf->pending_timers);
 
@@ -176,7 +176,7 @@ ngx_[% subsystem %]_lua_ngx_timer_helper(lua_State *L, int every)
         return 2;
     }
 
-    lmcf = ngx_[% subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
     if (lmcf->pending_timers >= lmcf->max_pending_timers) {
         lua_pushnil(L);

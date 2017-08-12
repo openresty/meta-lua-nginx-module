@@ -916,7 +916,7 @@ ngx_[% subsystem %]_lua_request_cleanup(ngx_[% subsystem %]_lua_ctx_t *ctx, int 
         ctx->cleanup = NULL;
     }
 
-    lmcf = ngx_[% subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
 #if 1
     if (r->connection->fd == (ngx_socket_t) -1) {
@@ -3942,7 +3942,7 @@ ngx_[% subsystem %]_lua_create_fake_request(ngx_connection_t *c)
     }
 
 #if 0
-    cmcf = ngx_[% subsystem %]_get_module_main_conf(r, ngx_http_core_module);
+    cmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_http_core_module);
 
     r->variables = ngx_pcalloc(r->pool, cmcf->variables.nelts
                                * sizeof(ngx_http_variable_value_t));

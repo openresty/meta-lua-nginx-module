@@ -344,7 +344,7 @@ ngx_[% subsystem %]_lua_get_lua_vm([% req_type %] *r, ngx_[% subsystem %]_lua_ct
         return ctx->vm_state->vm;
     }
 
-    lmcf = ngx_[% subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
     dd("lmcf->lua: %p", lmcf->lua);
     return lmcf->lua;
 }
