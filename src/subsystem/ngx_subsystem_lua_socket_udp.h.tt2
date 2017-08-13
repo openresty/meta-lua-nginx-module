@@ -38,13 +38,13 @@ struct ngx_[% subsystem %]_lua_socket_udp_upstream_s {
     ngx_[% subsystem %]_lua_socket_udp_upstream_handler_pt     read_event_handler;
 
     ngx_[% subsystem %]_lua_loc_conf_t         *conf;
-    ngx_http_cleanup_pt             *cleanup;
+    ngx_[% req_subsystem %]_cleanup_pt             *cleanup;
     [% req_type %]              *request;
     ngx_[% subsystem %]_lua_udp_connection_t    udp_connection;
 
     ngx_msec_t                       read_timeout;
 
-    ngx_http_upstream_resolved_t    *resolved;
+    ngx_[% subsystem %]_upstream_resolved_t    *resolved;
 
     ngx_uint_t                       ft_type;
     ngx_err_t                        socket_errno;

@@ -14,7 +14,9 @@
 
 void ngx_[% subsystem %]_lua_inject_misc_api(lua_State *L);
 
+[% IF subsystem == 'http' %]
 void ngx_[% subsystem %]_lua_inject_req_misc_api(lua_State *L);
+[% END %]
 
 
 #endif /* _NGX_[% subsystem FILTER upper %]_LUA_MISC_H_INCLUDED_ */

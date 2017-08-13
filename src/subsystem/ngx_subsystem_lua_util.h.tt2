@@ -244,7 +244,16 @@ void ngx_[% subsystem %]_lua_cleanup_vm(void *data);
 
 ngx_connection_t *ngx_[% subsystem %]_lua_create_fake_connection(ngx_pool_t *pool);
 
-[% req_type %] *ngx_[% subsystem %]_lua_create_fake_request(ngx_connection_t *c);
+[% IF subsystem == 'http' %]
+ngx_http_request_t *ngx_[% subsystem %]_lua_create_fake_request(ngx_connection_t *c);
+[% ELSIF subsystem == 'stream' %]
+ngx_stream_lua_request_t *
+    ngx_[% subsystem %]_lua_create_fake_request(ngx_stream_session_t *s);
+[% END %]
+
+[% IF subsystem == 'stream' %]
+ngx_stream_session_t *ngx_stream_lua_create_fake_session(ngx_connection_t *c);
+[% END %]
 
 ngx_int_t ngx_[% subsystem %]_lua_report(ngx_log_t *log, lua_State *L, int status,
     const char *prefix);
@@ -254,11 +263,13 @@ int ngx_[% subsystem %]_lua_do_call(ngx_log_t *log, lua_State *L);
 [% IF subsystem == 'http' %]
 [% cleanup_pt = 'ngx_http_cleanup_pt' %]
 [% ELSIF subsystem == 'stream' %]
-[% cleanup_pt = 'ngx_stream_lua_cleanup_t' %]
+[% cleanup_pt = 'ngx_stream_lua_cleanup_pt' %]
 [% END %]
 
+[% IF subsystem == 'http' %]
 [% cleanup_pt %] *ngx_[% subsystem %]_lua_cleanup_add([% req_type %] *r,
     size_t size);
+[% END %]
 
 void ngx_[% subsystem %]_lua_cleanup_free([% req_type %] *r,
     [% cleanup_pt %] *cleanup);

@@ -194,7 +194,12 @@ ngx_[% subsystem %]_lua_ngx_req_start_time(lua_State *L)
         return luaL_error(L, "no request found");
     }
 
+[% IF subsystem == 'http' %]
     lua_pushnumber(L, (lua_Number) (r->start_sec + r->start_msec / 1000.0L));
+[% ELSIF subsystem == 'stream' %]
+    lua_pushnumber(L, (lua_Number) (r->session->start_sec + r->session->start_msec / 1000.0L));
+[% END %]
+
     return 1;
 }
 
@@ -263,7 +268,11 @@ ngx_[% subsystem %]_lua_ffi_now(void)
 double
 ngx_[% subsystem %]_lua_ffi_req_start_time([% req_type %] *r)
 {
+[% IF subsystem == 'http' %]
     return r->start_sec + r->start_msec / 1000.0;
+[% ELSIF subsystem == 'stream' %]
+    return r->session->start_sec + r->session->start_msec / 1000.0;
+[% END %]
 }
 
 

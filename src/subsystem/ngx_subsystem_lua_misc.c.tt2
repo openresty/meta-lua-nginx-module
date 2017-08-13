@@ -37,6 +37,7 @@ ngx_[% subsystem %]_lua_inject_misc_api(lua_State *L)
 }
 
 
+[% IF subsystem == 'http' %]
 void
 ngx_[% subsystem %]_lua_inject_req_misc_api(lua_State *L)
 {
@@ -45,7 +46,6 @@ ngx_[% subsystem %]_lua_inject_req_misc_api(lua_State *L)
 }
 
 
-[% IF subsystem == 'http' %]
 static int
 ngx_[% subsystem %]_lua_ngx_req_is_internal(lua_State *L)
 {
@@ -65,7 +65,10 @@ ngx_[% subsystem %]_lua_ngx_req_is_internal(lua_State *L)
 static int
 ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
 {
+[% IF subsystem == 'http' %]
     int                          status;
+[% END %]
+
     [% req_type %]          *r;
     u_char                      *p;
     size_t                       len;

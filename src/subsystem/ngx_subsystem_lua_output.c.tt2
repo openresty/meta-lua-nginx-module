@@ -14,7 +14,11 @@ static int ngx_[% subsystem %]_lua_ngx_say(lua_State *L);
 static int ngx_[% subsystem %]_lua_ngx_print(lua_State *L);
 static int ngx_[% subsystem %]_lua_ngx_flush(lua_State *L);
 static int ngx_[% subsystem %]_lua_ngx_eof(lua_State *L);
+
+[% IF subsystem == 'http' %]
 static int ngx_[% subsystem %]_lua_ngx_send_headers(lua_State *L);
+[% END %]
+
 static int ngx_[% subsystem %]_lua_ngx_echo(lua_State *L, unsigned newline);
 static void ngx_[% subsystem %]_lua_flush_cleanup(void *data);
 
@@ -62,10 +66,16 @@ ngx_[% subsystem %]_lua_ngx_echo(lua_State *L, unsigned newline)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT);
+[% IF subsystem == 'http' %]
+    ngx_http_lua_check_context(L, ctx, NGX_HTTP_LUA_CONTEXT_REWRITE
+                               | NGX_HTTP_LUA_CONTEXT_ACCESS
+                               | NGX_HTTP_LUA_CONTEXT_CONTENT);
 
+[% ELSIF subsystem == 'stream' %]
+    ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT);
+[% END %]
+
+[% IF subsystem == 'http' %]
     if (ctx->acquired_raw_req_socket) {
         lua_pushnil(L);
         lua_pushliteral(L, "raw request socket acquired");
@@ -77,6 +87,7 @@ ngx_[% subsystem %]_lua_ngx_echo(lua_State *L, unsigned newline)
         lua_pushliteral(L, "header only");
         return 2;
     }
+[% END %]
 
     if (ctx->eof) {
         lua_pushnil(L);
@@ -147,12 +158,14 @@ ngx_[% subsystem %]_lua_ngx_echo(lua_State *L, unsigned newline)
     }
 
     if (size == 0) {
+[% IF subsystem == 'http' %]
         rc = ngx_[% subsystem %]_lua_send_header_if_needed(r, ctx);
         if (rc == NGX_ERROR || rc > NGX_OK) {
             lua_pushnil(L);
             lua_pushliteral(L, "nginx output filter error");
             return 2;
         }
+[% END %]
 
         lua_pushinteger(L, 1);
         return 1;
@@ -232,7 +245,11 @@ ngx_[% subsystem %]_lua_ngx_echo(lua_State *L, unsigned newline)
 
     rc = ngx_[% subsystem %]_lua_send_chain_link(r, ctx, cl);
 
+[% IF subsystem == 'http' %]
     if (rc == NGX_ERROR || rc >= NGX_HTTP_SPECIAL_RESPONSE) {
+[% ELSIF subsystem == 'stream' %]
+    if (rc == NGX_ERROR) {
+[% END %]
         lua_pushnil(L);
         lua_pushliteral(L, "nginx output filter error");
         return 2;
@@ -461,7 +478,13 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
     int                          n;
     unsigned                     wait = 0;
     ngx_event_t                 *wev;
-    ngx_http_core_loc_conf_t    *clcf;
+
+[% IF subsystem == 'http' %]
+    ngx_http_core_loc_conf_t    *cllscf;
+[% ELSIF subsystem == 'stream' %]
+    ngx_stream_lua_srv_conf_t   *cllscf;
+[% END %]
+
     ngx_[% subsystem %]_lua_co_ctx_t       *coctx;
 
     n = lua_gettop(L);
@@ -472,7 +495,11 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
 
     r = ngx_[% subsystem %]_lua_get_req(L);
 
+[% IF subsystem == 'http' %]
     if (n == 1 && r == r->main) {
+[% ELSIF subsystem == 'stream' %]
+    if (n == 1) {
+[% END %]
         luaL_checktype(L, 1, LUA_TBOOLEAN);
         wait = lua_toboolean(L, 1);
     }
@@ -482,26 +509,35 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT);
+[% IF subsystem == 'http' %]
+    ngx_http_lua_check_context(L, ctx, NGX_HTTP_LUA_CONTEXT_REWRITE
+                               | NGX_HTTP_LUA_CONTEXT_ACCESS
+                               | NGX_HTTP_LUA_CONTEXT_CONTENT);
 
+[% ELSIF subsystem == 'stream' %]
+    ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT);
+[% END %]
+
+[% IF subsystem == 'http' %]
     if (ctx->acquired_raw_req_socket) {
         lua_pushnil(L);
         lua_pushliteral(L, "raw request socket acquired");
         return 2;
     }
+[% END %]
 
     coctx = ctx->cur_co_ctx;
     if (coctx == NULL) {
         return luaL_error(L, "no co ctx found");
     }
 
+[% IF subsystem == 'http' %]
     if (r->header_only) {
         lua_pushnil(L);
         lua_pushliteral(L, "header only");
         return 2;
     }
+[% END %]
 
     if (ctx->eof) {
         lua_pushnil(L);
@@ -518,6 +554,7 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
         return 2;
     }
 
+[% IF subsystem == 'http' %]
 #if 1
     if ((!r->header_sent && !ctx->header_sent)
         || (!ctx->seen_body_data && !wait))
@@ -527,6 +564,7 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
         return 2;
     }
 #endif
+[% END %]
 
     cl = ngx_[% subsystem %]_lua_get_flush_chain(r, ctx);
     if (cl == NULL) {
@@ -537,7 +575,11 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
 
     dd("send chain: %d", (int) rc);
 
+[% IF subsystem == 'http' %]
     if (rc == NGX_ERROR || rc >= NGX_HTTP_SPECIAL_RESPONSE) {
+[% ELSIF subsystem == 'stream' %]
+    if (rc == NGX_ERROR) {
+[% END %]
         lua_pushnil(L);
         lua_pushliteral(L, "nginx output filter error");
         return 2;
@@ -548,8 +590,12 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
 
     wev = r->connection->write;
 
+[% IF subsystem == 'http' %]
     if (wait && (r->connection->buffered & NGX_HTTP_LOWLEVEL_BUFFERED
                  || wev->delayed))
+[% ELSIF subsystem == 'stream' %]
+    if (wait || wev->delayed)
+[% END %]
     {
         ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                        "lua flush requires waiting: buffered 0x%uxd, "
@@ -559,21 +605,29 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
         coctx->flushing = 1;
         ctx->flushing_coros++;
 
+[% IF subsystem == 'http' %]
         if (ctx->entered_content_phase) {
             /* mimic ngx_http_set_write_handler */
-            r->write_event_handler = ngx_[% subsystem %]_lua_content_wev_handler;
+            r->write_event_handler = ngx_http_lua_content_wev_handler;
 
         } else {
             r->write_event_handler = ngx_http_core_run_phases;
         }
+[% ELSIF subsystem == 'stream' %]
+        r->write_event_handler = ngx_stream_lua_content_wev_handler;
+[% END %]
 
-        clcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_http_core_module);
+[% IF subsystem == 'http' %]
+        cllscf = ngx_http_get_module_loc_conf(r->main, ngx_http_core_module);
+[% ELSIF subsystem == 'stream' %]
+        cllscf = ngx_stream_lua_get_module_srv_conf(r, ngx_stream_lua_module);
+[% END %]
 
         if (!wev->delayed) {
-            ngx_add_timer(wev, clcf->send_timeout);
+            ngx_add_timer(wev, cllscf->send_timeout);
         }
 
-        if (ngx_handle_write_event(wev, clcf->send_lowat) != NGX_OK) {
+        if (ngx_handle_write_event(wev, cllscf->send_lowat) != NGX_OK) {
             if (wev->timer_set) {
                 wev->delayed = 0;
                 ngx_del_timer(wev);
@@ -635,9 +689,14 @@ ngx_[% subsystem %]_lua_ngx_eof(lua_State *L)
         return 2;
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT);
+[% IF subsystem == 'http' %]
+    ngx_http_lua_check_context(L, ctx, NGX_HTTP_LUA_CONTEXT_REWRITE
+                               | NGX_HTTP_LUA_CONTEXT_ACCESS
+                               | NGX_HTTP_LUA_CONTEXT_CONTENT);
+
+[% ELSIF subsystem == 'stream' %]
+    ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT);
+[% END %]
 
     ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua send eof");
@@ -646,7 +705,11 @@ ngx_[% subsystem %]_lua_ngx_eof(lua_State *L)
 
     dd("send chain: %d", (int) rc);
 
+[% IF subsystem == 'http' %]
     if (rc == NGX_ERROR || rc >= NGX_HTTP_SPECIAL_RESPONSE) {
+[% ELSIF subsystem == 'stream' %]
+    if (rc == NGX_ERROR) {
+[% END %]
         lua_pushnil(L);
         lua_pushliteral(L, "nginx output filter error");
         return 2;
@@ -660,8 +723,10 @@ ngx_[% subsystem %]_lua_ngx_eof(lua_State *L)
 void
 ngx_[% subsystem %]_lua_inject_output_api(lua_State *L)
 {
+[% IF subsystem == 'http' %]
     lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_send_headers);
     lua_setfield(L, -2, "send_headers");
+[% END %]
 
     lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_print);
     lua_setfield(L, -2, "print");
@@ -677,35 +742,36 @@ ngx_[% subsystem %]_lua_inject_output_api(lua_State *L)
 }
 
 
+[% IF subsystem == 'http' %]
 /**
  * Send out headers
  * */
 static int
-ngx_[% subsystem %]_lua_ngx_send_headers(lua_State *L)
+ngx_http_lua_ngx_send_headers(lua_State *L)
 {
     ngx_int_t                rc;
-    [% req_type %]      *r;
-    ngx_[% subsystem %]_lua_ctx_t      *ctx;
+    ngx_http_request_t      *r;
+    ngx_http_lua_ctx_t      *ctx;
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_http_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_http_get_module_ctx(r, ngx_http_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT);
+    ngx_http_lua_check_context(L, ctx, NGX_HTTP_LUA_CONTEXT_REWRITE
+                               | NGX_HTTP_LUA_CONTEXT_ACCESS
+                               | NGX_HTTP_LUA_CONTEXT_CONTENT);
 
     if (!r->header_sent && !ctx->header_sent) {
-        ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+        ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
                        "lua send headers");
 
-        rc = ngx_[% subsystem %]_lua_send_header_if_needed(r, ctx);
+        rc = ngx_http_lua_send_header_if_needed(r, ctx);
         if (rc == NGX_ERROR || rc > NGX_OK) {
             lua_pushnil(L);
             lua_pushliteral(L, "nginx output filter error");
@@ -716,6 +782,7 @@ ngx_[% subsystem %]_lua_ngx_send_headers(lua_State *L)
     lua_pushinteger(L, 1);
     return 1;
 }
+[% END %]
 
 
 ngx_int_t

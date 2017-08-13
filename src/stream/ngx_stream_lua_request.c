@@ -113,19 +113,19 @@ ngx_stream_lua_block_reading(ngx_stream_lua_request_t *r)
         && r->connection->read->active)
     {
         if (ngx_del_event(r->connection->read, NGX_READ_EVENT, 0) != NGX_OK) {
-            ngx_stream_lua_finalize_request(r, NGX_STREAM_INTERNAL_SERVER_ERROR);
+            ngx_stream_lua_finalize_real_request(r, NGX_STREAM_INTERNAL_SERVER_ERROR);
         }
     }
 }
 
 void
-ngx_stream_lua_finalize_request(ngx_stream_lua_request_t *r, ngx_int_t rc)
+ngx_stream_lua_finalize_real_request(ngx_stream_lua_request_t *r, ngx_int_t rc)
 {
     ngx_stream_lua_cleanup_t  *cln;
     ngx_pool_t                *pool;
     ngx_stream_session_t      *s;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_STREAM, s->connection->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_STREAM, r->connection->log, 0,
                    "finalize stream request: %i", rc);
 
     s = r->session;

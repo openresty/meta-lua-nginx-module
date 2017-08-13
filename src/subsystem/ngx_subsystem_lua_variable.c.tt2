@@ -60,12 +60,14 @@ ngx_[% subsystem %]_lua_var_get(lua_State *L)
     ngx_str_t                    name;
     ngx_[% subsystem %]_variable_value_t   *vv;
 
+[% IF subsystem == 'http' %]
 #if (NGX_PCRE)
     u_char                      *val;
     ngx_uint_t                   n;
     LUA_NUMBER                   index;
     int                         *cap;
 #endif
+[% END %]
 
     r = ngx_[% subsystem %]_lua_get_req(L);
     if (r == NULL) {
@@ -74,6 +76,7 @@ ngx_[% subsystem %]_lua_var_get(lua_State *L)
 
     ngx_[% subsystem %]_lua_check_fake_request(L, r);
 
+[% IF subsystem == 'http' %]
 #if (NGX_PCRE)
     if (lua_type(L, -1) == LUA_TNUMBER) {
         /* it is a regex capturing variable */
@@ -110,6 +113,7 @@ ngx_[% subsystem %]_lua_var_get(lua_State *L)
         return 1;
     }
 #endif
+[% END %]
 
     if (lua_type(L, -1) != LUA_TSTRING) {
         return luaL_error(L, "bad variable name");
@@ -124,7 +128,11 @@ ngx_[% subsystem %]_lua_var_get(lua_State *L)
     name.len = len;
     name.data = lowcase;
 
-    vv = ngx_[% subsystem %]_get_variable(r, &name, hash);
+[% IF subsystem == 'http' %]
+    vv = ngx_http_get_variable(r, &name, hash);
+[% ELSIF subsystem == 'stream' %]
+    vv = ngx_stream_get_variable(r->session, &name, hash);
+[% END %]
 
     if (vv == NULL || vv->not_found) {
         lua_pushnil(L);
@@ -249,13 +257,21 @@ ngx_[% subsystem %]_lua_var_set(lua_State *L)
                 vv->len = len;
             }
 
+[% IF subsystem == 'http' %]
             v->set_handler(r, vv, v->data);
+[% ELSIF subsystem == 'stream' %]
+            v->set_handler(r->session, vv, v->data);
+[% END %]
 
             return 0;
         }
 
         if (v->flags & NGX_[% subsystem FILTER upper %]_VAR_INDEXED) {
+[% IF subsystem == 'http' %]
             vv = &r->variables[v->index];
+[% ELSIF subsystem == 'stream' %]
+            vv = &r->session->variables[v->index];
+[% END %]
 
             dd("set indexed variable");
 
@@ -357,7 +373,12 @@ ngx_[% subsystem %]_lua_ffi_var_get([% req_type %] *r, u_char *name_data,
 
     dd("variable name: %.*s", (int) name_len, lowcase_buf);
 
-    vv = ngx_[% subsystem %]_get_variable(r, &name, hash);
+[% IF subsystem == 'http' %]
+    vv = ngx_http_get_variable(r, &name, hash);
+[% ELSIF subsystem == 'stream' %]
+    vv = ngx_stream_get_variable(r->session, &name, hash);
+[% END %]
+
     if (vv == NULL || vv->not_found) {
         return NGX_DECLINED;
     }

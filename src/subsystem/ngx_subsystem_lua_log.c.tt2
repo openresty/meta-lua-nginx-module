@@ -13,7 +13,10 @@
 
 #include "ngx_[% subsystem %]_lua_log.h"
 #include "ngx_[% subsystem %]_lua_util.h"
+
+[% IF subsystem == 'http' %]
 #include "ngx_[% subsystem %]_lua_log_ringbuf.h"
+[% END %]
 
 
 static int ngx_[% subsystem %]_lua_print(lua_State *L);
@@ -315,6 +318,7 @@ ngx_[% subsystem %]_lua_inject_log_consts(lua_State *L)
 }
 
 
+[% IF subsystem == 'http' %]
 #ifdef HAVE_INTERCEPT_ERROR_LOG_PATCH
 ngx_int_t
 ngx_[% subsystem %]_lua_capture_log_handler(ngx_log_t *log,
@@ -429,5 +433,6 @@ ngx_[% subsystem %]_lua_ffi_errlog_get_sys_filter_level([% req_type %] *r)
 }
 
 #endif
+[% END # http %]
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

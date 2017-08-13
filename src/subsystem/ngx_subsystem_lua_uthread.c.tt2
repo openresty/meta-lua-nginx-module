@@ -123,11 +123,15 @@ ngx_[% subsystem %]_lua_uthread_wait(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
+
+[% IF subsystem == 'http' %]
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT);
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
+[% END %]
+
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER);
 
     coctx = ctx->cur_co_ctx;
 
@@ -221,11 +225,15 @@ ngx_[% subsystem %]_lua_uthread_kill(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
+
+[% IF subsystem == 'http' %]
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT);
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
+[% END %]
+
+                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER);
 
     coctx = ctx->cur_co_ctx;
 
@@ -250,11 +258,13 @@ ngx_[% subsystem %]_lua_uthread_kill(lua_State *L)
         return 2;
     }
 
+[% IF subsystem == 'http' %]
     if (sub_coctx->pending_subreqs > 0) {
         lua_pushnil(L);
         lua_pushliteral(L, "pending subrequests");
         return 2;
     }
+[% END %]
 
     switch (sub_coctx->co_status) {
     case NGX_[% subsystem FILTER upper %]_LUA_CO_ZOMBIE:

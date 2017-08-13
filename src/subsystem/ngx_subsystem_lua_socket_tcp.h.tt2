@@ -60,7 +60,7 @@ struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s {
     ngx_[% subsystem %]_lua_socket_pool_t      *socket_pool;
 
     ngx_[% subsystem %]_lua_loc_conf_t         *conf;
-    ngx_http_cleanup_pt             *cleanup;
+    ngx_[% req_subsystem %]_cleanup_pt             *cleanup;
     [% req_type %]              *request;
     ngx_peer_connection_t            peer;
 
@@ -68,7 +68,7 @@ struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s {
     ngx_msec_t                       send_timeout;
     ngx_msec_t                       connect_timeout;
 
-    ngx_http_upstream_resolved_t    *resolved;
+    ngx_[% subsystem %]_upstream_resolved_t    *resolved;
 
     ngx_chain_t                     *bufs_in; /* input data buffers */
     ngx_chain_t                     *buf_in; /* last input data buffer */

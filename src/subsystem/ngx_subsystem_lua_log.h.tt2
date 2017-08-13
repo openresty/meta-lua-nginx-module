@@ -13,10 +13,13 @@
 
 
 void ngx_[% subsystem %]_lua_inject_log_api(lua_State *L);
+
+[% IF subsystem == 'http' %]
 #ifdef HAVE_INTERCEPT_ERROR_LOG_PATCH
 ngx_int_t ngx_[% subsystem %]_lua_capture_log_handler(ngx_log_t *log,
     ngx_uint_t level, u_char *buf, size_t n);
 #endif
+[% END %]
 
 
 #endif /* _NGX_[% subsystem FILTER upper %]_LUA_LOG_H_INCLUDED_ */
