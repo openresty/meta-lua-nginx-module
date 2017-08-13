@@ -28,6 +28,20 @@ struct ngx_stream_lua_request_s {
 };
 
 
+void ngx_stream_lua_empty_handler(ngx_event_t *wev);
+void ngx_stream_lua_request_handler(ngx_event_t *ev);
+void ngx_stream_lua_block_reading(ngx_stream_lua_request_t *r);
+
+ngx_stream_lua_cleanup_t *
+ngx_stream_lua_cleanup_add(ngx_stream_lua_request_t *r, size_t size);
+
+ngx_stream_lua_request_t *
+ngx_stream_lua_create_request(ngx_stream_session_t *s);
+void ngx_stream_lua_finalize_request(ngx_stream_lua_request_t *r, ngx_int_t rc);
+
+typedef ngx_int_t (*ngx_stream_lua_handler_pt)(ngx_stream_lua_request_t *r);
+
+
 #define ngx_stream_lua_get_module_ctx(r, module)  \
     ngx_stream_get_module_ctx((r)->session, module)
 #define ngx_stream_lua_set_ctx(r, c, module)      \

@@ -16,7 +16,13 @@ ngx_int_t ngx_[% subsystem %]_lua_content_by_chunk(lua_State *L, [% req_type %] 
 void ngx_[% subsystem %]_lua_content_wev_handler([% req_type %] *r);
 ngx_int_t ngx_[% subsystem %]_lua_content_handler_file([% req_type %] *r);
 ngx_int_t ngx_[% subsystem %]_lua_content_handler_inline([% req_type %] *r);
-ngx_int_t ngx_[% subsystem %]_lua_content_handler([% req_type %] *r);
+
+[% IF subsystem == 'http' %]
+ngx_int_t ngx_http_lua_content_handler(ngx_http_request_t *r);
+[% ELSIF subsystem == 'stream' %]
+void ngx_stream_lua_content_handler(ngx_stream_session_t *r);
+[% END %]
+
 ngx_int_t ngx_[% subsystem %]_lua_content_run_posted_threads(lua_State *L,
     [% req_type %] *r, ngx_[% subsystem %]_lua_ctx_t *ctx, int n);
 

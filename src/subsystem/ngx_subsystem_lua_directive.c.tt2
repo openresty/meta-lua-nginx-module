@@ -661,7 +661,7 @@ ngx_[% subsystem %]_lua_access_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *
 
     return NGX_CONF_OK;
 }
-[% END %]
+[% END # http %]
 
 
 char *
@@ -696,14 +696,13 @@ ngx_[% subsystem %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
     ngx_stream_core_srv_conf_t    *cxcf;
 [% END %]
 
-    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
-
 [% IF subsystem == 'http' %]
-    ngx_http_lua_loc_conf_t       *lxcf = conf;
-    ngx_http_compile_complex_value_t         ccv;
-[% ELSIF subsystem == 'stream' %]
-    ngx_stream_lua_srv_conf_t     *lxcf = conf;
+    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
 [% END %]
+
+    ngx_[% subsystem %]_compile_complex_value_t         ccv;
+
+    ngx_[% subsystem %]_lua_loc_conf_t       *llcf = conf;
 
     dd("enter");
 
@@ -712,7 +711,7 @@ ngx_[% subsystem %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
         return NGX_CONF_ERROR;
     }
 
-    if (lxcf->content_handler) {
+    if (llcf->content_handler) {
         return "is duplicate";
     }
 
@@ -735,13 +734,13 @@ ngx_[% subsystem %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
             return NGX_CONF_ERROR;
         }
 
-        lxcf->content_chunkname = chunkname;
+        llcf->content_chunkname = chunkname;
 
         dd("chunkname: %s", chunkname);
 
         /* Don't eval nginx variables for inline lua code */
 
-        lxcf->content_src.value = value[1];
+        llcf->content_src.value = value[1];
 
         p = ngx_palloc(cf->pool,
                        NGX_[% subsystem FILTER upper %]_LUA_INLINE_KEY_LEN + 1);
@@ -749,7 +748,7 @@ ngx_[% subsystem %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
             return NGX_CONF_ERROR;
         }
 
-        lxcf->content_src_key = p;
+        llcf->content_src_key = p;
 
         p = ngx_copy(p, NGX_[% subsystem FILTER upper %]_LUA_INLINE_TAG,
                      NGX_[% subsystem FILTER upper %]_LUA_INLINE_TAG_LEN);
@@ -758,59 +757,43 @@ ngx_[% subsystem %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
 
     } else {
 
-[% IF subsystem == 'http' %]
-        ngx_memzero(&ccv, sizeof(ngx_http_compile_complex_value_t));
+        ngx_memzero(&ccv, sizeof(ngx_[% subsystem %]_compile_complex_value_t));
         ccv.cf = cf;
         ccv.value = &value[1];
-        ccv.complex_value = &lxcf->content_src;
+        ccv.complex_value = &llcf->content_src;
 
-        if (ngx_http_compile_complex_value(&ccv) != NGX_OK) {
+        if (ngx_[% subsystem %]_compile_complex_value(&ccv) != NGX_OK) {
             return NGX_CONF_ERROR;
         }
 
-        if (lxcf->content_src.lengths == NULL) {
+        if (llcf->content_src.lengths == NULL) {
             /* no variable found */
-            p = ngx_palloc(cf->pool, NGX_HTTP_LUA_FILE_KEY_LEN + 1);
+            p = ngx_palloc(cf->pool, NGX_[% subsystem FILTER upper %]_LUA_FILE_KEY_LEN + 1);
             if (p == NULL) {
                 return NGX_CONF_ERROR;
             }
 
-            lxcf->content_src_key = p;
+            llcf->content_src_key = p;
 
-            p = ngx_copy(p, NGX_HTTP_LUA_FILE_TAG, NGX_HTTP_LUA_FILE_TAG_LEN);
-            p = ngx_http_lua_digest_hex(p, value[1].data, value[1].len);
+            p = ngx_copy(p, NGX_[% subsystem FILTER upper %]_LUA_FILE_TAG, NGX_[% subsystem FILTER upper %]_LUA_FILE_TAG_LEN);
+            p = ngx_[% subsystem %]_lua_digest_hex(p, value[1].data, value[1].len);
             *p = '\0';
         }
-
-[% ELSIF subsystem == 'stream' %]
-        lxcf->content_src = value[1];
-
-        p = ngx_palloc(cf->pool, NGX_STREAM_LUA_FILE_KEY_LEN + 1);
-        if (p == NULL) {
-            return NGX_CONF_ERROR;
-        }
-
-        lxcf->content_src_key = p;
-
-        p = ngx_copy(p, NGX_STREAM_LUA_FILE_TAG, NGX_STREAM_LUA_FILE_TAG_LEN);
-        p = ngx_stream_lua_digest_hex(p, value[1].data, value[1].len);
-        *p = '\0';
-[% END %]
-
     }
 
-    lxcf->content_handler = (ngx_[% subsystem %]_handler_pt) cmd->post;
+    llcf->content_handler = (ngx_[% req_subsystem %]_handler_pt) cmd->post;
 
-    lmcf = ngx_http_conf_get_module_main_conf(cf, ngx_[% subsystem %]_lua_module);
-
+[% IF subsystem == 'http' %]
+    lmcf = ngx_[% subsystem %]_conf_get_module_main_conf(cf, ngx_[% subsystem %]_lua_module);
     lmcf->requires_capture_filter = 1;
+[% END %]
 
     /*  register location content handler */
-    [% IF subsystem == 'http' %]
+[% IF subsystem == 'http' %]
     cxcf = ngx_http_conf_get_module_loc_conf(cf, ngx_http_core_module);
-    [% ELSIF subsystem == 'stream' %]
+[% ELSIF subsystem == 'stream' %]
     cxcf = ngx_stream_conf_get_module_srv_conf(cf, ngx_stream_core_module);
-    [% END %]
+[% END %]
     if (cxcf == NULL) {
         return NGX_CONF_ERROR;
     }

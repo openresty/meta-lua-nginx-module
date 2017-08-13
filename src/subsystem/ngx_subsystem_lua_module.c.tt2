@@ -64,7 +64,9 @@ static ngx_conf_post_t  ngx_[% subsystem %]_lua_lowat_post =
     { ngx_[% subsystem %]_lua_lowat_check };
 
 
+[% IF subsystem == 'http' %]
 static volatile ngx_cycle_t  *ngx_[% subsystem %]_lua_prev_cycle = NULL;
+[% END %]
 
 
 #if (NGX_HTTP_SSL) && defined(nginx_version) && nginx_version >= 1001013
@@ -685,9 +687,12 @@ ngx_[% subsystem %]_lua_init(ngx_conf_t *cf)
     ngx_int_t                   rc;
     volatile ngx_cycle_t       *saved_cycle;
     ngx_[% subsystem %]_lua_main_conf_t   *lmcf;
+
+[% IF subsystem == 'http' %]
 #if !defined(NGX_LUA_NO_FFI_API) || nginx_version >= 1011011
     ngx_pool_cleanup_t         *cln;
 #endif
+[% END %]
 
 [% IF subsystem == 'http' %]
     int                         multi_http_blocks;

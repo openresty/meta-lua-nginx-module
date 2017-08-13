@@ -314,6 +314,7 @@ typedef struct {
 
 [% IF subsystem == 'http' %]
     ngx_flag_t              force_read_body; /* whether force request body to
+                                                be read */
 
     ngx_flag_t              http10_buffering;
 
@@ -321,7 +322,7 @@ typedef struct {
     ngx_http_handler_pt     access_handler;
 [% END %]
 
-    ngx_[% subsystem %]_handler_pt     content_handler;
+    ngx_[% req_subsystem %]_handler_pt     content_handler;
 
 [% IF subsystem == 'http' %]
     ngx_http_handler_pt     log_handler;
@@ -510,7 +511,7 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
     ngx_[% subsystem %]_lua_vm_state_t  *vm_state;
 
     [% req_type %]      *request;
-    ngx_[% subsystem %]_handler_pt      resume_handler;
+    ngx_[% req_subsystem %]_handler_pt      resume_handler;
 
     ngx_[% subsystem %]_lua_co_ctx_t   *cur_co_ctx; /* co ctx for the current coroutine */
 

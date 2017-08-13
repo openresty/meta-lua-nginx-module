@@ -259,7 +259,11 @@ ngx_[% subsystem %]_lua_cache_loadfile(ngx_log_t *log, lua_State *L,
             break;
 
         case LUA_ERRFILE:
+[% IF subsystem == 'http' %]
             errcode = NGX_HTTP_NOT_FOUND;
+[% ELSIF subsystem == 'stream' %]
+            errcode = NGX_STREAM_INTERNAL_SERVER_ERROR;
+[% END %]
             /* fall through */
 
         default:

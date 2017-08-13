@@ -60,29 +60,6 @@ ngx_stream_lua_create_request(ngx_stream_session_t *s)
 }
 
 void
-ngx_stream_lua_free_request(ngx_stream_lua_request_t *r)
-{
-    ngx_stream_lua_cleanup_t  *cln;
-    ngx_pool_t                *pool;
-
-    cln = r->cleanup;
-    r->cleanup = NULL;
-
-    while (cln) {
-        if (cln->handler) {
-            cln->handler(cln->data);
-        }
-
-        cln = cln->next;
-    }
-
-    pool = r->pool;
-    r->pool = NULL;
-
-    ngx_destroy_pool(pool);
-}
-
-static void
 ngx_stream_lua_request_handler(ngx_event_t *ev)
 {
     ngx_connection_t          *c;
@@ -114,4 +91,71 @@ ngx_stream_lua_request_handler(ngx_event_t *ev)
     } else {
         r->read_event_handler(r);
     }
+}
+
+void
+ngx_stream_lua_empty_handler(ngx_event_t *wev)
+{
+    ngx_log_debug0(NGX_LOG_DEBUG_STREAM, wev->log, 0,
+                   "stream lua empty handler");
+    return;
+}
+
+void
+ngx_stream_lua_block_reading(ngx_stream_lua_request_t *r)
+{
+    ngx_log_debug0(NGX_LOG_DEBUG_STREAM, r->connection->log, 0,
+                   "stream reading blocked");
+
+    /* aio does not call this handler */
+
+    if ((ngx_event_flags & NGX_USE_LEVEL_EVENT)
+        && r->connection->read->active)
+    {
+        if (ngx_del_event(r->connection->read, NGX_READ_EVENT, 0) != NGX_OK) {
+            ngx_stream_lua_finalize_request(r, NGX_STREAM_INTERNAL_SERVER_ERROR);
+        }
+    }
+}
+
+void
+ngx_stream_lua_finalize_request(ngx_stream_lua_request_t *r, ngx_int_t rc)
+{
+    ngx_stream_lua_cleanup_t  *cln;
+    ngx_pool_t                *pool;
+    ngx_stream_session_t      *s;
+
+    ngx_log_debug1(NGX_LOG_DEBUG_STREAM, s->connection->log, 0,
+                   "finalize stream request: %i", rc);
+
+    s = r->session;
+
+    if (rc == NGX_DONE || rc == NGX_DECLINED) {
+        goto cleanup;
+    }
+
+    if (rc == NGX_ERROR) {
+        rc = NGX_STREAM_INTERNAL_SERVER_ERROR;
+        goto cleanup;
+    }
+
+cleanup:
+    cln = r->cleanup;
+    r->cleanup = NULL;
+
+    while (cln) {
+        if (cln->handler) {
+            cln->handler(cln->data);
+        }
+
+        cln = cln->next;
+    }
+
+    pool = r->pool;
+    r->pool = NULL;
+
+    ngx_destroy_pool(pool);
+
+    ngx_stream_finalize_session(s, NGX_STREAM_OK);
+    return;
 }
