@@ -631,7 +631,12 @@ ngx_[% subsystem %]_lua_timer_handler(ngx_event_t *ev)
 
 #   if nginx_version >= 1009000
 
+[% IF subsystem == 'http' %]
     ngx_set_connection_log(r->connection, clcf->error_log);
+
+[% ELSIF subsystem == 'stream' %]
+    ngx_set_connection_log(s->connection, clcf->error_log);
+[% END %]
 
 #   else
 
