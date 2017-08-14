@@ -618,7 +618,7 @@ ngx_[% subsystem %]_lua_timer_handler(ngx_event_t *ev)
     r->srv_conf = tctx.srv_conf;
     r->loc_conf = tctx.loc_conf;
 
-    clcf = ngx_http_get_module_loc_conf(s, ngx_http_core_module);
+    clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
 
 [% ELSIF subsystem == 'stream' %]
     s->main_conf = tctx.main_conf;

@@ -261,18 +261,19 @@ ngx_int_t ngx_[% subsystem %]_lua_report(ngx_log_t *log, lua_State *L, int statu
 int ngx_[% subsystem %]_lua_do_call(ngx_log_t *log, lua_State *L);
 
 [% IF subsystem == 'http' %]
-[% cleanup_pt = 'ngx_http_cleanup_pt' %]
+[% cleanup= 'ngx_http_cleanup' %]
+
 [% ELSIF subsystem == 'stream' %]
-[% cleanup_pt = 'ngx_stream_lua_cleanup_pt' %]
+[% cleanup= 'ngx_stream_lua_cleanup' %]
 [% END %]
 
 [% IF subsystem == 'http' %]
-[% cleanup_pt %] *ngx_[% subsystem %]_lua_cleanup_add([% req_type %] *r,
+[% cleanup %]_t *ngx_[% subsystem %]_lua_cleanup_add([% req_type %] *r,
     size_t size);
 [% END %]
 
 void ngx_[% subsystem %]_lua_cleanup_free([% req_type %] *r,
-    [% cleanup_pt %] *cleanup);
+    [% cleanup %]_pt *cleanup);
 
 
 #define ngx_[% subsystem %]_lua_check_if_abortable(L, ctx)                             \
@@ -311,14 +312,19 @@ ngx_stream_lua_create_ctx(ngx_stream_session_t *r)
 
 [% IF subsystem == 'http' %]
     ctx = ngx_palloc(r->pool, sizeof(ngx_http_lua_ctx_t));
+
+    if (ctx == NULL) {
+        return NULL;
+    }
+
 [% ELSIF subsystem == 'stream' %]
     ctx = ngx_palloc(r->connection->pool, sizeof(ngx_stream_lua_ctx_t));
     sreq = ngx_stream_lua_create_request(r);
-[% END %]
 
     if (ctx == NULL || sreq == NULL) {
         return NULL;
     }
+[% END %]
 
 [% IF subsystem == 'http' %]
     ngx_http_lua_init_ctx(r, ctx);
