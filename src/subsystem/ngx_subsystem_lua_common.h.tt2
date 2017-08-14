@@ -273,7 +273,7 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
 
 [% IF subsystem == 'http' %]
 union ngx_http_lua_srv_conf_u {
-#if (NGX_HTTP_SSL)
+#if (NGX_[% subsystem FILTER upper %]_SSL)
     struct {
         ngx_[% subsystem %]_lua_srv_conf_handler_pt     ssl_cert_handler;
         ngx_str_t                            ssl_cert_src;
@@ -300,7 +300,7 @@ union ngx_http_lua_srv_conf_u {
 
 
 typedef struct {
-#if (NGX_HTTP_SSL)
+#if (NGX_[% subsystem FILTER upper %]_SSL)
     ngx_ssl_t              *ssl;  /* shared by SSL cosockets */
     ngx_uint_t              ssl_protocols;
     ngx_str_t               ssl_ciphers;

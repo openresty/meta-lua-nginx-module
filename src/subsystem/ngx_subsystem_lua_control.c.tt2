@@ -343,7 +343,7 @@ ngx_[% subsystem %]_lua_ngx_exit(lua_State *L)
                         | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH))
     {
 
-#if (NGX_HTTP_SSL)
+#if (NGX_[% subsystem FILTER upper %]_SSL)
 
         ctx->exit_code = rc;
         ctx->exited = 1;
@@ -500,7 +500,7 @@ ngx_[% subsystem %]_lua_ffi_exit([% req_type %] *r, int status, u_char *err,
                         | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH))
     {
 
-#if (NGX_HTTP_SSL)
+#if (NGX_[% subsystem FILTER upper %]_SSL)
 
         ctx->exit_code = status;
         ctx->exited = 1;
