@@ -785,12 +785,8 @@ ngx_[% subsystem %]_lua_inject_ngx_api(lua_State *L, ngx_[% subsystem %]_lua_mai
 
     ngx_[% subsystem %]_lua_inject_variable_api(L);
     ngx_[% subsystem %]_lua_inject_shdict_api(lmcf, L);
-
-[% IF subsystem == 'http' %]
     ngx_[% subsystem %]_lua_inject_socket_tcp_api(log, L);
     ngx_[% subsystem %]_lua_inject_socket_udp_api(log, L);
-[% END # temp until socket is factored %]
-
     ngx_[% subsystem %]_lua_inject_uthread_api(log, L);
     ngx_[% subsystem %]_lua_inject_timer_api(L);
     ngx_[% subsystem %]_lua_inject_config_api(L);
@@ -2220,9 +2216,7 @@ ngx_[% subsystem %]_lua_inject_req_api(ngx_log_t *log, lua_State *L)
 
     lua_createtable(L, 0 /* narr */, 24 /* nrec */);    /* .req */
 
-[% IF subsystem == 'http' %]
     ngx_[% subsystem %]_lua_inject_req_socket_api(L);
-[% END # temp until socket is factored %]
 
 [% IF subsystem == 'http' %]
     ngx_[% subsystem %]_lua_inject_req_header_api(L);
@@ -3444,6 +3438,7 @@ ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *
 
 [% IF subsystem == 'http' %]
         return NGX_HTTP_CLIENT_CLOSED_REQUEST;
+
 [% ELSIF subsystem == 'stream' %]
         return NGX_ERROR;
 [% END %]
@@ -3476,7 +3471,12 @@ ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *
                       "kevent() reported that client prematurely closed "
                       "connection");
 
+[% IF subsystem == 'http' %]
         return NGX_HTTP_CLIENT_CLOSED_REQUEST;
+
+[% ELSIF subsystem == 'stream' %]
+        return NGX_ERROR;
+[% END %]
     }
 
 #endif
@@ -3499,7 +3499,12 @@ ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *
 
 #if 1
         if (ngx_del_event(ev, event, 0) != NGX_OK) {
+[% IF subsystem == 'http' %]
             return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+[% ELSIF subsystem == 'stream' %]
+            return NGX_ERROR;
+[% END %]
         }
 #endif
     }
@@ -3527,7 +3532,11 @@ ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *
     ngx_log_error(NGX_LOG_INFO, ev->log, err,
                   "client prematurely closed connection");
 
+[% IF subsystem == 'http' %]
     return NGX_HTTP_CLIENT_CLOSED_REQUEST;
+[% ELSIF subsystem == 'stream' %]
+    return NGX_ERROR;
+[% END %]
 }
 
 
@@ -3573,8 +3582,14 @@ ngx_[% subsystem %]_lua_rd_check_broken_connection([% req_type %] *r)
         if ((ngx_event_flags & NGX_USE_LEVEL_EVENT) && rev->active) {
             if (ngx_del_event(rev, NGX_READ_EVENT, 0) != NGX_OK) {
                 ngx_[% subsystem %]_lua_request_cleanup(ctx, 0);
+
+[% IF subsystem == 'http' %]
                 ngx_[% subsystem %]_lua_finalize_request(r,
                                               NGX_HTTP_INTERNAL_SERVER_ERROR);
+[% ELSIF subsystem == 'stream' %]
+                ngx_[% subsystem %]_lua_finalize_request(r,
+                                              NGX_STREAM_INTERNAL_SERVER_ERROR);
+[% END %]
                 return;
             }
         }
@@ -4004,9 +4019,7 @@ ngx_[% subsystem %]_lua_cleanup_vm(void *data)
         if (--state->count == 0) {
             L = state->vm;
 
-[% IF subsystem == 'http' %]
             ngx_[% subsystem %]_lua_cleanup_conn_pools(L);
-[% END # temp until socket is factored %]
 
             ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
                            "lua close the global Lua VM %p", L);

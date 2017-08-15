@@ -169,7 +169,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
     }
 
     /* workaround to make ngx_stream_core_create_srv_conf not SEGFAULT */
-    conf_file->file.name.data = "dummy";
+    conf_file->file.name.data = (u_char *) "dummy";
     conf_file->file.name.len = sizeof("dummy") - 1;
     conf_file->line = 1;
 

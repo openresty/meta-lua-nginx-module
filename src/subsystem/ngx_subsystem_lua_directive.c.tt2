@@ -179,7 +179,11 @@ ngx_[% subsystem %]_lua_code_cache(ngx_conf_t *cf, ngx_command_t *cmd, void *con
 
     if (!*fp) {
         ngx_conf_log_error(NGX_LOG_ALERT, cf, 0,
+[% IF subsystem == 'http' %]
                            "lua_code_cache is off; this will hurt "
+[% ELSIF subsystem == 'stream' %]
+                           "stream lua_code_cache is off; this will hurt "
+[% END %]
                            "performance");
     }
 
