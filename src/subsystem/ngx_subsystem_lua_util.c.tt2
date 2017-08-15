@@ -57,6 +57,11 @@
 [% END %]
 
 
+[% IF subsystem == 'stream' %]
+[% log_prefix = 'stream ' %]
+[% END %]
+
+
 #if 1
 #undef ngx_[% subsystem %]_lua_probe_info
 #define ngx_[% subsystem %]_lua_probe_info(msg)
@@ -3769,7 +3774,11 @@ ngx_[% subsystem %]_lua_finalize_fake_request([% req_type %] *r, ngx_int_t rc)
 [% END %]
 
     if (rc == NGX_DONE) {
+
+[% IF subsystem == 'http' %]
         ngx_[% subsystem %]_lua_close_fake_request(r);
+[% END %]
+
         return;
     }
 
@@ -4018,7 +4027,7 @@ ngx_[% subsystem %]_lua_cleanup_vm(void *data)
 
     if (state) {
         ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
-                       "lua decrementing the reference count for Lua VM: %i",
+                       "[% log_prefix %]lua decrementing the reference count for Lua VM: %i",
                        state->count);
 
         if (--state->count == 0) {
@@ -4027,7 +4036,7 @@ ngx_[% subsystem %]_lua_cleanup_vm(void *data)
             ngx_[% subsystem %]_lua_cleanup_conn_pools(L);
 
             ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
-                           "lua close the global Lua VM %p", L);
+                           "[% log_prefix %]lua close the global Lua VM %p", L);
             lua_close(L);
             ngx_free(state);
         }

@@ -31,7 +31,7 @@ ngx_stream_lua_cleanup_add(ngx_stream_lua_request_t *r, size_t size)
     r->cleanup = cln;
 
     ngx_log_debug1(NGX_LOG_DEBUG_STREAM, r->connection->log, 0,
-                   "http cleanup add: %p", cln);
+                   "stream cleanup add: %p", cln);
 
     return cln;
 }
@@ -42,10 +42,14 @@ ngx_stream_lua_create_request(ngx_stream_session_t *s)
     ngx_pool_t               *pool;
     ngx_stream_lua_request_t *r;
 
+#if 0
     pool = ngx_create_pool(NGX_DEFAULT_POOL_SIZE, s->connection->log);
     if (pool == NULL) {
         return NULL;
     }
+#endif
+
+    pool = s->connection->pool;
 
     r = ngx_pcalloc(pool, sizeof(ngx_stream_lua_request_t));
     if (r == NULL) {
@@ -122,7 +126,9 @@ void
 ngx_stream_lua_finalize_real_request(ngx_stream_lua_request_t *r, ngx_int_t rc)
 {
     ngx_stream_lua_cleanup_t  *cln;
+#if 0
     ngx_pool_t                *pool;
+#endif
     ngx_stream_session_t      *s;
 
     ngx_log_debug1(NGX_LOG_DEBUG_STREAM, r->connection->log, 0,
@@ -155,10 +161,12 @@ cleanup:
         cln = cln->next;
     }
 
+#if 0
     pool = r->pool;
     r->pool = NULL;
 
     ngx_destroy_pool(pool);
+#endif
 
     ngx_stream_finalize_session(s, NGX_STREAM_OK);
     return;

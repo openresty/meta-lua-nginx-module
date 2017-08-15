@@ -16,6 +16,11 @@
 #include "ngx_[% subsystem %]_lua_probe.h"
 
 
+[% IF subsystem == 'stream' %]
+[% log_prefix = 'stream ' %]
+[% END %]
+
+
 typedef struct {
     void        **main_conf;
     void        **srv_conf;
@@ -563,7 +568,7 @@ ngx_[% subsystem %]_lua_timer_handler(ngx_event_t *ev)
 [% END %]
 
     ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
-                   "lua ngx.timer expired");
+                   "[% log_prefix %]lua ngx.timer expired");
 
     ngx_memcpy(&tctx, ev->data, sizeof(ngx_[% subsystem %]_lua_timer_ctx_t));
     ngx_free(ev);
@@ -583,7 +588,12 @@ ngx_[% subsystem %]_lua_timer_handler(ngx_event_t *ev)
 
     if (lmcf->running_timers >= lmcf->max_running_timers) {
         ngx_log_error(NGX_LOG_ALERT, ngx_cycle->log, 0,
+[% IF subsystem == 'http' %]
                       "%i lua_max_running_timers are not enough",
+
+[% ELSIF subsystem == 'stream' %]
+                      "stream lua: %i lua_max_running_timers are not enough",
+[% END %]
                       lmcf->max_running_timers);
         goto failed;
     }
