@@ -1652,6 +1652,11 @@ ngx_[% subsystem %]_lua_wev_handler([% req_type %] *r)
 
 [% IF subsystem == 'http' %]
     if (c->buffered & NGX_HTTP_LOWLEVEL_BUFFERED) {
+
+[% ELSIF subsystem == 'stream' %]
+    if (c->buffered) {
+[% END %]
+
         rc = ngx_[% subsystem %]_lua_flush_pending_output(r, ctx);
 
         dd("flush pending output returned %d, c->error: %d", (int) rc,
@@ -1663,7 +1668,6 @@ ngx_[% subsystem %]_lua_wev_handler([% req_type %] *r)
 
         /* when rc == NGX_ERROR, c->error must be set */
     }
-[% END %]
 
 flush_coros:
 
@@ -1811,9 +1815,11 @@ ngx_[% subsystem %]_lua_flush_pending_output([% req_type %] *r,
 [% IF subsystem == 'http' %]
     if (c->buffered & NGX_HTTP_LOWLEVEL_BUFFERED) {
 
-[% IF subsystem == 'http' %]
         cllscf = ngx_http_get_module_loc_conf(r->main, ngx_http_core_module);
+
 [% ELSIF subsystem == 'stream' %]
+    if (c->buffered) {
+
         cllscf = ngx_stream_lua_get_module_srv_conf(r, ngx_stream_lua_module);
 [% END %]
 
@@ -1844,7 +1850,6 @@ ngx_[% subsystem %]_lua_flush_pending_output([% req_type %] *r,
         }
 #endif
     }
-[% END %]
 
     return NGX_OK;
 }
