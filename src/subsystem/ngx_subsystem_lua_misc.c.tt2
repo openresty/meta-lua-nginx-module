@@ -215,6 +215,7 @@ ngx_[% subsystem %]_lua_ngx_set(lua_State *L)
 
 
 #ifndef NGX_LUA_NO_FFI_API
+[% IF subsystem == 'http' %]
 int
 ngx_[% subsystem %]_lua_ffi_get_resp_status([% req_type %] *r)
 {
@@ -300,6 +301,7 @@ ngx_[% subsystem %]_lua_ffi_headers_sent([% req_type %] *r)
 
     return r->header_sent ? 1 : 0;
 }
+[% END %]
 #endif /* NGX_LUA_NO_FFI_API */
 
 

@@ -545,6 +545,7 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
         return 2;
     }
 
+[% IF subsystem == 'http' %]
     if (ctx->buffering) {
         ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                        "lua http 1.0 buffering makes ngx.flush() a no-op");
@@ -554,7 +555,6 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
         return 2;
     }
 
-[% IF subsystem == 'http' %]
 #if 1
     if ((!r->header_sent && !ctx->header_sent)
         || (!ctx->seen_body_data && !wait))
@@ -594,7 +594,7 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
     if (wait && (r->connection->buffered & NGX_HTTP_LOWLEVEL_BUFFERED
                  || wev->delayed))
 [% ELSIF subsystem == 'stream' %]
-    if (wait || wev->delayed)
+    if (wait && wev->delayed)
 [% END %]
     {
         ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
@@ -626,6 +626,7 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
         if (!wev->delayed) {
             ngx_add_timer(wev, cllscf->send_timeout);
         }
+
 
         if (ngx_handle_write_event(wev, cllscf->send_lowat) != NGX_OK) {
             if (wev->timer_set) {

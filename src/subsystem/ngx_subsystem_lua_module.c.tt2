@@ -159,7 +159,11 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
     { ngx_string("lua_code_cache"),
       [% lowest_level_conf_flags %]|NGX_CONF_FLAG,
       ngx_[% subsystem %]_lua_code_cache,
+[% IF subsystem == 'http' %]
       NGX_HTTP_LOC_CONF_OFFSET,
+[% ELSIF subsystem == 'stream' %]
+      NGX_STREAM_SRV_CONF_OFFSET,
+[% END %]
       offsetof(ngx_[% subsystem %]_lua_loc_conf_t, enable_code_cache),
       NULL },
 
@@ -184,7 +188,11 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
      { ngx_string("lua_socket_log_errors"),
       [% lowest_level_conf_flags %]|NGX_CONF_FLAG,
       ngx_conf_set_flag_slot,
+[% IF subsystem == 'http' %]
       NGX_HTTP_LOC_CONF_OFFSET,
+[% ELSIF subsystem == 'stream' %]
+      NGX_STREAM_SRV_CONF_OFFSET,
+[% END %]
       offsetof(ngx_[% subsystem %]_lua_loc_conf_t, log_socket_errors),
       NULL },
 

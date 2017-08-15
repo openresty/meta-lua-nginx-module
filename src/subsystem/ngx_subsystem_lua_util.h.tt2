@@ -65,9 +65,11 @@ extern char ngx_[% subsystem %]_lua_headers_metatable_key;
 #endif
 
 
+[% IF subsystem == 'http' %]
 #ifndef NGX_HTTP_SWITCHING_PROTOCOLS
 #define NGX_HTTP_SWITCHING_PROTOCOLS 101
 #endif
+[% END %]
 
 
 #if defined(nginx_version) && nginx_version < 1000000

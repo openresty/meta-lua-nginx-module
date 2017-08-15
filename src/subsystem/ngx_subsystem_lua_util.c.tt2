@@ -562,6 +562,12 @@ ngx_int_t
 ngx_stream_lua_send_chain_link(ngx_stream_lua_request_t *r, ngx_stream_lua_ctx_t *ctx,
     ngx_chain_t *in)
 {
+    if (in == NULL) {
+        ctx->eof = 1;
+
+        return NGX_OK;
+    }
+
     return ngx_stream_lua_output_filter(r, in);
 }
 [% END %]
@@ -1003,7 +1009,11 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
     lua_State               *next_co;
     lua_State               *old_co;
     const char              *err, *msg, *trace;
+
+[% IF subsystem == 'http' %]
     ngx_int_t                rc;
+[% END %]
+
 #if (NGX_PCRE)
     ngx_pool_t              *old_pool = NULL;
 #endif
@@ -1622,6 +1632,7 @@ ngx_[% subsystem %]_lua_wev_handler([% req_type %] *r)
                 if (ctx->entered_content_phase) {
                     ngx_[% subsystem %]_lua_finalize_request(r, NGX_ERROR);
                 }
+
                 return NGX_ERROR;
             }
         }
@@ -1643,6 +1654,7 @@ ngx_[% subsystem %]_lua_wev_handler([% req_type %] *r)
         return NGX_DONE;
     }
 
+[% IF subsystem == 'http' %]
     if (c->buffered & NGX_HTTP_LOWLEVEL_BUFFERED) {
         rc = ngx_[% subsystem %]_lua_flush_pending_output(r, ctx);
 
@@ -1655,6 +1667,7 @@ ngx_[% subsystem %]_lua_wev_handler([% req_type %] *r)
 
         /* when rc == NGX_ERROR, c->error must be set */
     }
+[% END %]
 
 flush_coros:
 
@@ -1799,6 +1812,7 @@ ngx_[% subsystem %]_lua_flush_pending_output([% req_type %] *r,
         return rc;
     }
 
+[% IF subsystem == 'http' %]
     if (c->buffered & NGX_HTTP_LOWLEVEL_BUFFERED) {
 
 [% IF subsystem == 'http' %]
@@ -1806,7 +1820,6 @@ ngx_[% subsystem %]_lua_flush_pending_output([% req_type %] *r,
 [% ELSIF subsystem == 'stream' %]
         cllscf = ngx_stream_lua_get_module_srv_conf(r, ngx_stream_lua_module);
 [% END %]
-
 
         if (!wev->delayed) {
             ngx_add_timer(wev, cllscf->send_timeout);
@@ -1835,6 +1848,7 @@ ngx_[% subsystem %]_lua_flush_pending_output([% req_type %] *r,
         }
 #endif
     }
+[% END %]
 
     return NGX_OK;
 }
@@ -3407,9 +3421,9 @@ ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *
                    "http lua check client, write event:%d, \"%V\"",
                    ev->write, &r->uri);
 
-[% ELSIF subsystem == 'http' %]
+[% ELSIF subsystem == 'stream' %]
     ngx_log_debug1(NGX_LOG_DEBUG_STREAM, ev->log, 0,
-                   "http lua check client, write event:%d", ev->write);
+                   "stream lua check client, write event:%d", ev->write);
 [% END %]
 
     c = r->connection;
@@ -3420,18 +3434,29 @@ ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *
             event = ev->write ? NGX_WRITE_EVENT : NGX_READ_EVENT;
 
             if (ngx_del_event(ev, event, 0) != NGX_OK) {
+[% IF subsystem == 'http' %]
                 return NGX_HTTP_INTERNAL_SERVER_ERROR;
+[% ELSIF subsystem == 'stream' %]
+                return NGX_ERROR;
+[% END %]
             }
         }
 
+[% IF subsystem == 'http' %]
         return NGX_HTTP_CLIENT_CLOSED_REQUEST;
+[% ELSIF subsystem == 'stream' %]
+        return NGX_ERROR;
+[% END %]
     }
 
+
+[% IF subsystem == 'http' %]
 #if (NGX_HTTP_V2)
     if (r->stream) {
         return NGX_OK;
     }
 #endif
+[% END %]
 
 #if (NGX_HAVE_KQUEUE)
 
@@ -3728,7 +3753,12 @@ ngx_[% subsystem %]_lua_finalize_fake_request([% req_type %] *r, ngx_int_t rc)
         return;
     }
 
+[% IF subsystem == 'http' %]
     if (rc == NGX_ERROR || rc >= NGX_HTTP_SPECIAL_RESPONSE) {
+
+[% ELSIF subsystem == 'stream' %]
+    if (rc == NGX_ERROR) {
+[% END %]
 
 [% IF subsystem == 'http' %]
 #if (NGX_[% subsystem FILTER upper %]_SSL)

@@ -521,6 +521,7 @@ ngx_[% subsystem %]_lua_ffi_exit([% req_type %] *r, int status, u_char *err,
 #endif
     }
 
+[% IF subsystem == 'http' %]
     if (ctx->no_abort
         && status != NGX_ERROR
         && status != NGX_HTTP_CLOSE
@@ -548,6 +549,7 @@ ngx_[% subsystem %]_lua_ffi_exit([% req_type %] *r, int status, u_char *err,
 
         status = NGX_HTTP_OK;
     }
+[% END %]
 
     ctx->exit_code = status;
     ctx->exited = 1;

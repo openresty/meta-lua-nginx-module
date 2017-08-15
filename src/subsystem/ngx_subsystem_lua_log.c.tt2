@@ -59,7 +59,12 @@ ngx_[% subsystem %]_lua_ngx_log(lua_State *L)
     /* remove log-level param from stack */
     lua_remove(L, 1);
 
+[% IF subsystem == 'http' %]
     return log_wrapper(log, "[lua] ", (ngx_uint_t) level, L);
+
+[% ELSIF subsystem == 'stream' %]
+    return log_wrapper(log, "stream [lua] ", (ngx_uint_t) level, L);
+[% END %]
 }
 
 
@@ -85,7 +90,12 @@ ngx_[% subsystem %]_lua_print(lua_State *L)
         log = ngx_cycle->log;
     }
 
+[% IF subsystem == 'http' %]
     return log_wrapper(log, "[lua] ", NGX_LOG_NOTICE, L);
+
+[% ELSIF subsystem == 'stream' %]
+    return log_wrapper(log, "stream [lua] ", NGX_LOG_NOTICE, L);
+[% END %]
 }
 
 

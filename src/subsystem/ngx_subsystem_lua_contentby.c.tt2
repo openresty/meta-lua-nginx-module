@@ -67,7 +67,12 @@ ngx_[% subsystem %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
                       "lua: failed to create new coroutine to handle request");
 
+[% IF subsystem == 'http' %]
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+[% ELSIF subsystem == 'stream' %]
+        return NGX_ERROR;
+[% END %]
     }
 
     /*  move code closure to new coroutine */
@@ -91,7 +96,12 @@ ngx_[% subsystem %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
     if (ctx->cleanup == NULL) {
         cln = ngx_[% req_subsystem %]_cleanup_add(r, 0);
         if (cln == NULL) {
+[% IF subsystem == 'http' %]
             return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+[% ELSIF subsystem == 'stream' %]
+            return NGX_ERROR;
+[% END %]
         }
 
         cln->handler = ngx_[% subsystem %]_lua_request_cleanup_handler;
@@ -112,9 +122,11 @@ ngx_[% subsystem %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
     if (llcf->check_client_abort) {
         r->read_event_handler = ngx_[% subsystem %]_lua_rd_check_broken_connection;
 
+[% IF subsystem == 'http' %]
 #if (NGX_HTTP_V2)
         if (!r->stream) {
 #endif
+[% END %]
 
         rev = r->connection->read;
 
@@ -124,9 +136,11 @@ ngx_[% subsystem %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
             }
         }
 
+[% IF subsystem == 'http' %]
 #if (NGX_HTTP_V2)
         }
 #endif
+[% END %]
 
     } else {
         r->read_event_handler = ngx_[% req_subsystem %]_block_reading;
@@ -391,7 +405,12 @@ ngx_[% subsystem %]_lua_content_handler_inline([% req_type %] *r)
                                        (const char *)
                                        llcf->content_chunkname);
     if (rc != NGX_OK) {
+[% IF subsystem == 'http' %]
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+[% ELSIF subsystem == 'stream' %]
+        return NGX_ERROR;
+[% END %]
     }
 
     return ngx_[% subsystem %]_lua_content_by_chunk(L, r);
