@@ -1419,7 +1419,7 @@ user_co_done:
             if (ctx->cur_co_ctx->is_uthread) {
 
                 ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
-                              "lua user thread aborted: %s: %s\n%s",
+                              "[% log_prefix %]lua user thread aborted: %s: %s\n%s",
                               err, msg, trace);
 
                 lua_settop(L, 0);
@@ -4381,7 +4381,7 @@ ngx_[% subsystem %]_lua_cleanup_free([% req_type %] *r,
             ctx->free_cleanup = cln;
 
             ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
-                           "lua http cleanup free: %p", cln);
+                           "lua [% subsystem %] cleanup free: %p", cln);
 
             return;
         }

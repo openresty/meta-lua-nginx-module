@@ -1,6 +1,7 @@
 #include <ngx_config.h>
 #include <ngx_core.h>
 #include <ngx_stream.h>
+#include "ddebug.h"
 #include "ngx_stream_lua_common.h"
 #include "ngx_stream_lua_request.h"
 
@@ -9,6 +10,28 @@ ngx_stream_lua_cleanup_t *
 ngx_stream_lua_cleanup_add(ngx_stream_lua_request_t *r, size_t size)
 {
     ngx_stream_lua_cleanup_t  *cln;
+    ngx_stream_lua_ctx_t  *ctx;
+
+    if (size == 0) {
+        ctx = ngx_stream_lua_get_module_ctx(r, ngx_stream_lua_module);
+
+        if (ctx != NULL && ctx->free_cleanup) {
+            cln = ctx->free_cleanup;
+            ctx->free_cleanup = cln->next;
+
+            dd("reuse cleanup: %p", cln);
+
+            ngx_log_debug1(NGX_LOG_DEBUG_STREAM, r->connection->log, 0,
+                           "lua stream cleanup reuse: %p", cln);
+
+            cln->handler = NULL;
+            cln->next = r->cleanup;
+
+            r->cleanup = cln;
+
+            return cln;
+        }
+    }
 
     cln = ngx_palloc(r->pool, sizeof(ngx_stream_lua_cleanup_t));
     if (cln == NULL) {

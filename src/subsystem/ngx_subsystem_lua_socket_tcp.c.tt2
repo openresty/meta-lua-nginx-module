@@ -3592,7 +3592,7 @@ ngx_[% subsystem %]_lua_socket_tcp_finalize([% req_type %] *r,
     dd("request: %p, u: %p, u->cleanup: %p", r, u, u->cleanup);
 
     ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
-                   "lua finalize socket");
+                   "[% log_prefix %]lua finalize socket");
 
     if (u->cleanup) {
         *u->cleanup = NULL;

@@ -48,11 +48,8 @@ static int ngx_[% subsystem %]_lua_ngx_decode_base64(lua_State *L);
 static int ngx_[% subsystem %]_lua_ngx_encode_base64(lua_State *L);
 static int ngx_[% subsystem %]_lua_ngx_crc32_short(lua_State *L);
 static int ngx_[% subsystem %]_lua_ngx_crc32_long(lua_State *L);
-
-[% IF subsystem == 'http' %]
 static int ngx_[% subsystem %]_lua_ngx_encode_args(lua_State *L);
 static int ngx_[% subsystem %]_lua_ngx_decode_args(lua_State *L);
-[% END %]
 
 #if (NGX_OPENSSL)
 static int ngx_[% subsystem %]_lua_ngx_hmac_sha1(lua_State *L);
@@ -68,13 +65,11 @@ ngx_[% subsystem %]_lua_inject_string_api(lua_State *L)
     lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_unescape_uri);
     lua_setfield(L, -2, "unescape_uri");
 
-[% IF subsystem == 'http' %]
     lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_encode_args);
     lua_setfield(L, -2, "encode_args");
 
     lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_decode_args);
     lua_setfield(L, -2, "decode_args");
-[% END %]
 
     lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_quote_sql_str);
     lua_setfield(L, -2, "quote_sql_str");
@@ -583,7 +578,6 @@ ngx_[% subsystem %]_lua_ngx_crc32_long(lua_State *L)
 }
 
 
-[% IF subsystem == 'http' %]
 static int
 ngx_[% subsystem %]_lua_ngx_encode_args(lua_State *L)
 {
@@ -633,7 +627,6 @@ ngx_[% subsystem %]_lua_ngx_decode_args(lua_State *L)
 
     return ngx_[% subsystem %]_lua_parse_args(L, tmp, tmp + len, max);
 }
-[% END # http %]
 
 
 #if (NGX_OPENSSL)

@@ -118,15 +118,15 @@ typedef struct {
 #endif
 
 
-#ifndef NGX_HTTP_LUA_MAX_ARGS
-#define NGX_HTTP_LUA_MAX_ARGS 100
-#endif
-
-
 #ifndef NGX_HTTP_LUA_MAX_HEADERS
 #define NGX_HTTP_LUA_MAX_HEADERS 100
 #endif
 [% END %]
+
+
+#ifndef NGX_[% subsystem FILTER upper %]_LUA_MAX_ARGS
+#define NGX_[% subsystem FILTER upper %]_LUA_MAX_ARGS 100
+#endif
 
 
 /* must be within 16 bit */

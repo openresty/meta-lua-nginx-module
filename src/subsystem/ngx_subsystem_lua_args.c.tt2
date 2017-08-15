@@ -15,6 +15,7 @@
 #include "ngx_[% subsystem %]_lua_util.h"
 
 
+[% IF subsystem == 'http' %]
 static int ngx_[% subsystem %]_lua_ngx_req_set_uri_args(lua_State *L);
 static int ngx_[% subsystem %]_lua_ngx_req_get_uri_args(lua_State *L);
 static int ngx_[% subsystem %]_lua_ngx_req_get_post_args(lua_State *L);
@@ -230,6 +231,7 @@ ngx_[% subsystem %]_lua_ngx_req_get_post_args(lua_State *L)
 
     return retval;
 }
+[% END # http %]
 
 
 int
@@ -361,6 +363,7 @@ ngx_[% subsystem %]_lua_parse_args(lua_State *L, u_char *buf, u_char *last, int 
 }
 
 
+[% IF subsystem == 'http' %]
 void
 ngx_[% subsystem %]_lua_inject_req_args_api(lua_State *L)
 {
@@ -545,6 +548,7 @@ ngx_[% subsystem %]_lua_ffi_req_get_uri_args([% req_type %] *r, u_char *buf,
     return i;
 }
 #endif /* NGX_LUA_NO_FFI_API */
+[% END # http %]
 
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */
