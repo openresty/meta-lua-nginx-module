@@ -9,6 +9,11 @@
 #define _NGX_[% subsystem FILTER upper %]_LUA_COMMON_H_INCLUDED_
 
 
+[% IF subsystem == 'stream' %]
+#define NGX_LUA_NO_FFI_API
+[% END %]
+
+
 #include <nginx.h>
 #include <ngx_core.h>
 #include <ngx_[% subsystem %].h>
