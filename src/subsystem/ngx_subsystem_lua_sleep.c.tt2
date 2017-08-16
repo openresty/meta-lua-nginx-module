@@ -106,8 +106,14 @@ ngx_[% subsystem %]_lua_ngx_sleep(lua_State *L)
 void
 ngx_[% subsystem %]_lua_sleep_handler(ngx_event_t *ev)
 {
-[% IF subsystem == 'http' %]
+[% IF subsystem == 'stream' %]
+#if (NGX_DEBUG)
+[% END %]
+
     ngx_connection_t        *c;
+
+[% IF subsystem == 'stream' %]
+#endif
 [% END %]
 
     [% req_type %]      *r;
@@ -123,8 +129,14 @@ ngx_[% subsystem %]_lua_sleep_handler(ngx_event_t *ev)
 
     r = coctx->data;
 
-[% IF subsystem == 'http' %]
+[% IF subsystem == 'stream' %]
+#if (NGX_DEBUG)
+[% END %]
+
     c = r->connection;
+
+[% IF subsystem == 'stream' %]
+#endif
 [% END %]
 
     ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);

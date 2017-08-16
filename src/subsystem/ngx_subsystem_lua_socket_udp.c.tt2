@@ -447,8 +447,14 @@ ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
 {
     [% req_type %]                      *r;
 
-[% IF subsystem == 'http' %]
+[% IF subsystem == 'stream' %]
+#if (NGX_DEBUG)
+[% END %]
+
     ngx_connection_t                    *c;
+
+[% IF subsystem == 'stream' %]
+#endif
 [% END %]
 
     ngx_[% subsystem %]_upstream_resolved_t        *ur;
@@ -469,8 +475,14 @@ ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
     u = ctx->data;
     r = u->request;
 
-[% IF subsystem == 'http' %]
+[% IF subsystem == 'stream' %]
+#if (NGX_DEBUG)
+[% END %]
+
     c = r->connection;
+
+[% IF subsystem == 'stream' %]
+#endif
 [% END %]
 
     ur = u->resolved;
