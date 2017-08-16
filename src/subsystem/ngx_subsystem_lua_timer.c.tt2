@@ -937,7 +937,7 @@ ngx_[% subsystem %]_lua_abort_pending_timers(ngx_event_t *ev)
     ngx_event_timer_rbtree.root->parent = temp;
 
     ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
-                   "lua found %i pending timers to be aborted prematurely",
+                   "[% log_prefix %]lua found %i pending timers to be aborted prematurely",
                    n);
 
     for (i = 0; i < n; i++) {
