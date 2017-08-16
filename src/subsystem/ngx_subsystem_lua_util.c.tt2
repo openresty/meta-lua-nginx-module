@@ -38,6 +38,7 @@
 #include "ngx_[% subsystem %]_lua_timer.h"
 #include "ngx_[% subsystem %]_lua_config.h"
 #include "ngx_[% subsystem %]_lua_worker.h"
+#include "ngx_[% subsystem %]_lua_ssl.h"
 
 
 [% IF subsystem == 'http' %]
@@ -45,7 +46,6 @@
 #include "ngx_[% subsystem %]_lua_req_body.h"
 #include "ngx_[% subsystem %]_lua_headers.h"
 #include "ngx_[% subsystem %]_lua_ssl_certby.h"
-#include "ngx_[% subsystem %]_lua_ssl.h"
 #include "ngx_[% subsystem %]_lua_log_ringbuf.h"
 #include "ngx_[% subsystem %]_lua_setby.h"
 #include "ngx_[% subsystem %]_lua_headerfilterby.h"
@@ -3754,12 +3754,10 @@ ngx_[% subsystem %]_lua_finalize_fake_request([% req_type %] *r, ngx_int_t rc)
 {
     ngx_connection_t          *c;
 
-[% IF subsystem == 'http' %]
 #if (NGX_[% subsystem FILTER upper %]_SSL)
     ngx_ssl_conn_t            *ssl_conn;
     ngx_[% subsystem %]_lua_ssl_ctx_t    *cctx;
 #endif
-[% END %]
 
     c = r->connection;
 
@@ -3789,7 +3787,6 @@ ngx_[% subsystem %]_lua_finalize_fake_request([% req_type %] *r, ngx_int_t rc)
     if (rc == NGX_ERROR) {
 [% END %]
 
-[% IF subsystem == 'http' %]
 #if (NGX_[% subsystem FILTER upper %]_SSL)
 
         if (r->connection->ssl) {
@@ -3807,7 +3804,6 @@ ngx_[% subsystem %]_lua_finalize_fake_request([% req_type %] *r, ngx_int_t rc)
         }
 
 #endif
-[% END %]
 
         ngx_[% subsystem %]_lua_close_fake_request(r);
         return;
