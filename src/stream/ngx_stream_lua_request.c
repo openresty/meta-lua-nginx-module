@@ -4,6 +4,11 @@
 #include "ddebug.h"
 #include "ngx_stream_lua_common.h"
 #include "ngx_stream_lua_request.h"
+#include "ngx_stream_lua_contentby.h"
+
+
+static ngx_int_t ngx_stream_lua_set_write_handler(ngx_stream_lua_request_t *r);
+static void ngx_stream_lua_writer(ngx_stream_lua_request_t *r);
 
 
 ngx_stream_lua_cleanup_t *
@@ -172,6 +177,14 @@ ngx_stream_lua_finalize_real_request(ngx_stream_lua_request_t *r, ngx_int_t rc)
         goto cleanup;
     }
 
+    if (r->connection->buffered) {
+        if (ngx_stream_lua_set_write_handler(r) != NGX_OK) {
+            goto cleanup;
+        }
+
+        return;
+    }
+
 cleanup:
     cln = r->cleanup;
     r->cleanup = NULL;
@@ -193,4 +206,95 @@ cleanup:
 
     ngx_stream_finalize_session(s, NGX_STREAM_OK);
     return;
+}
+
+void
+ngx_stream_lua_request_empty_handler(ngx_stream_lua_request_t *r)
+{
+    ngx_log_debug0(NGX_LOG_DEBUG_STREAM, r->connection->log, 0,
+                   "stream request empty handler");
+
+    return;
+}
+
+static void
+ngx_stream_lua_writer(ngx_stream_lua_request_t *r)
+{
+    ngx_int_t                    rc;
+    ngx_event_t                 *wev;
+    ngx_connection_t            *c;
+    ngx_stream_lua_srv_conf_t   *lscf;
+
+    c = r->connection;
+    wev = c->write;
+
+    ngx_log_debug0(NGX_LOG_DEBUG_STREAM, wev->log, 0,
+                   "stream writer handler");
+
+    lscf = ngx_stream_lua_get_module_srv_conf(r, ngx_stream_lua_module);
+
+    if (wev->timedout) {
+        ngx_log_error(NGX_LOG_INFO, c->log, NGX_ETIMEDOUT,
+                      "client timed out");
+        c->timedout = 1;
+
+        ngx_stream_lua_finalize_real_request(r, NGX_ERROR);
+        return;
+    }
+
+    rc = ngx_stream_top_filter(r->session, NULL, 1);
+
+    ngx_log_debug1(NGX_LOG_DEBUG_STREAM, c->log, 0,
+                   "stream writer output filter: %i", rc);
+
+    if (rc == NGX_ERROR) {
+        ngx_stream_lua_finalize_real_request(r, rc);
+        return;
+    }
+
+    if (c->buffered) {
+        if (!wev->delayed) {
+            ngx_add_timer(wev, lscf->send_timeout);
+        }
+
+        if (ngx_handle_write_event(wev, lscf->send_lowat) != NGX_OK) {
+            ngx_stream_lua_finalize_real_request(r, NGX_ERROR);
+        }
+
+        return;
+    }
+
+    ngx_log_debug0(NGX_LOG_DEBUG_STREAM, wev->log, 0,
+                   "stream writer done");
+
+    r->write_event_handler = ngx_stream_lua_request_empty_handler;
+
+    ngx_stream_lua_finalize_real_request(r, rc);
+}
+
+static ngx_int_t
+ngx_stream_lua_set_write_handler(ngx_stream_lua_request_t *r)
+{
+    ngx_event_t                 *wev;
+    ngx_stream_lua_srv_conf_t   *lscf;
+
+    r->read_event_handler = ngx_stream_lua_request_empty_handler;
+    r->write_event_handler = ngx_stream_lua_writer;
+
+    wev = r->connection->write;
+
+    if (wev->ready && wev->delayed) {
+        return NGX_OK;
+    }
+
+    lscf = ngx_stream_lua_get_module_srv_conf(r, ngx_stream_lua_module);
+    if (!wev->delayed) {
+        ngx_add_timer(wev, lscf->send_timeout);
+    }
+
+    if (ngx_handle_write_event(wev, lscf->send_lowat) != NGX_OK) {
+        return NGX_ERROR;
+    }
+
+    return NGX_OK;
 }
