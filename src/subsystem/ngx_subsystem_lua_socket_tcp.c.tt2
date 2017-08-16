@@ -837,8 +837,12 @@ ngx_[% subsystem %]_lua_socket_empty_resolve_handler(ngx_resolver_ctx_t *ctx)
 static void
 ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
 {
-    [% req_type %]                  *r;
+    [% req_type %]                      *r;
+
+[% IF subsystem == 'http' %]
     ngx_connection_t                    *c;
+[% END %]
+
     ngx_[% subsystem %]_upstream_resolved_t        *ur;
     ngx_[% subsystem %]_lua_ctx_t                  *lctx;
     lua_State                           *L;
@@ -856,7 +860,11 @@ ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
 
     u = ctx->data;
     r = u->request;
+
+[% IF subsystem == 'http' %]
     c = r->connection;
+[% END %]
+
     ur = u->resolved;
 
     ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,

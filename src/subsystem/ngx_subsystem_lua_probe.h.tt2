@@ -10,7 +10,11 @@
 
 #include <ngx_config.h>
 #include <ngx_core.h>
+
+
+[% IF subsystem == 'http' %]
 #include <ngx_http.h>
+[% END %]
 
 
 #if defined(NGX_DTRACE) && NGX_DTRACE

@@ -10,7 +10,12 @@
 
 #include <nginx.h>
 #include <ngx_core.h>
+
+
+[% IF subsystem == 'http' %]
 #include <ngx_http.h>
+[% END %]
+
 
 #include <lua.h>
 #include <stdint.h>
