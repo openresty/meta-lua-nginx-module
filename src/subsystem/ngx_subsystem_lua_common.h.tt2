@@ -154,6 +154,7 @@ typedef struct {
 #define NGX_STREAM_LUA_CONTEXT_LOG                                  0x0002
 #define NGX_STREAM_LUA_CONTEXT_TIMER                                0x0004
 #define NGX_STREAM_LUA_CONTEXT_INIT_WORKER                          0x0008
+#define NGX_STREAM_LUA_CONTEXT_BALANCER                             0x0010
 [% END %]
 
 
@@ -166,13 +167,13 @@ typedef struct {
 typedef struct ngx_[% subsystem %]_lua_main_conf_s  ngx_[% subsystem %]_lua_main_conf_t;
 [% IF subsystem == 'http' %]
 typedef union ngx_http_lua_srv_conf_u  ngx_http_lua_srv_conf_t;
+[% ELSIF subsystem == 'stream' %]
+typedef struct ngx_stream_lua_srv_conf_s ngx_stream_lua_srv_conf_t;
 [% END %]
 
 
-[% IF subsystem == 'http' %]
-typedef struct ngx_http_lua_balancer_peer_data_s
-    ngx_http_lua_balancer_peer_data_t;
-[% END %]
+typedef struct ngx_[% subsystem %]_lua_balancer_peer_data_s
+    ngx_[% subsystem %]_lua_balancer_peer_data_t;
 
 
 typedef struct ngx_[% subsystem %]_lua_sema_mm_s  ngx_[% subsystem %]_lua_sema_mm_t;
@@ -180,10 +181,8 @@ typedef struct ngx_[% subsystem %]_lua_sema_mm_s  ngx_[% subsystem %]_lua_sema_m
 
 typedef ngx_int_t (*ngx_[% subsystem %]_lua_main_conf_handler_pt)(ngx_log_t *log,
     ngx_[% subsystem %]_lua_main_conf_t *lmcf, lua_State *L);
-[% IF subsystem == 'http' %]
 typedef ngx_int_t (*ngx_[% subsystem %]_lua_srv_conf_handler_pt)([% req_type %] *r,
     ngx_[% subsystem %]_lua_srv_conf_t *lscf, lua_State *L);
-[% END %]
 
 
 typedef struct {
@@ -237,13 +236,11 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
     ngx_[% subsystem %]_lua_main_conf_handler_pt    init_worker_handler;
     ngx_str_t                            init_worker_src;
 
-[% IF subsystem == 'http' %]
-    ngx_http_lua_balancer_peer_data_t      *balancer_peer_data;
-                    /* balancer_by_lua does not support yielding and
-                     * there cannot be any conflicts among concurrent requests,
-                     * thus it is safe to store the peer data in the main conf.
-                     */
-[% END %]
+    ngx_[% subsystem %]_lua_balancer_peer_data_t    *balancer_peer_data;
+    /* balancer_by_lua does not support yielding and
+     * there cannot be any conflicts among concurrent requests,
+     * thus it is safe to store the peer data in the main conf.
+     */
 
     ngx_uint_t                      shm_zones_inited;
 
@@ -304,7 +301,11 @@ union ngx_http_lua_srv_conf_u {
 [% END %]
 
 
-typedef struct {
+[% IF subsystem == 'http' %]
+typedef struct ngx_http_lua_loc_conf_s {
+[% ELSIF subsystem == 'stream' %]
+struct ngx_stream_lua_srv_conf_s {
+[% END %]
 #if (NGX_[% subsystem FILTER upper %]_SSL)
     ngx_ssl_t              *ssl;  /* shared by SSL cosockets */
     ngx_uint_t              ssl_protocols;
@@ -397,10 +398,19 @@ typedef struct {
     ngx_flag_t                       use_default_type;
 [% END %]
 
+[%- IF subsystem == 'stream' -%]
+    struct {
+        ngx_str_t           src;
+        u_char             *src_key;
+
+        ngx_[% subsystem %]_lua_srv_conf_handler_pt  handler;
+    } balancer;
+[% END -%]
+
 [% IF subsystem == 'http' %]
 } ngx_http_lua_loc_conf_t;
 [% ELSIF subsystem == 'stream' %]
-} ngx_stream_lua_srv_conf_t;
+};
 
 typedef ngx_stream_lua_srv_conf_t ngx_stream_lua_loc_conf_t;
 [% END %]
