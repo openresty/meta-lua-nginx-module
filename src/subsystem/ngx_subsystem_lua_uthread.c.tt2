@@ -125,11 +125,14 @@ ngx_[% subsystem %]_lua_uthread_wait(lua_State *L)
 
     ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
 
-[% IF subsystem == 'http' %]
+[% IF subsystem == 'http' -%]
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-[% END %]
+
+[% ELSIF subsystem == 'stream' -%]
+                               | NGX_STREAM_LUA_CONTEXT_PREREAD
+[% END -%]
 
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER);
 
@@ -227,11 +230,14 @@ ngx_[% subsystem %]_lua_uthread_kill(lua_State *L)
 
     ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
 
-[% IF subsystem == 'http' %]
+[% IF subsystem == 'http' -%]
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-[% END %]
+
+[% ELSIF subsystem == 'stream' -%]
+                               | NGX_STREAM_LUA_CONTEXT_PREREAD
+[% END -%]
 
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER);
 

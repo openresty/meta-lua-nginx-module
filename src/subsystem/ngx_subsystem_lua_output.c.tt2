@@ -66,14 +66,15 @@ ngx_[% subsystem %]_lua_ngx_echo(lua_State *L, unsigned newline)
         return luaL_error(L, "no request ctx found");
     }
 
-[% IF subsystem == 'http' %]
+[% IF subsystem == 'http' -%]
     ngx_http_lua_check_context(L, ctx, NGX_HTTP_LUA_CONTEXT_REWRITE
                                | NGX_HTTP_LUA_CONTEXT_ACCESS
                                | NGX_HTTP_LUA_CONTEXT_CONTENT);
 
-[% ELSIF subsystem == 'stream' %]
-    ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT);
-[% END %]
+[% ELSIF subsystem == 'stream' -%]
+    ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT
+                                 | NGX_STREAM_LUA_CONTEXT_PREREAD);
+[% END -%]
 
 [% IF subsystem == 'http' %]
     if (ctx->acquired_raw_req_socket) {
@@ -515,7 +516,8 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
                                | NGX_HTTP_LUA_CONTEXT_CONTENT);
 
 [% ELSIF subsystem == 'stream' %]
-    ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT);
+    ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT
+                                 | NGX_STREAM_LUA_CONTEXT_PREREAD);
 [% END %]
 
 [% IF subsystem == 'http' %]
@@ -605,20 +607,17 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
         coctx->flushing = 1;
         ctx->flushing_coros++;
 
-[% IF subsystem == 'http' %]
         if (ctx->entered_content_phase) {
             /* mimic ngx_http_set_write_handler */
-            r->write_event_handler = ngx_http_lua_content_wev_handler;
+            r->write_event_handler = ngx_[% subsystem %]_lua_content_wev_handler;
 
         } else {
-            r->write_event_handler = ngx_http_core_run_phases;
+            r->write_event_handler = ngx_[% req_subsystem %]_core_run_phases;
         }
-[% ELSIF subsystem == 'stream' %]
-        r->write_event_handler = ngx_stream_lua_content_wev_handler;
-[% END %]
 
 [% IF subsystem == 'http' %]
         cllscf = ngx_http_get_module_loc_conf(r->main, ngx_http_core_module);
+
 [% ELSIF subsystem == 'stream' %]
         cllscf = ngx_stream_lua_get_module_srv_conf(r, ngx_stream_lua_module);
 [% END %]
@@ -698,7 +697,8 @@ ngx_[% subsystem %]_lua_ngx_eof(lua_State *L)
                                | NGX_HTTP_LUA_CONTEXT_CONTENT);
 
 [% ELSIF subsystem == 'stream' %]
-    ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT);
+    ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT
+                                 | NGX_STREAM_LUA_CONTEXT_PREREAD);
 [% END %]
 
     ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
