@@ -97,18 +97,20 @@ extern char ngx_[% subsystem %]_lua_headers_metatable_key;
      : "(unknown)")
 [% ELSIF subsystem == 'stream' %]
 #define ngx_stream_lua_context_name(c)                                         \
-    ((c) == NGX_STREAM_LUA_CONTEXT_CONTENT ? "content_by_lua*"               \
+    ((c) == NGX_STREAM_LUA_CONTEXT_CONTENT ? "content_by_lua*"                 \
+     : (c) == NGX_STREAM_LUA_CONTEXT_LOG ? "log_by_lua*"                       \
      : (c) == NGX_STREAM_LUA_CONTEXT_TIMER ? "ngx.timer"                       \
      : (c) == NGX_STREAM_LUA_CONTEXT_INIT_WORKER ? "init_worker_by_lua*"       \
      : (c) == NGX_STREAM_LUA_CONTEXT_BALANCER ? "balancer_by_lua*"             \
+     : (c) == NGX_STREAM_LUA_CONTEXT_PREREAD ? "preread_by_lua*"               \
      : "(unknown)")
 [% END %]
 
 
-#define ngx_[% subsystem %]_lua_check_context(L, ctx, flags)                            \
-    if (!((ctx)->context & (flags))) {                                       \
-        return luaL_error(L, "API disabled in the context of %s",            \
-                          ngx_[% subsystem %]_lua_context_name((ctx)->context));        \
+#define ngx_[% subsystem %]_lua_check_context(L, ctx, flags)                     \
+    if (!((ctx)->context & (flags))) {                                           \
+        return luaL_error(L, "API disabled in the context of %s",                \
+                          ngx_[% subsystem %]_lua_context_name((ctx)->context)); \
     }
 
 

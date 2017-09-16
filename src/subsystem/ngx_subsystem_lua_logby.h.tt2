@@ -1,0 +1,26 @@
+
+/*
+ * Copyright (C) Yichun Zhang (agentzh)
+ */
+
+
+#ifndef _NGX_[% subsystem FILTER upper %]_LUA_LOGBY_H_INCLUDED_
+#define _NGX_[% subsystem FILTER upper %]_LUA_LOGBY_H_INCLUDED_
+
+
+#include "ngx_[% subsystem %]_lua_common.h"
+
+
+[% IF subsystem == 'http' -%]
+ngx_int_t ngx_http_lua_log_handler(ngx_http_request_t *r);
+[% ELSIF subsystem == 'stream' -%]
+ngx_int_t ngx_stream_lua_log_handler(ngx_stream_session_t *r);
+[% END -%]
+
+ngx_int_t ngx_[% subsystem %]_lua_log_handler_inline([% req_type %] *r);
+ngx_int_t ngx_[% subsystem %]_lua_log_handler_file([% req_type %] *r);
+
+
+#endif /* _NGX_[% subsystem FILTER upper %]_LUA_LOGBY_H_INCLUDED_ */
+
+/* vi:set ft=c ts=4 sw=4 et fdm=marker: */

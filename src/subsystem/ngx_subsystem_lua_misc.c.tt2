@@ -65,14 +65,11 @@ ngx_[% subsystem %]_lua_ngx_req_is_internal(lua_State *L)
 static int
 ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
 {
-[% IF subsystem == 'http' %]
-    int                          status;
-[% END %]
-
-    [% req_type %]          *r;
-    u_char                      *p;
-    size_t                       len;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
+    int                             status;
+    [% req_type %]                 *r;
+    u_char                         *p;
+    size_t                          len;
+    ngx_[% subsystem %]_lua_ctx_t  *ctx;
 
     r = ngx_[% subsystem %]_lua_get_req(L);
     if (r == NULL) {
@@ -90,12 +87,12 @@ ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
 
     dd("ngx get %s", p);
 
-[% IF subsystem == 'http' %]
     if (len == sizeof("status") - 1
         && ngx_strncmp(p, "status", sizeof("status") - 1) == 0)
     {
         ngx_[% subsystem %]_lua_check_fake_request(L, r);
 
+[% IF subsystem == 'http' -%]
         if (r->err_status) {
             status = r->err_status;
 
@@ -109,10 +106,15 @@ ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
             status = 0;
         }
 
+[% ELSIF subsystem == 'stream' -%]
+    /* same as $status */
+
+    status = r->session->status;
+[% END -%]
+
         lua_pushinteger(L, status);
         return 1;
     }
-[% END %]
 
     if (len == sizeof("ctx") - 1
         && ngx_strncmp(p, "ctx", sizeof("ctx") - 1) == 0)
