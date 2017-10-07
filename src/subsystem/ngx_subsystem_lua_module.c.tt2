@@ -160,7 +160,8 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       NULL },
 
     { ngx_string("lua_code_cache"),
-      [% lowest_level_conf_flags %]|NGX_CONF_FLAG,
+      [% lowest_level_conf_flags %]
+          |NGX_CONF_FLAG,
       ngx_[% subsystem %]_lua_code_cache,
 [% IF subsystem == 'http' %]
       NGX_HTTP_LOC_CONF_OFFSET,
@@ -189,7 +190,8 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
 [% END %]
 
      { ngx_string("lua_socket_log_errors"),
-      [% lowest_level_conf_flags %]|NGX_CONF_FLAG,
+      [% lowest_level_conf_flags %]
+          |NGX_CONF_FLAG,
       ngx_conf_set_flag_slot,
 [% IF subsystem == 'http' %]
       NGX_HTTP_LOC_CONF_OFFSET,
@@ -499,49 +501,56 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
 [% END %]
 
     { ngx_string("lua_socket_keepalive_timeout"),
-      [% lowest_level_conf_flags %]|NGX_CONF_TAKE1,
+      [% lowest_level_conf_flags %]
+          |NGX_CONF_TAKE1,
       ngx_conf_set_msec_slot,
       [% lua_socket_offset %],
       offsetof([% lua_socket_conf_t %], keepalive_timeout),
       NULL },
 
     { ngx_string("lua_socket_connect_timeout"),
-      [% lowest_level_conf_flags %]|NGX_CONF_TAKE1,
+      [% lowest_level_conf_flags %]
+          |NGX_CONF_TAKE1,
       ngx_conf_set_msec_slot,
       [% lua_socket_offset %],
       offsetof([% lua_socket_conf_t %], connect_timeout),
       NULL },
 
     { ngx_string("lua_socket_send_timeout"),
-      [% lowest_level_conf_flags %]|NGX_CONF_TAKE1,
+      [% lowest_level_conf_flags %]
+          |NGX_CONF_TAKE1,
       ngx_conf_set_msec_slot,
       [% lua_socket_offset %],
       offsetof([% lua_socket_conf_t %], send_timeout),
       NULL },
 
     { ngx_string("lua_socket_send_lowat"),
-      [% lowest_level_conf_flags %]|NGX_CONF_TAKE1,
+      [% lowest_level_conf_flags %]
+          |NGX_CONF_TAKE1,
       ngx_conf_set_size_slot,
       [% lua_socket_offset %],
       offsetof([% lua_socket_conf_t %], send_lowat),
       &ngx_[% subsystem %]_lua_lowat_post },
 
     { ngx_string("lua_socket_buffer_size"),
-      [% lowest_level_conf_flags %]|NGX_CONF_TAKE1,
+      [% lowest_level_conf_flags %]
+          |NGX_CONF_TAKE1,
       ngx_conf_set_size_slot,
       [% lua_socket_offset %],
       offsetof([% lua_socket_conf_t %], buffer_size),
       NULL },
 
     { ngx_string("lua_socket_pool_size"),
-      [% lowest_level_conf_flags %]|NGX_CONF_TAKE1,
+      [% lowest_level_conf_flags %]
+          |NGX_CONF_TAKE1,
       ngx_conf_set_num_slot,
       [% lua_socket_offset %],
       offsetof([% lua_socket_conf_t %], pool_size),
       NULL },
 
     { ngx_string("lua_socket_read_timeout"),
-      [% lowest_level_conf_flags %]|NGX_CONF_TAKE1,
+      [% lowest_level_conf_flags %]
+          |NGX_CONF_TAKE1,
       ngx_conf_set_msec_slot,
       [% lua_socket_offset %],
       offsetof([% lua_socket_conf_t %], read_timeout),
@@ -558,7 +567,8 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
 [% END %]
 
     { ngx_string("lua_check_client_abort"),
-      [% lowest_level_conf_flags %]|NGX_CONF_FLAG,
+      [% lowest_level_conf_flags %]
+          |NGX_CONF_FLAG,
       ngx_conf_set_flag_slot,
       [% lua_socket_offset %],
       offsetof([% lua_socket_conf_t %], check_client_abort),
