@@ -107,17 +107,18 @@ extern char ngx_[% subsystem %]_lua_headers_metatable_key;
 [% END %]
 
 
-#define ngx_[% subsystem %]_lua_check_context(L, ctx, flags)                     \
-    if (!((ctx)->context & (flags))) {                                           \
-        return luaL_error(L, "API disabled in the context of %s",                \
-                          ngx_[% subsystem %]_lua_context_name((ctx)->context)); \
+#define ngx_[% subsystem %]_lua_check_context(L, ctx, flags)                   \
+    if (!((ctx)->context & (flags))) {                                         \
+        return luaL_error(L, "API disabled in the context of %s",              \
+                          ngx_[% subsystem %]_lua_context_name((ctx)           \
+                                                                   ->context));\
     }
 
 
 #ifndef NGX_LUA_NO_FFI_API
 static ngx_inline ngx_int_t
-ngx_[% subsystem %]_lua_ffi_check_context(ngx_[% subsystem %]_lua_ctx_t *ctx, unsigned flags,
-    u_char *err, size_t *errlen)
+ngx_[% subsystem %]_lua_ffi_check_context(ngx_[% subsystem %]_lua_ctx_t *ctx,
+    unsigned flags, u_char *err, size_t *errlen)
 {
     if (!(ctx->context & flags)) {
         *errlen = ngx_snprintf(err, *errlen,
@@ -218,7 +219,7 @@ ngx_[% subsystem %]_lua_co_ctx_t *ngx_[% subsystem %]_lua_create_co_ctx([% req_t
     ngx_[% subsystem %]_lua_ctx_t *ctx);
 
 ngx_int_t ngx_[% subsystem %]_lua_run_posted_threads(ngx_connection_t *c, lua_State *L,
-    [% req_type %] *r, ngx_[% subsystem %]_lua_ctx_t *ctx);
+    [% req_type %] *r, ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_uint_t nreqs);
 
 ngx_int_t ngx_[% subsystem %]_lua_post_thread([% req_type %] *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_[% subsystem %]_lua_co_ctx_t *coctx);
