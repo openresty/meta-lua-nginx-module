@@ -1496,7 +1496,7 @@ user_co_done:
                 return (r->header_sent || ctx->header_sent) ? NGX_ERROR :
                        NGX_HTTP_INTERNAL_SERVER_ERROR;
 [% ELSIF subsystem == 'stream' %]
-                return NGX_ERROR;
+                return NGX_STREAM_INTERNAL_SERVER_ERROR;
 [% END %]
             }
 
@@ -1557,7 +1557,7 @@ no_parent:
     return (r->header_sent || ctx->header_sent) ?
                 NGX_ERROR : NGX_HTTP_INTERNAL_SERVER_ERROR;
 [% ELSIF subsystem == 'stream' %]
-    return NGX_ERROR;
+    return NGX_STREAM_INTERNAL_SERVER_ERROR;
 [% END %]
 
 done:
@@ -3438,11 +3438,7 @@ ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *
             event = ev->write ? NGX_WRITE_EVENT : NGX_READ_EVENT;
 
             if (ngx_del_event(ev, event, 0) != NGX_OK) {
-[% IF subsystem == 'http' %]
-                return NGX_HTTP_INTERNAL_SERVER_ERROR;
-[% ELSIF subsystem == 'stream' %]
-                return NGX_ERROR;
-[% END %]
+                return NGX_[% subsystem FILTER upper %]_INTERNAL_SERVER_ERROR;
             }
         }
 
@@ -3509,12 +3505,7 @@ ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *
 
 #if 1
         if (ngx_del_event(ev, event, 0) != NGX_OK) {
-[% IF subsystem == 'http' %]
-            return NGX_HTTP_INTERNAL_SERVER_ERROR;
-
-[% ELSIF subsystem == 'stream' %]
-            return NGX_ERROR;
-[% END %]
+            return NGX_[% subsystem FILTER upper %]_INTERNAL_SERVER_ERROR;
         }
 #endif
     }
@@ -3593,13 +3584,8 @@ ngx_[% subsystem %]_lua_rd_check_broken_connection([% req_type %] *r)
             if (ngx_del_event(rev, NGX_READ_EVENT, 0) != NGX_OK) {
                 ngx_[% subsystem %]_lua_request_cleanup(ctx, 0);
 
-[% IF subsystem == 'http' %]
                 ngx_[% subsystem %]_lua_finalize_request(r,
-                                              NGX_HTTP_INTERNAL_SERVER_ERROR);
-[% ELSIF subsystem == 'stream' %]
-                ngx_[% subsystem %]_lua_finalize_request(r,
-                                              NGX_STREAM_INTERNAL_SERVER_ERROR);
-[% END %]
+                    NGX_[% subsystem FILTER upper %]_INTERNAL_SERVER_ERROR);
                 return;
             }
         }
@@ -3781,7 +3767,7 @@ ngx_[% subsystem %]_lua_finalize_fake_request([% req_type %] *r, ngx_int_t rc)
     if (rc == NGX_ERROR || rc >= NGX_HTTP_SPECIAL_RESPONSE) {
 
 [% ELSIF subsystem == 'stream' %]
-    if (rc == NGX_ERROR) {
+    if (rc == NGX_ERROR || rc >= NGX_STREAM_BAD_REQUEST) {
 [% END %]
 
 #if (NGX_[% subsystem FILTER upper %]_SSL)
