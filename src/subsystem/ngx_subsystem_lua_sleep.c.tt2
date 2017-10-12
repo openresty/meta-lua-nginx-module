@@ -176,7 +176,9 @@ ngx_[% subsystem %]_lua_sleep_handler(ngx_event_t *ev)
         ngx_[% req_subsystem %]_core_run_phases(r);
     }
 
+[% IF subsystem == 'http' -%]
     ngx_[% subsystem %]_run_posted_requests(c);
+[% END -%]
 }
 
 
