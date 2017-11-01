@@ -1343,21 +1343,20 @@ ngx_[% subsystem %]_lua_socket_udp_cleanup(void *data)
 static void
 ngx_[% subsystem %]_lua_socket_udp_handler(ngx_event_t *ev)
 {
-    ngx_connection_t                *c;
-    [% req_type %]              *r;
-
-[% IF subsystem == 'http' %]
-    ngx_http_log_ctx_t              *ctx;
-[% END %]
-
+    [% req_type %]                                 *r;
     ngx_[% subsystem %]_lua_socket_udp_upstream_t  *u;
+    ngx_connection_t                               *c;
+
+[% IF subsystem == 'http' -%]
+    ngx_http_log_ctx_t                             *ctx;
+[% END -%]
 
     c = ev->data;
     u = c->data;
     r = u->request;
     c = r->connection;
 
-[% IF subsystem == 'http' %]
+[% IF subsystem == 'http' -%]
     if (c->fd != (ngx_socket_t) -1) {  /* not a fake connection */
         ctx = c->log->data;
         ctx->current_request = r;
@@ -1367,9 +1366,9 @@ ngx_[% subsystem %]_lua_socket_udp_handler(ngx_event_t *ev)
                    "lua udp socket handler for \"%V?%V\", wev %d", &r->uri,
                    &r->args, (int) ev->write);
 
-[% ELSIF subsystem == 'http' %]
+[% ELSIF subsystem == 'stream' %]
     ngx_log_debug1(NGX_LOG_DEBUG_STREAM, c->log, 0,
-                   "lua udp socket handler for wev %d", (int) ev->write);
+                   "lua udp socket handler: wev %d", (int) ev->write);
 [% END %]
 
     u->read_event_handler(r, u);
