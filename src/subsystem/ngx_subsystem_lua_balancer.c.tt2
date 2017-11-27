@@ -415,7 +415,11 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
 [%- END %]
         }
 
+[%- IF subsystem == 'http' %]
         dd("tries: %d", (int) r->upstream->peer.tries);
+[%- ELSIF subsystem == 'stream' %]
+        dd("tries: %d", (int) r->session->upstream->peer.tries);
+[%- END %]
 
         return NGX_OK;
     }
