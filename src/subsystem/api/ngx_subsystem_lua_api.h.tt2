@@ -24,7 +24,7 @@
 /* Public API for other Nginx modules */
 
 
-#define ngx_[% subsystem %]_lua_version  10011
+#define ngx_[% subsystem %]_lua_version  10012
 
 
 typedef struct {
