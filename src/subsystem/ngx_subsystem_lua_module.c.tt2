@@ -692,6 +692,15 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       0,
       NULL },
 
+[% IF subsystem == 'stream' -%]
+     { ngx_string("lua_add_variable"),
+      NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE1,
+      ngx_stream_lua_add_variable,
+      0,
+      0,
+      NULL },
+[% END -%]
+
     ngx_null_command
 };
 
