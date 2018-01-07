@@ -1453,7 +1453,7 @@ ngx_[% subsystem %]_lua_socket_tcp_sslhandshake(lua_State *L)
                     return 2;
                 }
 
-                ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
+                ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
                                "[% log_prefix %]lua ssl set session: %p", *psession);
             }
         }
@@ -1724,7 +1724,7 @@ ngx_[% subsystem %]_lua_ssl_handshake_retval_handler([% req_type %] *r,
     } else {
         *ud = ssl_session;
 
-       ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
+       ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
                       "[% log_prefix %]lua ssl save session: %p", ssl_session);
 
         /* set up the __gc metamethod */
@@ -5761,7 +5761,7 @@ ngx_[% subsystem %]_lua_ssl_free_session(lua_State *L)
 
     psession = lua_touserdata(L, 1);
     if (psession && *psession != NULL) {
-        ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+        ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
                        "[% log_prefix %]lua ssl free session: %p", *psession);
 
         ngx_ssl_free_session(*psession);
