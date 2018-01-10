@@ -387,7 +387,8 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
 #ifdef HAVE_BALANCER_STATUS_CODE_PATCH
             || rc >= NGX_[% subsystem FILTER upper %]_SPECIAL_RESPONSE
 #endif
-        ) {
+        )
+    {
             return rc;
         }
 
