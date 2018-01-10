@@ -384,11 +384,9 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
         if (rc == NGX_ERROR
             || rc == NGX_BUSY
             || rc == NGX_DECLINED
-[%- IF subsystem == 'http' %]
 #ifdef HAVE_BALANCER_STATUS_CODE_PATCH
-            || rc >= NGX_HTTP_SPECIAL_RESPONSE
+            || rc >= NGX_[% subsystem FILTER upper %]_SPECIAL_RESPONSE
 #endif
-[% END -%]
         ) {
             return rc;
         }
