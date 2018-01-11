@@ -395,7 +395,7 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       0,
       (void *) ngx_[% subsystem %]_lua_log_handler_file },
 
-[% IF subsystem == 'http' %]
+[% IF subsystem == 'http' -%]
     { ngx_string("rewrite_by_lua_file"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
@@ -476,7 +476,15 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
       (void *) ngx_[% subsystem %]_lua_body_filter_file },
-[% END %]
+
+[% ELSIF subsystem == 'stream' -%]
+    { ngx_string("preread_by_lua_no_postpone"),
+      NGX_STREAM_MAIN_CONF|NGX_CONF_FLAG,
+      ngx_conf_set_flag_slot,
+      NGX_STREAM_MAIN_CONF_OFFSET,
+      offsetof(ngx_stream_lua_main_conf_t, postponed_to_preread_phase_end),
+      NULL },
+[% END -%]
 
     { ngx_string("balancer_by_lua_block"),
       NGX_[% subsystem FILTER upper %]_UPS_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
@@ -813,6 +821,10 @@ ngx_[% subsystem %]_lua_init(ngx_conf_t *cf)
 
         *h = ngx_[% subsystem %]_lua_preread_handler;
     }
+
+    if (lmcf->postponed_to_preread_phase_end == NGX_CONF_UNSET) {
+        lmcf->postponed_to_preread_phase_end = 0;
+    }
 [% END # http -%]
 
     dd("requires log: %d", (int) lmcf->requires_log);
@@ -991,10 +1003,13 @@ ngx_[% subsystem %]_lua_create_main_conf(ngx_conf_t *cf)
     lmcf->regex_match_limit = NGX_CONF_UNSET;
 #endif
 
-[% IF subsystem == 'http' %]
+[% IF subsystem == 'http' -%]
     lmcf->postponed_to_rewrite_phase_end = NGX_CONF_UNSET;
     lmcf->postponed_to_access_phase_end = NGX_CONF_UNSET;
-[% END %]
+
+[% ELSIF subsystem == 'stream' -%]
+    lmcf->postponed_to_preread_phase_end = NGX_CONF_UNSET;
+[% END -%]
 
 #if (NGX_[% subsystem FILTER upper %]_LUA_HAVE_MALLOC_TRIM)
     lmcf->malloc_trim_cycle = NGX_CONF_UNSET_UINT;
