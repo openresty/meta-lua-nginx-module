@@ -2202,10 +2202,7 @@ ngx_[% subsystem %]_lua_socket_tcp_read([% req_type %] *r,
     size_t                       size;
     ssize_t                      n;
     unsigned                     read;
-
-[% IF subsystem == 'http' %]
     off_t                        preread = 0;
-[% END  %]
 
     ngx_[% subsystem %]_lua_loc_conf_t     *llcf;
 
@@ -2241,12 +2238,10 @@ ngx_[% subsystem %]_lua_socket_tcp_read([% req_type %] *r,
                                (int) u->read_waiting, (int) u->eof);
 [% END %]
 
+[% IF subsystem == 'http' -%]
                 if (u->body_downstream
                     && b->last == b->pos
-[% IF subsystem == 'http' %]
-                    && r->request_body->rest == 0
-[% END %]
-                )
+                    && r->request_body->rest == 0)
                 {
 
                     llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
@@ -2258,12 +2253,7 @@ ngx_[% subsystem %]_lua_socket_tcp_read([% req_type %] *r,
                             goto success;
                         }
 
-[% IF subsystem == 'http' %]
                         if (rc == NGX_HTTP_CLIENT_CLOSED_REQUEST) {
-
-[% ELSIF subsystem == 'stream' %]
-                        if (rc == NGX_ERROR) {
-[% END %]
                             ngx_[% subsystem %]_lua_socket_handle_read_error(r, u,
                                           NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_CLIENTABORT);
 
@@ -2275,6 +2265,7 @@ ngx_[% subsystem %]_lua_socket_tcp_read([% req_type %] *r,
                         return NGX_ERROR;
                     }
                 }
+[% END -%]
 
 #if 1
                 if (ngx_handle_read_event(rev, 0) != NGX_OK) {
@@ -2284,7 +2275,9 @@ ngx_[% subsystem %]_lua_socket_tcp_read([% req_type %] *r,
                 }
 #endif
 
+[% IF subsystem == 'http' -%]
 success:
+[% END -%]
 
                 ngx_[% subsystem %]_lua_socket_handle_read_success(r, u);
                 return NGX_OK;
@@ -2301,14 +2294,13 @@ success:
 
             /* rc == NGX_AGAIN */
 
+[% IF subsystem == 'http' -%]
             if (u->body_downstream
-[% IF subsystem == 'http' %]
-                && r->request_body->rest == 0
-[% END %]
-            )
+                && r->request_body->rest == 0)
             {
                 u->eof = 1;
             }
+[% END -%]
 
             continue;
         }
@@ -2333,9 +2325,15 @@ success:
             size = (size_t) (b->end - b->last);
         }
 
-[% IF subsystem == 'http' %]
         if (u->raw_downstream) {
+[% IF subsystem == 'http' -%]
             preread = r->header_in->last - r->header_in->pos;
+
+[% ELSIF subsystem == 'stream' -%]
+            if (r->connection->buffer != NULL) {
+                preread = ngx_buf_size(r->connection->buffer);
+            }
+[% END -%]
 
             if (preread) {
 
@@ -2344,14 +2342,26 @@ success:
                 }
 
                 ngx_[% subsystem %]_lua_probe_req_socket_consume_preread(r,
-                                                              r->header_in->pos,
-                                                              size);
+[% IF subsystem == 'http' -%]
+                                                                         r->header_in->pos,
 
+[% ELSIF subsystem == 'stream' -%]
+                                                                         r->connection->buffer->pos,
+[% END -%]
+                                                                         size);
+
+[% IF subsystem == 'http' -%]
                 b->last = ngx_copy(b->last, r->header_in->pos, size);
                 r->header_in->pos += size;
+
+[% ELSIF subsystem == 'stream' -%]
+                b->last = ngx_copy(b->last, r->connection->buffer->pos, size);
+                r->connection->buffer->pos += size;
+[% END -%]
                 continue;
             }
 
+[% IF subsystem == 'http' -%]
         } else if (u->body_downstream) {
 
             if (r->request_body->rest == 0) {
@@ -2404,8 +2414,9 @@ success:
             if (size > (size_t) r->request_body->rest) {
                 size = (size_t) r->request_body->rest;
             }
+
+[% END -%]
         }
-[% END %]
 
 #if 1
         if (rev->active && !rev->ready) {
