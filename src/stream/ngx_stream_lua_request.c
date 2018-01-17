@@ -193,7 +193,6 @@ ngx_stream_lua_block_reading(ngx_stream_lua_request_t *r)
 void
 ngx_stream_lua_finalize_real_request(ngx_stream_lua_request_t *r, ngx_int_t rc)
 {
-    ngx_stream_lua_cleanup_t  *cln;
 #if 0
     ngx_pool_t                *pool;
 #endif
