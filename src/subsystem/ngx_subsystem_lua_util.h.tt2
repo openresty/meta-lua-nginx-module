@@ -65,7 +65,7 @@ extern char ngx_[% subsystem %]_lua_headers_metatable_key;
 #endif
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #ifndef NGX_HTTP_SWITCHING_PROTOCOLS
 #define NGX_HTTP_SWITCHING_PROTOCOLS 101
 #endif
@@ -77,7 +77,7 @@ extern char ngx_[% subsystem %]_lua_headers_metatable_key;
 #endif
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #define ngx_http_lua_context_name(c)                                         \
     ((c) == NGX_HTTP_LUA_CONTEXT_SET ? "set_by_lua*"                         \
      : (c) == NGX_HTTP_LUA_CONTEXT_REWRITE ? "rewrite_by_lua*"               \
@@ -95,7 +95,7 @@ extern char ngx_[% subsystem %]_lua_headers_metatable_key;
      : (c) == NGX_HTTP_LUA_CONTEXT_SSL_SESS_FETCH ?                          \
                                                  "ssl_session_fetch_by_lua*" \
      : "(unknown)")
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 #define ngx_stream_lua_context_name(c)                                         \
     ((c) == NGX_STREAM_LUA_CONTEXT_CONTENT ? "content_by_lua*"                 \
      : (c) == NGX_STREAM_LUA_CONTEXT_LOG ? "log_by_lua*"                       \
@@ -250,14 +250,14 @@ void ngx_[% subsystem %]_lua_cleanup_vm(void *data);
 
 ngx_connection_t *ngx_[% subsystem %]_lua_create_fake_connection(ngx_pool_t *pool);
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 ngx_http_request_t *ngx_[% subsystem %]_lua_create_fake_request(ngx_connection_t *c);
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 ngx_stream_lua_request_t *
     ngx_[% subsystem %]_lua_create_fake_request(ngx_stream_session_t *s);
 [% END %]
 
-[% IF subsystem == 'stream' %]
+[% IF stream_subsys %]
 ngx_stream_session_t *ngx_stream_lua_create_fake_session(ngx_connection_t *c);
 [% END %]
 
@@ -266,14 +266,14 @@ ngx_int_t ngx_[% subsystem %]_lua_report(ngx_log_t *log, lua_State *L, int statu
 
 int ngx_[% subsystem %]_lua_do_call(ngx_log_t *log, lua_State *L);
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 [% cleanup = 'ngx_http_cleanup' %]
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 [% cleanup = 'ngx_stream_lua_cleanup' %]
 [% END %]
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 [% cleanup %]_t *ngx_[% subsystem %]_lua_cleanup_add([% req_type %] *r,
     size_t size);
 [% END %]
@@ -300,9 +300,9 @@ ngx_[% subsystem %]_lua_init_ctx([% req_type %] *r, ngx_[% subsystem %]_lua_ctx_
 
 
 static ngx_inline ngx_[% subsystem %]_lua_ctx_t *
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 ngx_http_lua_create_ctx(ngx_http_request_t *r)
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 ngx_stream_lua_create_ctx(ngx_stream_session_t *r)
 [% END %]
 {
@@ -312,18 +312,18 @@ ngx_stream_lua_create_ctx(ngx_stream_session_t *r)
     ngx_[% subsystem %]_lua_loc_conf_t     *llcf;
     ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
 
-[% IF subsystem == 'stream' %]
+[% IF stream_subsys %]
     ngx_stream_lua_request_t               *sreq;
 [% END %]
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ctx = ngx_palloc(r->pool, sizeof(ngx_http_lua_ctx_t));
 
     if (ctx == NULL) {
         return NULL;
     }
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ctx = ngx_palloc(r->connection->pool, sizeof(ngx_stream_lua_ctx_t));
     if (ctx == NULL) {
         return NULL;
@@ -336,17 +336,17 @@ ngx_stream_lua_create_ctx(ngx_stream_session_t *r)
     }
 [% END %]
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_http_lua_init_ctx(r, ctx);
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_stream_lua_init_ctx(sreq, ctx);
 [% END %]
 
     ngx_[% subsystem %]_set_ctx(r, ctx, ngx_[% subsystem %]_lua_module);
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     llcf = ngx_http_get_module_loc_conf(r, ngx_http_lua_module);
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     llcf = ngx_stream_get_module_srv_conf(r, ngx_stream_lua_module);
 [% END %]
 
@@ -355,11 +355,11 @@ ngx_stream_lua_create_ctx(ngx_stream_session_t *r)
 
         dd("lmcf: %p", lmcf);
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
         L = ngx_http_lua_init_vm(lmcf->lua, lmcf->cycle, r->pool, lmcf,
                                  r->connection->log, &cln);
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
         /*
          * caveats: we need to move the vm cleanup hook to the list end
          * to ensure it will be executed *after* the request cleanup
@@ -481,7 +481,7 @@ ngx_[% subsystem %]_lua_hash_str(u_char *src, size_t n)
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static ngx_inline ngx_int_t
 ngx_[% subsystem %]_lua_set_content_type([% req_type %] *r)
 {

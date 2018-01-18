@@ -16,7 +16,7 @@
 #include "ngx_[% subsystem %]_lua_coroutine.h"
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static int ngx_http_lua_ngx_exec(lua_State *L);
 static int ngx_http_lua_ngx_redirect(lua_State *L);
 [% END %]
@@ -29,7 +29,7 @@ static int ngx_[% subsystem %]_lua_on_abort(lua_State *L);
 void
 ngx_[% subsystem %]_lua_inject_control_api(ngx_log_t *log, lua_State *L)
 {
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     /* ngx.redirect */
 
     lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_redirect);
@@ -56,7 +56,7 @@ ngx_[% subsystem %]_lua_inject_control_api(ngx_log_t *log, lua_State *L)
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static int
 ngx_[% subsystem %]_lua_ngx_exec(lua_State *L)
 {
@@ -325,7 +325,7 @@ ngx_[% subsystem %]_lua_ngx_exit(lua_State *L)
     ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_HEADER_FILTER
@@ -333,14 +333,14 @@ ngx_[% subsystem %]_lua_ngx_exit(lua_State *L)
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_STORE
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
                                | NGX_STREAM_LUA_CONTEXT_PREREAD
 [% END -%]
         );
 
     rc = (ngx_int_t) luaL_checkinteger(L, 1);
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     if (ctx->context & (NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
                         | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_STORE
                         | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH))
@@ -400,14 +400,14 @@ ngx_[% subsystem %]_lua_ngx_exit(lua_State *L)
     ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
                    "lua exit with code %i", ctx->exit_code);
 
-[%- IF subsystem == 'http' %]
+[%- IF http_subsys %]
     if (ctx->context & (NGX_HTTP_LUA_CONTEXT_HEADER_FILTER
                         | NGX_HTTP_LUA_CONTEXT_BALANCER))
     {
         return 0;
     }
 
-[%- ELSIF subsystem == 'stream' %]
+[%- ELSIF stream_subsys %]
     if (ctx->context & NGX_STREAM_LUA_CONTEXT_BALANCER) {
         return 0;
     }
@@ -529,7 +529,7 @@ ngx_[% subsystem %]_lua_ffi_exit([% req_type %] *r, int status, u_char *err,
 #endif
     }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     if (ctx->no_abort
         && status != NGX_ERROR
         && status != NGX_HTTP_CLOSE

@@ -15,7 +15,7 @@
 #include "ngx_[% subsystem %]_lua_util.h"
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static int ngx_[% subsystem %]_lua_ngx_req_set_uri_args(lua_State *L);
 static int ngx_[% subsystem %]_lua_ngx_req_get_uri_args(lua_State *L);
 static int ngx_[% subsystem %]_lua_ngx_req_get_post_args(lua_State *L);
@@ -363,7 +363,7 @@ ngx_[% subsystem %]_lua_parse_args(lua_State *L, u_char *buf, u_char *last, int 
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 void
 ngx_[% subsystem %]_lua_inject_req_args_api(lua_State *L)
 {

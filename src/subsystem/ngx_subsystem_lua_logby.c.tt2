@@ -61,9 +61,9 @@ ngx_[% subsystem %]_lua_log_by_lua_env(lua_State *L, [% req_type %] *r)
 
 
 ngx_int_t
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
 ngx_http_lua_log_handler(ngx_http_request_t *r)
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
 ngx_stream_lua_log_handler(ngx_stream_session_t *r)
 [% END -%]
 {
@@ -104,14 +104,14 @@ ngx_stream_lua_log_handler(ngx_stream_session_t *r)
 #   endif
 #endif
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
     ngx_log_debug2(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
                    "lua log handler, uri:\"%V\" c:%ud", &r->uri,
                    r->main->count);
 
     llcf = ngx_http_get_module_loc_conf(r, ngx_http_lua_module);
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
     ngx_log_debug0(NGX_LOG_DEBUG_STREAM, r->connection->log, 0,
                    "lua log handler");
 
@@ -123,10 +123,10 @@ ngx_stream_lua_log_handler(ngx_stream_session_t *r)
         return NGX_DECLINED;
     }
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
     ctx = ngx_http_get_module_ctx(r, ngx_http_lua_module);
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
     ctx = ngx_stream_get_module_ctx(r, ngx_stream_lua_module);
 [% END -%]
 
@@ -184,9 +184,9 @@ ngx_[% subsystem %]_lua_log_handler_file([% req_type %] *r)
 
     llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
     if (ngx_http_complex_value(r, &llcf->log_src, &eval_src) != NGX_OK) {
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
     if (ngx_stream_complex_value(r->session, &llcf->log_src, &eval_src) != NGX_OK) {
 [% END -%]
         return NGX_ERROR;
