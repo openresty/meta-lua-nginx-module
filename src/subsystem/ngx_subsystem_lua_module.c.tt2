@@ -21,7 +21,7 @@
 #include "ngx_[% subsystem %]_lua_logby.h"
 
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
 #include "ngx_[% subsystem %]_lua_semaphore.h"
 #include "ngx_[% subsystem %]_lua_ssl_certby.h"
 #include "ngx_[% subsystem %]_lua_ssl_session_storeby.h"
@@ -33,7 +33,7 @@
 #include "ngx_[% subsystem %]_lua_headerfilterby.h"
 #include "ngx_[% subsystem %]_lua_bodyfilterby.h"
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
 #include "ngx_[% subsystem %]_lua_prereadby.h"
 [% END -%]
 
@@ -45,7 +45,7 @@ static char *ngx_[% subsystem %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent
     void *child);
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static void *ngx_[% subsystem %]_lua_create_loc_conf(ngx_conf_t *cf);
 
 static char *ngx_[% subsystem %]_lua_merge_loc_conf(ngx_conf_t *cf, void *parent,
@@ -67,7 +67,7 @@ static ngx_conf_post_t  ngx_[% subsystem %]_lua_lowat_post =
     { ngx_[% subsystem %]_lua_lowat_check };
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static volatile ngx_cycle_t  *ngx_[% subsystem %]_lua_prev_cycle = NULL;
 [% END %]
 
@@ -86,9 +86,9 @@ static ngx_conf_bitmask_t  ngx_[% subsystem %]_lua_ssl_protocols[] = {
 #endif
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     [% lowest_level_conf_flags = 'NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF' %]
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     [% lowest_level_conf_flags = 'NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF' %]
 [% END %]
 
@@ -116,7 +116,7 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       0,
       NULL },
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     { ngx_string("lua_capture_error_log"),
       NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_[% subsystem %]_lua_capture_error_log,
@@ -159,15 +159,15 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       [% lowest_level_conf_flags %]
           |NGX_CONF_FLAG,
       ngx_[% subsystem %]_lua_code_cache,
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
       NGX_HTTP_LOC_CONF_OFFSET,
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
       NGX_STREAM_SRV_CONF_OFFSET,
 [% END %]
       offsetof(ngx_[% subsystem %]_lua_loc_conf_t, enable_code_cache),
       NULL },
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     { ngx_string("lua_need_request_body"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_FLAG,
@@ -189,9 +189,9 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       [% lowest_level_conf_flags %]
           |NGX_CONF_FLAG,
       ngx_conf_set_flag_slot,
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
       NGX_HTTP_LOC_CONF_OFFSET,
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
       NGX_STREAM_SRV_CONF_OFFSET,
 [% END %]
       offsetof(ngx_[% subsystem %]_lua_loc_conf_t, log_socket_errors),
@@ -239,7 +239,7 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       0,
       (void *) ngx_[% subsystem %]_lua_init_worker_by_file },
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
 #if defined(NDK) && NDK
     /* set_by_lua $res { inline Lua code } [$arg1 [$arg2 [...]]] */
     { ngx_string("set_by_lua_block"),
@@ -305,7 +305,7 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       0,
       (void *) ngx_[% subsystem %]_lua_access_handler_inline },
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
     /* preread_by_lua_file rel/or/abs/path/to/script */
     { ngx_string("preread_by_lua_file"),
       NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF|NGX_CONF_TAKE1,
@@ -323,10 +323,10 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       (void *) ngx_stream_lua_preread_handler_inline },
 [% END -%]
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     [% content_by_lua_flags = 'NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF' %]
     [% content_by_lua_offset = 'NGX_HTTP_LOC_CONF_OFFSET' %]
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     [% content_by_lua_flags = 'NGX_STREAM_SRV_CONF' %]
     [% content_by_lua_offset = 'NGX_STREAM_SRV_CONF_OFFSET' %]
 [% END %]
@@ -355,15 +355,15 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       0,
       (void *) ngx_[% subsystem %]_lua_content_handler_file },
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
     [%- log_by_lua_flags = 'NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF' -%]
     [%- log_by_lua_offset = 'NGX_HTTP_LOC_CONF_OFFSET' -%]
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
     [%- log_by_lua_flags = 'NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF' -%]
     [%- log_by_lua_offset = 'NGX_STREAM_SRV_CONF_OFFSET' -%]
 [% END -%]
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
     /* log_by_lua <inline script> */
     { ngx_string("log_by_lua"),
       [% log_by_lua_flags %]
@@ -391,7 +391,7 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       0,
       (void *) ngx_[% subsystem %]_lua_log_handler_file },
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
     { ngx_string("rewrite_by_lua_file"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
@@ -473,7 +473,7 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       0,
       (void *) ngx_[% subsystem %]_lua_body_filter_file },
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
     { ngx_string("preread_by_lua_no_postpone"),
       NGX_STREAM_MAIN_CONF|NGX_CONF_FLAG,
       ngx_conf_set_flag_slot,
@@ -496,10 +496,10 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       0,
       (void *) ngx_[% subsystem %]_lua_balancer_handler_file },
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     [% lua_socket_offset = 'NGX_HTTP_LOC_CONF_OFFSET' %]
     [% lua_socket_conf_t = 'ngx_http_lua_loc_conf_t' %]
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     [% lua_socket_offset = 'NGX_STREAM_SRV_CONF_OFFSET' %]
     [% lua_socket_conf_t = 'ngx_stream_lua_srv_conf_t' %]
 [% END %]
@@ -560,7 +560,7 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       offsetof([% lua_socket_conf_t %], read_timeout),
       NULL },
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     { ngx_string("lua_http10_buffering"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_FLAG,
@@ -578,7 +578,7 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       offsetof([% lua_socket_conf_t %], check_client_abort),
       NULL },
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     { ngx_string("lua_use_default_type"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_FLAG,
@@ -588,11 +588,11 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       NULL },
 [% END %]
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     [% lua_ssl_flags = 'NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF' %]
     [% lua_ssl_offset = 'NGX_HTTP_LOC_CONF_OFFSET' %]
     [% lua_ssl_conf_t = 'ngx_http_lua_loc_conf_t' %]
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     [% lua_ssl_flags = 'NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF' %]
     [% lua_ssl_offset = 'NGX_STREAM_SRV_CONF_OFFSET' %]
     [% lua_ssl_conf_t = 'ngx_stream_lua_srv_conf_t' %]
@@ -618,7 +618,7 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       offsetof([% lua_ssl_conf_t %], ssl_ciphers),
       NULL },
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     { ngx_string("ssl_certificate_by_lua_block"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
       ngx_[% subsystem %]_lua_ssl_cert_by_lua_block,
@@ -692,7 +692,7 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       0,
       NULL },
 
-[% IF subsystem == 'stream' -%]
+[% IF stream_subsys -%]
      { ngx_string("lua_add_variable"),
       NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_stream_lua_add_variable,
@@ -715,7 +715,7 @@ ngx_[% subsystem %]_module_t ngx_[% subsystem %]_lua_module_ctx = {
     ngx_[% subsystem %]_lua_create_srv_conf,     /*  create server configuration */
     ngx_[% subsystem %]_lua_merge_srv_conf,      /*  merge server configuration */
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_[% subsystem %]_lua_create_loc_conf,     /*  create location configuration */
     ngx_[% subsystem %]_lua_merge_loc_conf       /*  merge location configuration */
 [% END %]
@@ -748,7 +748,7 @@ ngx_[% subsystem %]_lua_init(ngx_conf_t *cf)
     ngx_[% subsystem %]_handler_pt        *h;
     ngx_[% subsystem %]_core_main_conf_t  *cmcf;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #if !defined(NGX_LUA_NO_FFI_API) || nginx_version >= 1011011
     ngx_pool_cleanup_t         *cln;
 #endif
@@ -759,7 +759,7 @@ ngx_[% subsystem %]_lua_init(ngx_conf_t *cf)
     lmcf = ngx_[% subsystem %]_conf_get_module_main_conf(cf,
                                                          ngx_[% subsystem %]_lua_module);
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
     if (ngx_[% subsystem %]_lua_prev_cycle != ngx_cycle) {
         ngx_[% subsystem %]_lua_prev_cycle = ngx_cycle;
         multi_http_blocks = 0;
@@ -786,7 +786,7 @@ ngx_[% subsystem %]_lua_init(ngx_conf_t *cf)
 
     cmcf = ngx_[% subsystem %]_conf_get_module_main_conf(cf, ngx_[% subsystem %]_core_module);
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
     if (lmcf->requires_rewrite) {
         h = ngx_array_push(&cmcf->phases[NGX_HTTP_REWRITE_PHASE].handlers);
         if (h == NULL) {
@@ -804,7 +804,7 @@ ngx_[% subsystem %]_lua_init(ngx_conf_t *cf)
 
         *h = ngx_[% subsystem %]_lua_access_handler;
     }
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
     if (lmcf->requires_preread) {
         h = ngx_array_push(&cmcf->phases[NGX_STREAM_PREREAD_PHASE].handlers);
         if (h == NULL) {
@@ -843,7 +843,7 @@ ngx_[% subsystem %]_lua_init(ngx_conf_t *cf)
         *h = ngx_[% subsystem %]_lua_log_handler;
     }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     if (multi_http_blocks || lmcf->requires_header_filter) {
         rc = ngx_[% subsystem %]_lua_header_filter_init();
         if (rc != NGX_OK) {
@@ -870,7 +870,7 @@ ngx_[% subsystem %]_lua_init(ngx_conf_t *cf)
     cln->handler = ngx_[% subsystem %]_lua_sema_mm_cleanup;
 #endif
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #if nginx_version >= 1011011
     cln = ngx_pool_cleanup_add(cf->pool, 0);
     if (cln == NULL) {
@@ -885,7 +885,7 @@ ngx_[% subsystem %]_lua_init(ngx_conf_t *cf)
     if (lmcf->lua == NULL) {
         dd("initializing lua vm");
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
         ngx_[% subsystem %]_lua_content_length_hash =
                                   ngx_[% subsystem %]_lua_hash_literal("content-length");
         ngx_[% subsystem %]_lua_location_hash = ngx_[% subsystem %]_lua_hash_literal("location");
@@ -995,11 +995,11 @@ ngx_[% subsystem %]_lua_create_main_conf(ngx_conf_t *cf)
     lmcf->regex_match_limit = NGX_CONF_UNSET;
 #endif
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
     lmcf->postponed_to_rewrite_phase_end = NGX_CONF_UNSET;
     lmcf->postponed_to_access_phase_end = NGX_CONF_UNSET;
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
     lmcf->postponed_to_preread_phase_end = NGX_CONF_UNSET;
 [% END -%]
 
@@ -1158,7 +1158,7 @@ ngx_[% subsystem %]_lua_create_srv_conf(ngx_conf_t *cf)
      *      lscf->balancer.src_key = NULL;
      */
 
-    [% IF subsystem == 'stream' %]
+    [% IF stream_subsys %]
         [% INCLUDE init_common_conf %]
     [% END %]
 
@@ -1169,7 +1169,7 @@ ngx_[% subsystem %]_lua_create_srv_conf(ngx_conf_t *cf)
 static char *
 ngx_[% subsystem %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
 {
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #if (NGX_[% subsystem FILTER upper %]_SSL)
     ngx_[% subsystem %]_lua_srv_conf_t *prev = parent;
     ngx_[% subsystem %]_lua_srv_conf_t *conf = child;
@@ -1261,7 +1261,7 @@ ngx_[% subsystem %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child
 
 #endif  /* NGX_[% subsystem FILTER upper %]_SSL */
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_[% subsystem %]_lua_srv_conf_t *prev = parent;
     ngx_[% subsystem %]_lua_srv_conf_t *conf = child;
 
@@ -1279,7 +1279,7 @@ ngx_[% subsystem %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static void *
 ngx_[% subsystem %]_lua_create_loc_conf(ngx_conf_t *cf)
 {
@@ -1395,9 +1395,9 @@ ngx_[% subsystem %]_lua_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child
 #if (NGX_[% subsystem FILTER upper %]_SSL)
 
 static ngx_int_t
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 ngx_http_lua_set_ssl(ngx_conf_t *cf, ngx_http_lua_loc_conf_t *lxcf)
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 ngx_stream_lua_set_ssl(ngx_conf_t *cf, ngx_stream_lua_srv_conf_t *lxcf)
 [% END %]
 {
