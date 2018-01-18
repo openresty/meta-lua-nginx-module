@@ -78,10 +78,10 @@ open my $in, $infile
 
 my ($out, $tmpfile) = tempfile "$subsys-XXXXXXX", TMPDIR => 1;
 
-my $raw_line;
+my ($raw_line, $skip);
 my ($continued_func_call, $func_name, $func_prefix_len_diff, $func_indent_len);
-my ($func_raw_prefix_len, $func_prefix_len);
-my ($in_if, $in_else, $skip, $if_branch_hit);
+my ($func_raw_prefix_len);
+my ($in_if, $in_else, $if_branch_hit);
 my ($in_block, $block, %blocks);
 
 while (<$in>) {
@@ -363,7 +363,6 @@ while (<$in>) {
                         $func_prefix_len_diff = $raw_len - $len;
                         $func_indent_len = $indent_len;
                         $func_raw_prefix_len = $raw_len;
-                        $func_prefix_len = $raw_len;
                     }
                 }
             }
