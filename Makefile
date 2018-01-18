@@ -9,7 +9,7 @@ API_TEMPLATE_TARGETS=$(subst _subsystem_,_$(SUBSYSTEM)_, $(patsubst src/subsyste
 MINI_TT2=utils/mini-tt2.pl
 
 .PHONY: all
-all: $(TEMPLATE_TARGETS) $(API_TEMPLATE_TARGETS) $(SUBSYSTEM_TARGETS)
+all: build $(TEMPLATE_TARGETS) $(API_TEMPLATE_TARGETS) $(SUBSYSTEM_TARGETS)
 	cp src/$(SUBSYSTEM)/* build/src
 
 build/src/api/ngx_http_%: src/subsystem/api/ngx_subsystem_%.tt2
