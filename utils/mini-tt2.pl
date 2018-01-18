@@ -33,7 +33,7 @@ my %tt2_vars;
 
     my $SUBSYS = uc $subsys;
 
-    $tt2_vars{SUBSYS} = $tt2_vars{SUBSYSTEM} = $SUBSYS;
+    $tt2_vars{SUBSYS} = $SUBSYS;
 
     my ($req_type, $req_subsys);
     if ($subsys eq 'http') {
