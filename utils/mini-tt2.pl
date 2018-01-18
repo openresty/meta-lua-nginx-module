@@ -81,13 +81,8 @@ my ($out, $tmpfile) = tempfile "$subsys-XXXXXXX", TMPDIR => 1;
 my $raw_line;
 my ($continued_func_call, $func_name, $func_prefix_len_diff, $func_indent_len);
 my ($func_raw_prefix_len, $func_prefix_len);
-my $in_if;
-my $in_else;
-my $skip;
-my $if_branch_hit;
-my $in_block;
-my $block;
-my %blocks;
+my ($in_if, $in_else, $skip, $if_branch_hit);
+my ($in_block, $block, %blocks);
 
 while (<$in>) {
     if (/^ \s* \[\%\# .*? \%\] \s* $/x) {
@@ -288,6 +283,8 @@ while (<$in>) {
         }
         $indent_len = length $indent;
     }
+
+    # check function calls spanning multiple lines
 
     if ($continued_func_call) {
         my $terminated;
