@@ -267,10 +267,10 @@ ngx_int_t ngx_[% subsystem %]_lua_report(ngx_log_t *log, lua_State *L, int statu
 int ngx_[% subsystem %]_lua_do_call(ngx_log_t *log, lua_State *L);
 
 [% IF subsystem == 'http' %]
-[% cleanup= 'ngx_http_cleanup' %]
+[% cleanup = 'ngx_http_cleanup' %]
 
 [% ELSIF subsystem == 'stream' %]
-[% cleanup= 'ngx_stream_lua_cleanup' %]
+[% cleanup = 'ngx_stream_lua_cleanup' %]
 [% END %]
 
 [% IF subsystem == 'http' %]
