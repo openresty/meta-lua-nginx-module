@@ -11,7 +11,7 @@
 #include "ngx_[% subsystem %]_lua_common.h"
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 void ngx_[% subsystem %]_lua_inject_req_args_api(lua_State *L);
 [% END %]
 

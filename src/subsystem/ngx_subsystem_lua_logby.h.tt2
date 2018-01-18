@@ -11,9 +11,9 @@
 #include "ngx_[% subsystem %]_lua_common.h"
 
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
 ngx_int_t ngx_http_lua_log_handler(ngx_http_request_t *r);
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
 ngx_int_t ngx_stream_lua_log_handler(ngx_stream_session_t *r);
 [% END -%]
 

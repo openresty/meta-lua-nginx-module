@@ -41,7 +41,7 @@
 #include "ngx_[% subsystem %]_lua_ssl.h"
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #include "ngx_[% subsystem %]_lua_uri.h"
 #include "ngx_[% subsystem %]_lua_req_body.h"
 #include "ngx_[% subsystem %]_lua_headers.h"
@@ -57,7 +57,7 @@
 [% END %]
 
 
-[% IF subsystem == 'stream' %]
+[% IF stream_subsys %]
 [% log_prefix = 'stream ' %]
 [% END %]
 
@@ -82,7 +82,7 @@ char ngx_[% subsystem %]_lua_code_cache_key;
 char ngx_[% subsystem %]_lua_regex_cache_key;
 char ngx_[% subsystem %]_lua_socket_pool_key;
 char ngx_[% subsystem %]_lua_coroutines_key;
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 char ngx_[% subsystem %]_lua_headers_metatable_key;
 
 
@@ -406,7 +406,7 @@ ngx_[% subsystem %]_lua_rebase_path(ngx_pool_t *pool, u_char *src, size_t len)
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 ngx_int_t
 ngx_[% subsystem %]_lua_send_header_if_needed([% req_type %] *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
@@ -442,7 +442,7 @@ ngx_[% subsystem %]_lua_send_header_if_needed([% req_type %] *r,
 [% END %]
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 ngx_int_t
 ngx_http_lua_send_chain_link(ngx_http_request_t *r, ngx_http_lua_ctx_t *ctx,
     ngx_chain_t *in)
@@ -562,7 +562,7 @@ ngx_http_lua_send_chain_link(ngx_http_request_t *r, ngx_http_lua_ctx_t *ctx,
     return ngx_http_lua_output_filter(r, in);
 }
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 ngx_int_t
 ngx_stream_lua_send_chain_link(ngx_stream_lua_request_t *r, ngx_stream_lua_ctx_t *ctx,
     ngx_chain_t *in)
@@ -578,7 +578,7 @@ ngx_stream_lua_send_chain_link(ngx_stream_lua_request_t *r, ngx_stream_lua_ctx_t
 [% END %]
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static ngx_int_t
 ngx_[% subsystem %]_lua_send_special([% req_type %] *r, ngx_uint_t flags)
 {
@@ -608,7 +608,7 @@ ngx_[% subsystem %]_lua_output_filter([% req_type %] *r, ngx_chain_t *in)
     ngx_int_t            rc;
     ngx_[% subsystem %]_lua_ctx_t  *ctx;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     [% req_type %]  *ar; /* active request */
 
     ar = r->connection->data;
@@ -625,7 +625,7 @@ ngx_[% subsystem %]_lua_output_filter([% req_type %] *r, ngx_chain_t *in)
 
     rc = ngx_http_output_filter(r, in);
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     rc = ngx_stream_top_filter(r->session, in, 1);
 [% END %]
 
@@ -647,7 +647,7 @@ ngx_[% subsystem %]_lua_output_filter([% req_type %] *r, ngx_chain_t *in)
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static ngx_int_t
 ngx_[% subsystem %]_lua_send_http10_headers([% req_type %] *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
@@ -737,7 +737,7 @@ ngx_[% subsystem %]_lua_init_globals(lua_State *L, ngx_cycle_t *cycle,
     lua_pushlightuserdata(L, cycle);
     lua_setglobal(L, "__ngx_cycle");
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #if defined(NDK) && NDK
     ngx_[% subsystem %]_lua_inject_ndk_api(L);
 #endif /* defined(NDK) && NDK */
@@ -756,7 +756,7 @@ ngx_[% subsystem %]_lua_inject_ngx_api(lua_State *L, ngx_[% subsystem %]_lua_mai
     lua_pushcfunction(L, ngx_[% subsystem %]_lua_get_raw_phase_context);
     lua_setfield(L, -2, "_phase_ctx");
 
-    [% IF subsystem == 'http' %]
+    [% IF http_subsys %]
     ngx_[% subsystem %]_lua_inject_arg_api(L);
 
     ngx_http_lua_inject_http_consts(L);
@@ -770,7 +770,7 @@ ngx_[% subsystem %]_lua_inject_ngx_api(lua_State *L, ngx_[% subsystem %]_lua_mai
     ngx_[% subsystem %]_lua_inject_string_api(L);
     ngx_[% subsystem %]_lua_inject_control_api(log, L);
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_[% subsystem %]_lua_inject_subrequest_api(L);
 [% END %]
 
@@ -783,7 +783,7 @@ ngx_[% subsystem %]_lua_inject_ngx_api(lua_State *L, ngx_[% subsystem %]_lua_mai
 
     ngx_[% subsystem %]_lua_inject_req_api(log, L);
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_[% subsystem %]_lua_inject_resp_header_api(L);
     ngx_[% subsystem %]_lua_create_headers_metatable(log, L);
 [% END %]
@@ -895,7 +895,7 @@ ngx_[% subsystem %]_lua_reset_ctx([% req_type %] *r, lua_State *L,
 
     ctx->entry_co_ctx.co_ref = LUA_NOREF;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ctx->entered_rewrite_phase = 0;
     ctx->entered_access_phase = 0;
 [% END %]
@@ -906,7 +906,7 @@ ngx_[% subsystem %]_lua_reset_ctx([% req_type %] *r, lua_State *L,
     ctx->exited = 0;
     ctx->resume_handler = ngx_[% subsystem %]_lua_wev_handler;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_str_null(&ctx->exec_uri);
     ngx_str_null(&ctx->exec_args);
 [% END %]
@@ -915,7 +915,7 @@ ngx_[% subsystem %]_lua_reset_ctx([% req_type %] *r, lua_State *L,
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 /* post read callback for rewrite and access phases */
 void
 ngx_[% subsystem %]_lua_generic_phase_post_read([% req_type %] *r)
@@ -1011,7 +1011,7 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
     lua_State               *old_co;
     const char              *err, *msg, *trace;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_int_t                rc;
 [% END %]
 
@@ -1019,12 +1019,12 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
     ngx_pool_t              *old_pool = NULL;
 #endif
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_log_debug2(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
                    "lua run thread, top:%d c:%ud", lua_gettop(L),
                    r->main->count);
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_log_debug1(NGX_LOG_DEBUG_STREAM, r->connection->log, 0,
                    "lua run thread, top:%d", lua_gettop(L));
 [% END %]
@@ -1108,7 +1108,7 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
                 orig_coctx->co_top = lua_gettop(orig_coctx->co);
 #endif
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
                 if (r->uri_changed) {
                     return ngx_[% subsystem %]_lua_handle_rewrite_jump(L, r, ctx);
                 }
@@ -1118,7 +1118,7 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
                     return ngx_[% subsystem %]_lua_handle_exit(L, r, ctx);
                 }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
                 if (ctx->exec_uri.len) {
                     return ngx_[% subsystem %]_lua_handle_exec(L, r, ctx);
                 }
@@ -1475,7 +1475,7 @@ user_co_done:
 
                 /* being the entry thread aborted */
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
                 if (r->filter_finalize) {
                     ngx_http_set_ctx(r, ctx, ngx_[% subsystem %]_lua_module);
                 }
@@ -1483,7 +1483,7 @@ user_co_done:
 
                 ngx_[% subsystem %]_lua_request_cleanup(ctx, 0);
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
                 dd("headers sent? %d", r->header_sent || ctx->header_sent);
 [% END %]
 
@@ -1492,10 +1492,10 @@ user_co_done:
                     return NGX_ERROR;
                 }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
                 return (r->header_sent || ctx->header_sent) ? NGX_ERROR :
                        NGX_HTTP_INTERNAL_SERVER_ERROR;
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
                 return NGX_STREAM_INTERNAL_SERVER_ERROR;
 [% END %]
             }
@@ -1542,7 +1542,7 @@ no_parent:
 
     ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     if (r->filter_finalize) {
         ngx_http_set_ctx(r, ctx, ngx_[% subsystem %]_lua_module);
     }
@@ -1553,16 +1553,16 @@ no_parent:
     ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "lua handler aborted: "
                   "user coroutine has no parent");
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     return (r->header_sent || ctx->header_sent) ?
                 NGX_ERROR : NGX_HTTP_INTERNAL_SERVER_ERROR;
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     return NGX_STREAM_INTERNAL_SERVER_ERROR;
 [% END %]
 
 done:
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     if (ctx->entered_content_phase
         && r->connection->fd != (ngx_socket_t) -1)
     {
@@ -1587,9 +1587,9 @@ ngx_[% subsystem %]_lua_wev_handler([% req_type %] *r)
     ngx_connection_t            *c;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_http_core_loc_conf_t    *cllscf;
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_stream_lua_srv_conf_t   *cllscf;
 [% END %]
 
@@ -1608,9 +1608,9 @@ ngx_[% subsystem %]_lua_wev_handler([% req_type %] *r)
                    "writing_raw_req_socket:%ud",
                    wev->timedout, wev->ready, ctx->writing_raw_req_socket);
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     cllscf = ngx_http_get_module_loc_conf(r->main, ngx_http_core_module);
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     cllscf = ngx_stream_lua_get_module_srv_conf(r, ngx_stream_lua_module);
 [% END %]
 
@@ -1655,10 +1655,10 @@ ngx_[% subsystem %]_lua_wev_handler([% req_type %] *r)
         return NGX_DONE;
     }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     if (c->buffered & NGX_HTTP_LOWLEVEL_BUFFERED) {
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     if (c->buffered) {
 [% END %]
 
@@ -1784,9 +1784,9 @@ ngx_[% subsystem %]_lua_flush_pending_output([% req_type %] *r,
     ngx_event_t        *wev;
     ngx_connection_t   *c;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_http_core_loc_conf_t    *cllscf;
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_stream_lua_srv_conf_t   *cllscf;
 [% END %]
 
@@ -1817,12 +1817,12 @@ ngx_[% subsystem %]_lua_flush_pending_output([% req_type %] *r,
         return rc;
     }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     if (c->buffered & NGX_HTTP_LOWLEVEL_BUFFERED) {
 
         cllscf = ngx_http_get_module_loc_conf(r->main, ngx_http_core_module);
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     if (c->buffered) {
 
         cllscf = ngx_stream_lua_get_module_srv_conf(r, ngx_stream_lua_module);
@@ -2228,7 +2228,7 @@ ngx_[% subsystem %]_lua_inject_req_api(ngx_log_t *log, lua_State *L)
 
     ngx_[% subsystem %]_lua_inject_req_socket_api(L);
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_[% subsystem %]_lua_inject_req_header_api(L);
     ngx_[% subsystem %]_lua_inject_req_uri_api(log, L);
     ngx_[% subsystem %]_lua_inject_req_args_api(L);
@@ -2242,7 +2242,7 @@ ngx_[% subsystem %]_lua_inject_req_api(ngx_log_t *log, lua_State *L)
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static ngx_int_t
 ngx_[% subsystem %]_lua_handle_exec(lua_State *L, [% req_type %] *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
@@ -2346,7 +2346,7 @@ static ngx_int_t
 ngx_[% subsystem %]_lua_handle_exit(lua_State *L, [% req_type %] *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_int_t           rc;
 [% END %]
 
@@ -2360,7 +2360,7 @@ ngx_[% subsystem %]_lua_handle_exit(lua_State *L, [% req_type %] *r,
 
     ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     if (r->filter_finalize) {
         ngx_http_set_ctx(r, ctx, ngx_[% subsystem %]_lua_module);
     }
@@ -2372,7 +2372,7 @@ ngx_[% subsystem %]_lua_handle_exit(lua_State *L, [% req_type %] *r,
         return ctx->exit_code;
     }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #if 1
     if (!r->header_sent
         && !ctx->header_sent
@@ -2707,7 +2707,7 @@ ngx_[% subsystem %]_lua_process_args_option([% req_type %] *r, lua_State *L,
     }
 }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static ngx_int_t
 ngx_[% subsystem %]_lua_handle_rewrite_jump(lua_State *L, [% req_type %] *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
@@ -3040,7 +3040,7 @@ ngx_[% subsystem %]_lua_traceback(lua_State *L)
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static void
 ngx_[% subsystem %]_lua_inject_arg_api(lua_State *L)
 {
@@ -3420,12 +3420,12 @@ ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *
     ngx_int_t            event;
     ngx_connection_t     *c;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_log_debug2(NGX_LOG_DEBUG_HTTP, ev->log, 0,
                    "http lua check client, write event:%d, \"%V\"",
                    ev->write, &r->uri);
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_log_debug1(NGX_LOG_DEBUG_STREAM, ev->log, 0,
                    "stream lua check client, write event:%d", ev->write);
 [% END %]
@@ -3442,16 +3442,16 @@ ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *
             }
         }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
         return NGX_HTTP_CLIENT_CLOSED_REQUEST;
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
         return NGX_ERROR;
 [% END %]
     }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #if (NGX_HTTP_V2)
     if (r->stream) {
         return NGX_OK;
@@ -3477,10 +3477,10 @@ ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *
                       "kevent() reported that client prematurely closed "
                       "connection");
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
         return NGX_HTTP_CLIENT_CLOSED_REQUEST;
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
         return NGX_ERROR;
 [% END %]
     }
@@ -3533,9 +3533,9 @@ ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *
     ngx_log_error(NGX_LOG_INFO, ev->log, err,
                   "[% log_prefix %]client prematurely closed connection");
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     return NGX_HTTP_CLIENT_CLOSED_REQUEST;
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     return NGX_ERROR;
 [% END %]
 }
@@ -3548,7 +3548,7 @@ ngx_[% subsystem %]_lua_rd_check_broken_connection([% req_type %] *r)
     ngx_event_t                *rev;
     ngx_[% subsystem %]_lua_ctx_t         *ctx;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     if (r->done) {
         return;
     }
@@ -3662,7 +3662,7 @@ ngx_[% subsystem %]_lua_on_abort_resume([% req_type %] *r)
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 ngx_int_t
 ngx_[% subsystem %]_lua_test_expect([% req_type %] *r)
 {
@@ -3718,10 +3718,10 @@ ngx_[% subsystem %]_lua_finalize_request([% req_type %] *r, ngx_int_t rc)
 
     if (r->connection->fd != (ngx_socket_t) -1) {
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
         ngx_http_finalize_request(r, rc);
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
         ngx_stream_lua_finalize_real_request(r, rc);
 [% END %]
 
@@ -3744,29 +3744,29 @@ ngx_[% subsystem %]_lua_finalize_fake_request([% req_type %] *r, ngx_int_t rc)
 
     c = r->connection;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_log_debug3(NGX_LOG_DEBUG_HTTP, c->log, 0,
                    "http lua finalize fake request: %d, a:%d, c:%d",
                    rc, r == c->data, r->main->count);
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_log_debug1(NGX_LOG_DEBUG_STREAM, c->log, 0,
                    "stream lua finalize fake request: %d", rc);
 [% END %]
 
     if (rc == NGX_DONE) {
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
         ngx_[% subsystem %]_lua_close_fake_request(r);
 [% END %]
 
         return;
     }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     if (rc == NGX_ERROR || rc >= NGX_HTTP_SPECIAL_RESPONSE) {
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     if (rc == NGX_ERROR || rc >= NGX_STREAM_BAD_REQUEST) {
 [% END %]
 
@@ -3810,19 +3810,19 @@ ngx_[% subsystem %]_lua_close_fake_request([% req_type %] *r)
 {
     ngx_connection_t  *c;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     r = r->main;
 [% END %]
 
     c = r->connection;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
                    "http lua fake request count:%d", r->count);
 
 [% END %]
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     if (r->count == 0) {
         ngx_log_error(NGX_LOG_ALERT, c->log, 0, "http lua fake request "
                       "count is zero");
@@ -3845,9 +3845,9 @@ ngx_[% subsystem %]_lua_free_fake_request([% req_type %] *r)
 {
     ngx_log_t                 *log;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_http_cleanup_t        *cln;
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_stream_lua_cleanup_t  *cln;
 [% END %]
 
@@ -3873,7 +3873,7 @@ ngx_[% subsystem %]_lua_free_fake_request([% req_type %] *r)
         cln = cln->next;
     }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     r->request_line.len = 0;
 [% END %]
 
@@ -4099,7 +4099,7 @@ failed:
 }
 
 
-[% IF subsystem == 'stream' %]
+[% IF stream_subsys %]
 ngx_stream_session_t *
 ngx_stream_lua_create_fake_session(ngx_connection_t *c)
 {
@@ -4127,7 +4127,7 @@ ngx_stream_lua_create_fake_session(ngx_connection_t *c)
 [% END %]
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 ngx_http_request_t *
 ngx_http_lua_create_fake_request(ngx_connection_t *c)
 {
@@ -4205,7 +4205,7 @@ ngx_http_lua_create_fake_request(ngx_connection_t *c)
 
     return r;
 }
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 ngx_stream_lua_request_t *
 ngx_stream_lua_create_fake_request(ngx_stream_session_t *s)
 {
@@ -4297,7 +4297,7 @@ ngx_[% subsystem %]_lua_get_raw_phase_context(lua_State *L)
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 ngx_http_cleanup_t *
 ngx_[% subsystem %]_lua_cleanup_add([% req_type %] *r, size_t size)
 {
@@ -4345,7 +4345,7 @@ ngx_[% subsystem %]_lua_cleanup_free([% req_type %] *r,
         return;
     }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     r = r->main;
 [% END %]
 

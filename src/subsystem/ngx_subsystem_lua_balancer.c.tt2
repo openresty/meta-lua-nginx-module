@@ -34,7 +34,7 @@ struct ngx_[% subsystem %]_lua_balancer_peer_data_s {
 
     int                                          last_peer_state;
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
 #if !(HAVE_NGX_UPSTREAM_TIMEOUT_FIELDS)
     unsigned                                     cloned_upstream_conf;  /* :1 */
 #endif
@@ -42,9 +42,9 @@ struct ngx_[% subsystem %]_lua_balancer_peer_data_s {
 };
 
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
 #if (NGX_HTTP_SSL)
-[%- ELSIF subsystem == 'stream' -%]
+[%- ELSIF stream_subsys -%]
 #if (NGX_STREAM_SSL && HAVE_NGX_STREAM_BALANCER_EXPORT_PATCH)
 [%- END %]
 static ngx_int_t ngx_[% subsystem %]_lua_balancer_set_session(ngx_peer_connection_t *pc,
@@ -56,10 +56,10 @@ static ngx_int_t ngx_[% subsystem %]_lua_balancer_init(ngx_conf_t *cf,
     ngx_[% subsystem %]_upstream_srv_conf_t *us);
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 static ngx_int_t ngx_http_lua_balancer_init_peer(ngx_http_request_t *r,
     ngx_http_upstream_srv_conf_t *us);
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 static ngx_int_t ngx_stream_lua_balancer_init_peer(ngx_stream_session_t *s,
     ngx_stream_upstream_srv_conf_t *us);
 
@@ -241,9 +241,9 @@ ngx_[% subsystem %]_lua_balancer_init(ngx_conf_t *cf,
 
 
 static ngx_int_t
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 ngx_[% subsystem %]_lua_balancer_init_peer(ngx_http_request_t *r,
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 ngx_[% subsystem %]_lua_balancer_init_peer(ngx_stream_session_t *s,
 [% END %]
     ngx_[% subsystem %]_upstream_srv_conf_t *us)
@@ -252,7 +252,7 @@ ngx_[% subsystem %]_lua_balancer_init_peer(ngx_stream_session_t *s,
     ngx_[% subsystem %]_lua_balancer_peer_data_t  *bp;
     ngx_[% subsystem %]_upstream_t                *upstream;
 
-[%- IF subsystem == 'stream' %]
+[%- IF stream_subsys %]
     [% req_type %]                                *r;
     ngx_stream_lua_ctx_t                          *ctx;
 
@@ -269,7 +269,7 @@ ngx_[% subsystem %]_lua_balancer_init_peer(ngx_stream_session_t *s,
 
     upstream = s->upstream;
 
-[%- ELSIF subsystem == 'http' -%]
+[%- ELSIF http_subsys -%]
     upstream = r->upstream;
 [% END -%]
 
@@ -280,10 +280,10 @@ ngx_[% subsystem %]_lua_balancer_init_peer(ngx_stream_session_t *s,
 
     upstream->peer.data = &bp->rrp;
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
     if (ngx_http_upstream_init_round_robin_peer(r, us) != NGX_OK) {
 
-[%- ELSIF subsystem == 'stream' -%]
+[%- ELSIF stream_subsys -%]
     if (ngx_stream_upstream_init_round_robin_peer(s, us) != NGX_OK) {
 [% END -%]
         return NGX_ERROR;
@@ -292,13 +292,13 @@ ngx_[% subsystem %]_lua_balancer_init_peer(ngx_stream_session_t *s,
     upstream->peer.get = ngx_[% subsystem %]_lua_balancer_get_peer;
     upstream->peer.free = ngx_[% subsystem %]_lua_balancer_free_peer;
 
-[%- IF subsystem == 'stream' %]
+[%- IF stream_subsys %]
     upstream->peer.notify = NULL;
 [%- END %]
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
 #if (NGX_HTTP_SSL)
-[%- ELSIF subsystem == 'stream' -%]
+[%- ELSIF stream_subsys -%]
 #if (NGX_STREAM_SSL && HAVE_NGX_STREAM_BALANCER_EXPORT_PATCH)
 [%- END %]
     upstream->peer.set_session = ngx_[% subsystem %]_lua_balancer_set_session;
@@ -338,10 +338,10 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
 
     if (ctx == NULL) {
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
         ctx = ngx_http_lua_create_ctx(r);
 
-[%- ELSIF subsystem == 'stream' -%]
+[%- ELSIF stream_subsys -%]
         ctx = ngx_stream_lua_create_ctx(r->session);
 [%- END -%]
 
@@ -406,17 +406,17 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
         bp->rrp.peers->single = 0;
 
         if (bp->more_tries) {
-[%- IF subsystem == 'http' %]
+[%- IF http_subsys %]
             r->upstream->peer.tries += bp->more_tries;
 
-[%- ELSIF subsystem == 'stream' %]
+[%- ELSIF stream_subsys %]
             r->session->upstream->peer.tries += bp->more_tries;
 [%- END %]
         }
 
-[%- IF subsystem == 'http' %]
+[%- IF http_subsys %]
         dd("tries: %d", (int) r->upstream->peer.tries);
-[%- ELSIF subsystem == 'stream' %]
+[%- ELSIF stream_subsys %]
         dd("tries: %d", (int) r->session->upstream->peer.tries);
 [%- END %]
 
@@ -504,9 +504,9 @@ ngx_[% subsystem %]_lua_balancer_free_peer(ngx_peer_connection_t *pc, void *data
 }
 
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
 #if (NGX_HTTP_SSL)
-[%- ELSIF subsystem == 'stream' -%]
+[%- ELSIF stream_subsys -%]
 #if (NGX_STREAM_SSL && HAVE_NGX_STREAM_BALANCER_EXPORT_PATCH)
 [%- END %]
 static ngx_int_t
@@ -540,7 +540,7 @@ ngx_[% subsystem %]_lua_balancer_save_session(ngx_peer_connection_t *pc, void *d
 #endif
 
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
 [%#- if not under http, always build those APIs as a workaround for no lua-resty-core support in subsystems other than http -%]
 
 #ifndef NGX_LUA_NO_FFI_API
@@ -562,10 +562,10 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_current_peer([% req_type %] *r,
         return NGX_ERROR;
     }
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
     u = r->upstream;
 
-[%- ELSIF subsystem == 'stream' -%]
+[%- ELSIF stream_subsys -%]
     u = r->session->upstream;
 [%- END -%]
 
@@ -634,7 +634,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_current_peer([% req_type %] *r,
 }
 
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
 int
 ngx_http_lua_ffi_balancer_set_timeouts(ngx_http_request_t *r,
     long connect_timeout, long send_timeout, long read_timeout,
@@ -729,7 +729,7 @@ ngx_http_lua_ffi_balancer_set_timeouts(ngx_http_request_t *r,
     return NGX_OK;
 }
 
-[%- ELSIF subsystem == 'stream' %]
+[%- ELSIF stream_subsys %]
 #if (NGX_STREAM_HAVE_PROXY_TIMEOUT_FIELDS_PATCH)
 int
 ngx_stream_lua_ffi_balancer_set_timeouts(ngx_stream_lua_request_t *r,
@@ -789,10 +789,10 @@ int
 ngx_[% subsystem %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
     int count, char **err)
 {
-[%- IF subsystem == 'http' %]
+[%- IF http_subsys %]
 #if (nginx_version >= 1007005)
 
-[%- ELSIF subsystem == 'stream' %]
+[%- ELSIF stream_subsys %]
 #if (HAS_NGX_STREAM_PROXY_GET_NEXT_UPSTREAM_TRIES_PATCH)
 [%- END %]
     ngx_uint_t                                     max_tries, total;
@@ -808,10 +808,10 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
         return NGX_ERROR;
     }
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
     u = r->upstream;
 
-[%- ELSIF subsystem == 'stream' -%]
+[%- ELSIF stream_subsys -%]
     u = r->session->upstream;
 [%- END -%]
 
@@ -839,7 +839,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
         return NGX_ERROR;
     }
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
 #if (nginx_version >= 1007005)
     max_tries = u->conf->next_upstream_tries;
     total = bp->total_tries + u->peer.tries - 1;
@@ -855,7 +855,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
     *err = NULL;
 #endif
 
-[%- ELSIF subsystem == 'stream' -%]
+[%- ELSIF stream_subsys -%]
 #if (HAS_NGX_STREAM_PROXY_GET_NEXT_UPSTREAM_TRIES_PATCH)
     max_tries = ngx_stream_proxy_get_next_upstream_tries(r->session);
     total = bp->total_tries + u->peer.tries - 1;
@@ -884,7 +884,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_get_last_failure([% req_type %] *r,
     ngx_[% subsystem %]_lua_ctx_t                 *ctx;
     ngx_[% subsystem %]_upstream_t                *u;
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
     ngx_[% subsystem %]_upstream_state_t          *state;
     ngx_array_t                                   *upstream_states;
 [%- END -%]
@@ -897,11 +897,11 @@ ngx_[% subsystem %]_lua_ffi_balancer_get_last_failure([% req_type %] *r,
         return NGX_ERROR;
     }
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
     u = r->upstream;
     upstream_states = r->upstream_states;
 
-[%- ELSIF subsystem == 'stream' -%]
+[%- ELSIF stream_subsys -%]
     u = r->session->upstream;
 [%- END -%]
 
@@ -929,7 +929,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_get_last_failure([% req_type %] *r,
         return NGX_ERROR;
     }
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
     if (upstream_states && upstream_states->nelts > 1) {
         state = upstream_states->elts;
         *status = (int) state[upstream_states->nelts - 2].status;
@@ -938,13 +938,13 @@ ngx_[% subsystem %]_lua_ffi_balancer_get_last_failure([% req_type %] *r,
         *status = 0;
     }
 
-[%- ELSIF subsystem == 'stream' -%]
+[%- ELSIF stream_subsys -%]
     *status = 0;
 [%- END -%]
 
     return bp->last_peer_state;
 }
 
-[%- IF subsystem == 'http' -%]
+[%- IF http_subsys -%]
 #endif  /* NGX_LUA_NO_FFI_API */
 [%- END -%]

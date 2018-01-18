@@ -13,7 +13,7 @@
 #include "ngx_[% subsystem %]_lua_initworkerby.h"
 #include "ngx_[% subsystem %]_lua_util.h"
 
-[% IF subsystem == 'stream' %]
+[% IF stream_subsys %]
 #include "ngx_stream_lua_contentby.h"
 [% END %]
 
@@ -42,15 +42,15 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
 
     ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
 
-[% IF subsystem == 'stream' %]
+[% IF stream_subsys %]
     ngx_stream_session_t    *s;
 [% END %]
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_http_core_loc_conf_t      *clcf, *top_clcf;
     ngx_http_lua_loc_conf_t       *top_llcf;
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_stream_core_srv_conf_t    *clcf, *top_clcf;
     ngx_stream_lua_srv_conf_t     *llcf, *top_llcf;
 [% END %]
@@ -88,11 +88,11 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
                cycle->conf_ctx[ngx_[% subsystem %]_module.index];
     [% subsystem %]_ctx.main_conf = conf_ctx->main_conf;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     top_clcf = conf_ctx->loc_conf[ngx_http_core_module.ctx_index];
     top_llcf = conf_ctx->loc_conf[ngx_http_lua_module.ctx_index];
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     top_clcf = conf_ctx->srv_conf[ngx_stream_core_module.ctx_index];
     top_llcf = conf_ctx->srv_conf[ngx_stream_lua_module.ctx_index];
 [% END %]
@@ -198,7 +198,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
     conf.log = cycle->log;
     conf.conf_file = conf_file;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     http_ctx.loc_conf = ngx_pcalloc(conf.pool,
                                     sizeof(void *) * ngx_http_max_module);
     if (http_ctx.loc_conf == NULL) {
@@ -233,7 +233,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
 
             [% subsystem %]_ctx.srv_conf[modules[i]->ctx_index] = cur;
 
-[% IF subsystem == 'stream' %]
+[% IF stream_subsys %]
             if (modules[i]->ctx_index == ngx_stream_core_module.ctx_index)
             {
                 clcf = cur;
@@ -256,7 +256,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
             }
         }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
         if (module->create_loc_conf) {
             cur = module->create_loc_conf(&conf);
             if (cur == NULL) {
@@ -298,7 +298,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
 
     c->log->handler = ngx_[% subsystem %]_lua_log_init_worker_error;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     r = ngx_http_lua_create_fake_request(c);
     if (r == NULL) {
         goto failed;
@@ -310,7 +310,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
 
     clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     s = ngx_stream_lua_create_fake_session(c);
     if (s == NULL) {
         goto failed;
@@ -340,15 +340,15 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
 
 #   if nginx_version >= 1009000
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_set_connection_log(r->connection, clcf->error_log);
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_set_connection_log(s->connection, clcf->error_log);
 [% END %]
 
 #   else
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_http_set_connection_log(r->connection, clcf->error_log);
 [% END %]
 
@@ -364,16 +364,16 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
 
 #endif
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ctx = ngx_http_lua_create_ctx(r);
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ctx = ngx_stream_lua_create_ctx(s);
 [% END %]
     if (ctx == NULL) {
         goto failed;
     }
 
-[% IF subsystem == 'stream' %]
+[% IF stream_subsys %]
     r = ctx->request;
 [% END %]
 

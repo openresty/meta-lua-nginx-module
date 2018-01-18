@@ -23,7 +23,7 @@
 #include "ngx_[% subsystem %]_lua_lex.h"
 #include "api/ngx_[% subsystem %]_lua_api.h"
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
 #include "ngx_http_lua_accessby.h"
 #include "ngx_http_lua_rewriteby.h"
 #include "ngx_http_lua_headerfilterby.h"
@@ -32,7 +32,7 @@
 #include "ngx_http_lua_log.h"
 #include "ngx_http_lua_ssl_certby.h"
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
 #include "ngx_stream_lua_prereadby.h"
 [% END -%]
 
@@ -41,7 +41,7 @@ typedef struct ngx_[% subsystem %]_lua_block_parser_ctx_s
     ngx_[% subsystem %]_lua_block_parser_ctx_t;
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #if defined(NDK) && NDK
 #include "ngx_[% subsystem %]_lua_setby.h"
 
@@ -179,9 +179,9 @@ ngx_[% subsystem %]_lua_code_cache(ngx_conf_t *cf, ngx_command_t *cmd, void *con
 
     if (!*fp) {
         ngx_conf_log_error(NGX_LOG_ALERT, cf, 0,
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
                            "lua_code_cache is off; this will hurt "
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
                            "stream lua_code_cache is off; this will hurt "
 [% END %]
                            "performance");
@@ -233,7 +233,7 @@ ngx_[% subsystem %]_lua_package_path(ngx_conf_t *cf, ngx_command_t *cmd, void *c
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #if defined(NDK) && NDK
 char *
 ngx_[% subsystem %]_lua_set_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,
@@ -440,7 +440,7 @@ ngx_[% subsystem %]_lua_filter_set_by_lua_file([% req_type %] *r, ngx_str_t *val
 [% END # http %]
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 char *
 ngx_[% subsystem %]_lua_rewrite_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf)
@@ -556,7 +556,7 @@ ngx_[% subsystem %]_lua_rewrite_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
 [% END %]
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 char *
 ngx_[% subsystem %]_lua_access_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf)
@@ -668,7 +668,7 @@ ngx_[% subsystem %]_lua_access_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *
 [% END # http %]
 
 
-[% IF subsystem == 'stream' %]
+[% IF stream_subsys %]
 char *
 ngx_stream_lua_preread_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf)
@@ -804,13 +804,13 @@ ngx_[% subsystem %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
     u_char                        *chunkname;
     ngx_str_t                     *value;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_http_core_loc_conf_t      *cxcf;
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_stream_core_srv_conf_t    *cxcf;
 [% END %]
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
 [% END %]
 
@@ -897,15 +897,15 @@ ngx_[% subsystem %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
 
     llcf->content_handler = (ngx_[% req_subsystem %]_handler_pt) cmd->post;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     lmcf = ngx_[% subsystem %]_conf_get_module_main_conf(cf, ngx_[% subsystem %]_lua_module);
     lmcf->requires_capture_filter = 1;
 [% END %]
 
     /*  register location content handler */
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     cxcf = ngx_http_conf_get_module_loc_conf(cf, ngx_http_core_module);
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     cxcf = ngx_stream_conf_get_module_srv_conf(cf, ngx_stream_core_module);
 [% END %]
     if (cxcf == NULL) {
@@ -1027,7 +1027,7 @@ ngx_[% subsystem %]_lua_log_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *con
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 char *
 ngx_[% subsystem %]_lua_header_filter_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf)
@@ -1357,7 +1357,7 @@ ngx_[% subsystem %]_lua_init_worker_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #if defined(NDK) && NDK
 static ngx_int_t
 ngx_[% subsystem %]_lua_set_by_lua_init([% req_type %] *r)
@@ -1851,7 +1851,7 @@ ngx_[% subsystem %]_lua_conf_read_lua_token(ngx_conf_t *cf,
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 char *
 ngx_[% subsystem %]_lua_capture_error_log(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf)
@@ -1952,7 +1952,7 @@ ngx_[% subsystem %]_lua_strlstrn(u_char *s1, u_char *last, u_char *s2, size_t n)
 }
 
 
-[% IF subsystem == 'stream' -%]
+[% IF stream_subsys -%]
 static ngx_int_t
 ngx_stream_lua_undefined_var(ngx_stream_session_t *s,
     ngx_stream_variable_value_t *v, uintptr_t data)

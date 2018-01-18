@@ -12,7 +12,7 @@
 #include <ngx_core.h>
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #include <ngx_http.h>
 [% END %]
 

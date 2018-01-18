@@ -14,7 +14,7 @@
 #include "ngx_[% subsystem %]_lua_log.h"
 #include "ngx_[% subsystem %]_lua_util.h"
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #include "ngx_[% subsystem %]_lua_log_ringbuf.h"
 [% END %]
 
@@ -59,10 +59,10 @@ ngx_[% subsystem %]_lua_ngx_log(lua_State *L)
     /* remove log-level param from stack */
     lua_remove(L, 1);
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     return log_wrapper(log, "[lua] ", (ngx_uint_t) level, L);
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     return log_wrapper(log, "stream [lua] ", (ngx_uint_t) level, L);
 [% END %]
 }
@@ -90,10 +90,10 @@ ngx_[% subsystem %]_lua_print(lua_State *L)
         log = ngx_cycle->log;
     }
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     return log_wrapper(log, "[lua] ", NGX_LOG_NOTICE, L);
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     return log_wrapper(log, "stream [lua] ", NGX_LOG_NOTICE, L);
 [% END %]
 }
@@ -328,7 +328,7 @@ ngx_[% subsystem %]_lua_inject_log_consts(lua_State *L)
 }
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #ifdef HAVE_INTERCEPT_ERROR_LOG_PATCH
 ngx_int_t
 ngx_[% subsystem %]_lua_capture_log_handler(ngx_log_t *log,

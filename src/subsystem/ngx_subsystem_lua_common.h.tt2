@@ -9,7 +9,7 @@
 #define _NGX_[% subsystem FILTER upper %]_LUA_COMMON_H_INCLUDED_
 
 
-[% IF subsystem == 'stream' %]
+[% IF stream_subsys %]
 #ifndef NGX_LUA_NO_FFI_API
 #define NGX_LUA_NO_FFI_API
 #endif
@@ -29,7 +29,7 @@
 #include <lauxlib.h>
 
 
-[% IF subsystem == 'stream' %]
+[% IF stream_subsys %]
 #include "ngx_stream_lua_request.h"
 [% END %]
 
@@ -52,7 +52,7 @@
 #endif
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #if defined(NDK) && NDK
 #include <ndk.h>
 #endif
@@ -110,12 +110,12 @@
     (NGX_[% subsystem FILTER upper %]_LUA_FILE_TAG_LEN + 2 * MD5_DIGEST_LENGTH)
 
 
-[% IF subsystem == 'stream' %]
+[% IF stream_subsys %]
 #define NGX_STREAM_CLIENT_CLOSED_REQUEST     499
 [% END %]
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #if defined(NDK) && NDK
 typedef struct {
     size_t       size;
@@ -137,7 +137,7 @@ typedef struct {
 
 
 /* must be within 16 bit */
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #define NGX_HTTP_LUA_CONTEXT_SET            0x0001
 #define NGX_HTTP_LUA_CONTEXT_REWRITE        0x0002
 #define NGX_HTTP_LUA_CONTEXT_ACCESS         0x0004
@@ -152,7 +152,7 @@ typedef struct {
 #define NGX_HTTP_LUA_CONTEXT_SSL_SESS_STORE 0x0800
 #define NGX_HTTP_LUA_CONTEXT_SSL_SESS_FETCH 0x1000
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 #define NGX_STREAM_LUA_CONTEXT_CONTENT                              0x0001
 #define NGX_STREAM_LUA_CONTEXT_LOG                                  0x0002
 #define NGX_STREAM_LUA_CONTEXT_TIMER                                0x0004
@@ -169,9 +169,9 @@ typedef struct {
 
 
 typedef struct ngx_[% subsystem %]_lua_main_conf_s  ngx_[% subsystem %]_lua_main_conf_t;
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 typedef union ngx_http_lua_srv_conf_u  ngx_http_lua_srv_conf_t;
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 typedef struct ngx_stream_lua_srv_conf_s ngx_stream_lua_srv_conf_t;
 [% END %]
 
@@ -230,11 +230,11 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
 
     ngx_array_t         *preload_hooks; /* of ngx_[% subsystem %]_lua_preload_hook_t */
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
     ngx_flag_t           postponed_to_rewrite_phase_end;
     ngx_flag_t           postponed_to_access_phase_end;
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
     ngx_flag_t           postponed_to_preread_phase_end;
 [% END -%]
 
@@ -258,7 +258,7 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
                                                 of reqeusts */
     ngx_uint_t           malloc_trim_req_count;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 #if nginx_version >= 1011011
     /* the following 2 fields are only used by ngx.req.raw_headers() for now */
     ngx_buf_t          **busy_buf_ptrs;
@@ -266,27 +266,27 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
 #endif
 [% END %]
 
-[% IF subsystem == 'http' -%]
+[% IF http_subsys -%]
     unsigned             requires_header_filter:1;
     unsigned             requires_body_filter:1;
     unsigned             requires_capture_filter:1;
     unsigned             requires_rewrite:1;
     unsigned             requires_access:1;
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
     unsigned             requires_preread:1;
 [% END -%]
 
     unsigned             requires_log:1;
     unsigned             requires_shm:1;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     unsigned             requires_capture_log:1;
 [% END %]
 };
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 union ngx_http_lua_srv_conf_u {
 #if (NGX_[% subsystem FILTER upper %]_SSL)
     struct {
@@ -314,9 +314,9 @@ union ngx_http_lua_srv_conf_u {
 [% END %]
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 typedef struct ngx_http_lua_loc_conf_s {
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 struct ngx_stream_lua_srv_conf_s {
 [% END %]
 #if (NGX_[% subsystem FILTER upper %]_SSL)
@@ -331,7 +331,7 @@ struct ngx_stream_lua_srv_conf_s {
     ngx_flag_t              enable_code_cache; /* whether to enable
                                                   code cache */
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_flag_t              force_read_body; /* whether force request body to
                                                 be read */
 
@@ -340,14 +340,14 @@ struct ngx_stream_lua_srv_conf_s {
     ngx_http_handler_pt     rewrite_handler;
     ngx_http_handler_pt     access_handler;
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
     ngx_[% req_subsystem %]_handler_pt     preread_handler;
 [% END -%]
 
     ngx_[% req_subsystem %]_handler_pt     content_handler;
     ngx_[% req_subsystem %]_handler_pt     log_handler;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_http_handler_pt     header_filter_handler;
 
     ngx_http_output_body_filter_pt         body_filter_handler;
@@ -366,7 +366,7 @@ struct ngx_stream_lua_srv_conf_s {
 
     u_char                  *access_src_key; /* cached key for access_src */
 
-[% ELSIF subsystem == 'stream' -%]
+[% ELSIF stream_subsys -%]
     u_char                      *preread_chunkname;
     ngx_stream_complex_value_t   preread_src;     /*  access_by_lua
                                                 inline script/script
@@ -389,7 +389,7 @@ struct ngx_stream_lua_srv_conf_s {
     u_char                                 *log_src_key;
     /* cached key for log_src */
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_http_complex_value_t header_filter_src;  /*  header_filter_by_lua
                                                      inline script/script
                                                      file path */
@@ -412,18 +412,18 @@ struct ngx_stream_lua_srv_conf_s {
 
     ngx_uint_t                       pool_size;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_flag_t                       transform_underscores_in_resp_headers;
 [% END %]
 
     ngx_flag_t                       log_socket_errors;
     ngx_flag_t                       check_client_abort;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_flag_t                       use_default_type;
 [% END %]
 
-[%- IF subsystem == 'stream' -%]
+[%- IF stream_subsys -%]
     struct {
         ngx_str_t           src;
         u_char             *src_key;
@@ -432,9 +432,9 @@ struct ngx_stream_lua_srv_conf_s {
     } balancer;
 [% END -%]
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 } ngx_http_lua_loc_conf_t;
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
 };
 
 typedef ngx_stream_lua_srv_conf_t ngx_stream_lua_loc_conf_t;
@@ -468,7 +468,7 @@ struct ngx_[% subsystem %]_lua_posted_thread_s {
 };
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 enum {
     NGX_[% subsystem FILTER upper %]_LUA_SUBREQ_TRUNCATED = 1
 };
@@ -483,13 +483,13 @@ struct ngx_[% subsystem %]_lua_co_ctx_s {
 
     ngx_[% subsystem %]_lua_posted_thread_t    *zombie_child_threads;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_http_cleanup_pt      cleanup;
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_stream_lua_cleanup_pt      cleanup;
 [% END %]
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_int_t               *sr_statuses; /* all capture subrequest statuses */
 
     ngx_http_headers_out_t **sr_headers;
@@ -577,24 +577,24 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
     ngx_chain_t             *busy_bufs;
     ngx_chain_t             *free_recv_bufs;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_http_cleanup_pt     *cleanup;
 
     ngx_http_cleanup_t      *free_cleanup; /* free list of cleanup records */
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     ngx_stream_lua_cleanup_pt     *cleanup;
 
     ngx_stream_lua_cleanup_t      *free_cleanup; /* free list of cleanup records */
 [% END %]
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_chain_t             *body; /* buffered subrequest response body
                                       chains */
 
     ngx_chain_t            **last_body; /* for the "body" field */
 [% END %]
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_str_t                exec_uri;
     ngx_str_t                exec_args;
 [% END %]
@@ -605,7 +605,7 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
                                              ngx_[% subsystem %]_lua_socket_tcp_upstream_t
                                              or ngx_[% subsystem %]_lua_co_ctx_t */
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     ngx_uint_t               index;              /* index of the current
                                                     subrequest in its parent
                                                     request */
@@ -619,7 +619,7 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
                                            (or running phase) for the current
                                            Lua chunk */
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     unsigned                 run_post_subrequest:1; /* whether it has run
                                                        post_subrequest
                                                        (for subrequests only) */
@@ -649,11 +649,11 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
     unsigned         headers_set:1; /* whether the user has set custom
                                        response headers */
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
     unsigned         entered_rewrite_phase:1;
     unsigned         entered_access_phase:1;
 
-[% ELSIF subsystem == 'stream' %]
+[% ELSIF stream_subsys %]
     unsigned         entered_preread_phase:1;
 [% END -%]
 
@@ -681,7 +681,7 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
 } ngx_[% subsystem %]_lua_ctx_t;
 
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 typedef struct ngx_[% subsystem %]_lua_header_val_s  ngx_[% subsystem %]_lua_header_val_t;
 
 
@@ -710,7 +710,7 @@ typedef struct {
 
 extern ngx_module_t ngx_[% subsystem %]_lua_module;
 
-[% IF subsystem == 'http' %]
+[% IF http_subsys %]
 extern ngx_http_output_header_filter_pt ngx_[% subsystem %]_lua_next_header_filter;
 extern ngx_http_output_body_filter_pt ngx_[% subsystem %]_lua_next_body_filter;
 [% END %]
