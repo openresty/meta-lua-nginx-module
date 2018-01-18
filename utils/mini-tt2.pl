@@ -284,7 +284,7 @@ close $out;
 
 close $in;
 
-if (-f $outfile && compare($tmpfile, $outfile) != 0) {
+if (!-f $outfile || compare($tmpfile, $outfile) != 0) {
     move $tmpfile, $outfile
         or die "Failed to move $tmpfile into $outfile: $!\n";
 }
