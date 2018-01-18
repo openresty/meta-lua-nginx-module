@@ -72,15 +72,16 @@ typedef struct {
 
 
 typedef struct {
-    ngx_[% req_subsystem %]_cleanup_pt     *cleanup;
-    [% req_type %]      *request;
+    ngx_[% req_subsys %]_cleanup_pt     *cleanup;
+    [% req_type %]                      *request;
+
     pcre                    *regex;
     pcre_extra              *regex_sd;
     int                      ncaptures;
     int                     *captures;
     int                      captures_len;
     uint8_t                  flags;
-} ngx_[% subsystem %]_lua_regex_ctx_t;
+} ngx_[% subsys %]_lua_regex_ctx_t;
 
 
 static int ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L);
@@ -133,11 +134,10 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
 {
     /* u_char                      *p; */
     int                          res_tb_idx = 0;
-    [% req_type %]          *r;
+    [% req_type %]              *r;
     ngx_str_t                    subj;
     ngx_str_t                    pat;
     ngx_str_t                    opts;
-    ngx_[% subsystem %]_lua_regex_t        *re;
     const char                  *msg;
     ngx_int_t                    rc;
     ngx_uint_t                   n;
@@ -149,7 +149,6 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
     int                          has_ctx = 0;
     ngx_uint_t                   flags;
     ngx_pool_t                  *pool, *old_pool;
-    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
     u_char                       errstr[NGX_MAX_CONF_ERRSTR + 1];
     pcre_extra                  *sd = NULL;
     int                          name_entry_size = 0, name_count;
@@ -157,7 +156,9 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
     int                          exec_opts;
     int                          group_id = 0;
 
-    ngx_[% subsystem %]_lua_regex_compile_t      re_comp;
+    ngx_[% subsys %]_lua_regex_t            *re;
+    ngx_[% subsys %]_lua_main_conf_t        *lmcf;
+    ngx_[% subsys %]_lua_regex_compile_t     re_comp;
 
     nargs = lua_gettop(L);
 
@@ -663,14 +664,11 @@ error:
 static int
 ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
 {
-    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
-    [% req_type %]          *r;
+    [% req_type %]              *r;
     ngx_str_t                    subj;
     ngx_str_t                    pat;
     ngx_str_t                    opts;
     int                          ovecsize;
-    ngx_[% subsystem %]_lua_regex_t        *re;
-    ngx_[% subsystem %]_lua_regex_ctx_t    *ctx;
     const char                  *msg;
     int                          nargs;
     ngx_int_t                    flags;
@@ -679,9 +677,12 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
     ngx_pool_t                  *pool, *old_pool;
     u_char                       errstr[NGX_MAX_CONF_ERRSTR + 1];
     pcre_extra                  *sd = NULL;
-    ngx_[% req_subsystem %]_cleanup_t          *cln;
 
-    ngx_[% subsystem %]_lua_regex_compile_t      re_comp;
+    ngx_[% subsys %]_lua_regex_t            *re;
+    ngx_[% subsys %]_lua_regex_ctx_t        *ctx;
+    ngx_[% subsys %]_lua_main_conf_t        *lmcf;
+    ngx_[% req_subsys %]_cleanup_t          *cln;
+    ngx_[% subsys %]_lua_regex_compile_t     re_comp;
 
     nargs = lua_gettop(L);
 
@@ -1001,8 +1002,7 @@ error:
 static int
 ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L)
 {
-    ngx_[% subsystem %]_lua_regex_ctx_t    *ctx;
-    [% req_type %]          *r;
+    [% req_type %]              *r;
     int                         *cap;
     ngx_int_t                    rc;
     ngx_uint_t                   n;
@@ -1013,6 +1013,8 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L)
     int                          name_entry_size = 0, name_count;
     u_char                      *name_table = NULL;
     int                          exec_opts;
+
+    ngx_[% subsys %]_lua_regex_ctx_t    *ctx;
 
     /* upvalues in order: subj ctx offset */
 
@@ -1293,15 +1295,13 @@ ngx_[% subsystem %]_lua_ngx_re_gsub(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
+ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
 {
-    ngx_[% subsystem %]_lua_regex_t        *re;
-    [% req_type %]          *r;
+    [% req_type %]              *r;
     ngx_str_t                    subj;
     ngx_str_t                    pat;
     ngx_str_t                    opts;
     ngx_str_t                    tpl;
-    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
     ngx_pool_t                  *pool, *old_pool;
     const char                  *msg;
     ngx_int_t                    rc;
@@ -1324,9 +1324,11 @@ ngx_[% subsystem %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
     u_char                      *name_table = NULL;
     int                          exec_opts;
 
-    ngx_[% subsystem %]_lua_regex_compile_t               re_comp;
-    ngx_[% subsystem %]_lua_complex_value_t              *ctpl = NULL;
-    ngx_[% subsystem %]_lua_compile_complex_value_t       ccv;
+    ngx_[% subsys %]_lua_main_conf_t                *lmcf;
+    ngx_[% subsys %]_lua_regex_t                    *re;
+    ngx_[% subsys %]_lua_regex_compile_t             re_comp;
+    ngx_[% subsys %]_lua_complex_value_t            *ctpl = NULL;
+    ngx_[% subsys %]_lua_compile_complex_value_t     ccv;
 
     nargs = lua_gettop(L);
 

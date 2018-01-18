@@ -42,8 +42,8 @@ ngx_[% subsystem %]_lua_ngx_say(lua_State *L)
 static int
 ngx_[% subsystem %]_lua_ngx_echo(lua_State *L, unsigned newline)
 {
-    [% req_type %]          *r;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
+    [% req_type %]              *r;
+    ngx_[% subsys %]_lua_ctx_t  *ctx;
     const char                  *p;
     size_t                       len;
     size_t                       size;
@@ -472,8 +472,8 @@ ngx_[% subsystem %]_lua_copy_str_in_table(lua_State *L, int index, u_char *dst)
 static int
 ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
 {
-    [% req_type %]          *r;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
+    [% req_type %]              *r;
+    ngx_[% subsys %]_lua_ctx_t  *ctx;
     ngx_chain_t                 *cl;
     ngx_int_t                    rc;
     int                          n;
@@ -659,9 +659,9 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
 static int
 ngx_[% subsystem %]_lua_ngx_eof(lua_State *L)
 {
-    [% req_type %]      *r;
-    ngx_[% subsystem %]_lua_ctx_t      *ctx;
-    ngx_int_t                rc;
+    [% req_type %]              *r;
+    ngx_[% subsys %]_lua_ctx_t  *ctx;
+    ngx_int_t                    rc;
 
     r = ngx_[% subsystem %]_lua_get_req(L);
     if (r == NULL) {

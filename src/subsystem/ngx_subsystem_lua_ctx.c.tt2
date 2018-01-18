@@ -28,8 +28,8 @@ static void ngx_[% subsystem %]_lua_ngx_ctx_cleanup(void *data);
 int
 ngx_[% subsystem %]_lua_ngx_get_ctx(lua_State *L)
 {
-    [% req_type %]          *r;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
+    [% req_type %]                  *r;
+    ngx_[% subsys %]_lua_ctx_t      *ctx;
 
     r = ngx_[% subsystem %]_lua_get_req(L);
     if (r == NULL) {
@@ -73,8 +73,8 @@ ngx_[% subsystem %]_lua_ngx_get_ctx(lua_State *L)
 int
 ngx_[% subsystem %]_lua_ngx_set_ctx(lua_State *L)
 {
-    [% req_type %]          *r;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
+    [% req_type %]                  *r;
+    ngx_[% subsys %]_lua_ctx_t      *ctx;
 
     r = ngx_[% subsystem %]_lua_get_req(L);
     if (r == NULL) {

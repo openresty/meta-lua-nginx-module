@@ -429,7 +429,7 @@ ngx_[% subsystem %]_lua_get_lua_vm([% req_type %] *r, ngx_[% subsystem %]_lua_ct
 static ngx_inline [% req_type %] *
 ngx_[% subsystem %]_lua_get_req(lua_State *L)
 {
-    [% req_type %]    *r;
+    [% req_type %]              *r;
 
     lua_getglobal(L, ngx_[% subsystem %]_lua_req_key);
     r = lua_touserdata(L, -1);
