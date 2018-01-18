@@ -48,6 +48,13 @@ my %tt2_vars;
     $tt2_vars{req_type} = $req_type;
     $tt2_vars{req_subsys} = $tt2_vars{req_subsystem} = $req_subsys;
     $tt2_vars{"${subsys}_subsys"} = 1;
+
+    if ($subsys eq 'http') {
+        $tt2_vars{log_prefix} = "";
+
+    } else {
+        $tt2_vars{log_prefix} = "$subsys "
+    }
 }
 
 my $infile = shift
@@ -404,7 +411,7 @@ sub replace_tt2_var ($$) {
     }
 
     if ($var =~ /^[A-Za-z]\w*$/) {
-        return '';
+        die "$infile: line $.: undefined tt2 variable: $var\n";
     }
 
     die "$infile: line $.: unknown tt2 variable or expression: $var\n";
