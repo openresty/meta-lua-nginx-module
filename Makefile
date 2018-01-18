@@ -1,6 +1,4 @@
-LEMPLATE_COMPILER?=lemplate
 SUBSYS?=http
-TEMPLATE_RUNNER=utils/run_template.lua
 
 TEMPLATE_SOURCES=$(wildcard src/subsystem/*.tt2)
 TEMPLATE_TARGETS=$(subst _subsystem_,_$(SUBSYS)_, $(patsubst src/subsystem/%.tt2, build/src/%, $(TEMPLATE_SOURCES)))
