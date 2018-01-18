@@ -78,6 +78,9 @@ open my $in, $infile
 
 my ($out, $tmpfile) = tempfile "$subsys-XXXXXXX", TMPDIR => 1;
 
+my $raw_line;
+my ($continued_func_call, $func_name, $func_prefix_len_diff, $func_indent_len);
+my ($func_raw_prefix_len, $func_prefix_len);
 my $in_if;
 my $in_else;
 my $skip;
@@ -85,12 +88,13 @@ my $if_branch_hit;
 my $in_block;
 my $block;
 my %blocks;
-my $in_cmt;
 
 while (<$in>) {
     if (/^ \s* \[\%\# .*? \%\] \s* $/x) {
         next;
     }
+
+    my $raw_line = $_;
 
     if (/^ \s* \[\%-? \s* BLOCK \s+ (\w+) \s* -?\%\] \s* $/x) {
         my $block_name = $1;
@@ -270,6 +274,104 @@ while (<$in>) {
 
     s/\[%-? \s* (['"]) (.*?) \1 \s* -?\%\]/$2/egx;
     s/\[%-? \s* (.*?) -?\%\]/replace_tt2_var($1, $.)/egx;
+
+    my $indent_len = 0;
+
+    if (/^(\s+)/m) {
+        my $indent = $1;
+        if ($indent =~ /\t/) {
+            die "$infile: line $.: use of tabs in indentation\n";
+        }
+        if ($indent =~ /([^ \n])/m) {
+            die "$infile: line $.: use of non-space chars in indentation: ",
+                ord($1), "\n";
+        }
+        $indent_len = length $indent;
+    }
+
+    if ($continued_func_call) {
+        my $terminated;
+        if (/^(\s*)\S/m) {
+            my $indent = $1;
+            if (length $indent <= $func_indent_len) {
+                #warn "terminating since indent is smaller";
+                $terminated = 1;
+            }
+
+        } elsif (/^\s*$/) {
+            #warn "terminating due to empty line";
+            $terminated = 1;
+        }
+
+        if ($terminated) {
+            undef $continued_func_call;
+            undef $func_prefix_len_diff;
+            undef $func_indent_len;
+            undef $func_name;
+        }
+    }
+
+    if ($continued_func_call) {
+        my $skip_patching;
+
+        if ($raw_line =~ /^ (\s*) /x) {
+            my $raw_len = length $1;
+            #warn "raw len: $raw_len, func raw prefix len: $func_raw_prefix_len";
+            if ($raw_len != $func_raw_prefix_len) {
+                warn "WARNING: $infile: line $.: continued arguments not aligned with ",
+                     "the function call on line $continued_func_call.\n";
+                $skip_patching = 1;
+            }
+        }
+
+        unless ($skip_patching) {
+            if ($func_prefix_len_diff > 0) {
+                #warn "func len diff: $func_prefix_len_diff";
+                if (!s/^ {$func_prefix_len_diff}//) {
+                    die "$infile: line $.: failed to remove ",
+                        "$func_prefix_len_diff spaces from the indentation ",
+                        "of the continued lines for the function call ",
+                        "$func_name defined on $continued_func_call.\n";
+                }
+
+            } else {
+                $_ = (" " x -$func_prefix_len_diff) . $_;
+            }
+
+            my $excess = length($_) - 80;
+            if ($excess > 0) {
+                #warn "line $.: line too long (len: ", length($_), ", excess: $excess)";
+                if (!s/^ {$excess}//) {
+                    die "$infile: line $.: failed to remove ",
+                        "$excess spaces from the indentation ",
+                        "of the continued lines for the function call ",
+                        "$func_name defined on $continued_func_call.\n";
+                }
+                #warn "final length: ", length($_);
+            }
+        }
+
+    } else {
+        if (/^ ( .*? \s ([a-z]\w*) \( ) .*? , \s* $/x) {
+            # found a function call
+            my ($prefix);
+            ($prefix, $func_name) = ($1, $2);
+            if ($prefix !~ /^\w+ /) {
+                my $len = length $prefix;
+                if ($raw_line =~ /^ (.*? \w \( ) /x) {
+                    my $raw_len = length $1;
+                    if ($len != $raw_len) {
+                        #warn "line $.: found continued func call: $_";
+                        $continued_func_call = $.;
+                        $func_prefix_len_diff = $raw_len - $len;
+                        $func_indent_len = $indent_len;
+                        $func_raw_prefix_len = $raw_len;
+                        $func_prefix_len = $raw_len;
+                    }
+                }
+            }
+        }
+    }
 
     if ($in_block) {
         #warn "adding txt to $block with name $block->{name}: $_";

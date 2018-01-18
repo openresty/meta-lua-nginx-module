@@ -160,11 +160,11 @@ ngx_[% subsystem %]_lua_log_handler_inline([% req_type %] *r)
     L = ngx_[% subsystem %]_lua_get_lua_vm(r, NULL);
 
     /*  load Lua inline script (w/ cache) sp = 1 */
-    rc = ngx_[% subsystem %]_lua_cache_loadbuffer(r->connection->log, L,
-                                       llcf->log_src.value.data,
-                                       llcf->log_src.value.len,
-                                       llcf->log_src_key,
-                                       (const char *) llcf->log_chunkname);
+    rc = ngx_[% subsys %]_lua_cache_loadbuffer(r->connection->log, L,
+                                               llcf->log_src.value.data,
+                                               llcf->log_src.value.len,
+                                               llcf->log_src_key,
+                                               (const char *) llcf->log_chunkname);
     if (rc != NGX_OK) {
         return NGX_ERROR;
     }

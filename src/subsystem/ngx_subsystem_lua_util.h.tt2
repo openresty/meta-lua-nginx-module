@@ -514,8 +514,8 @@ ngx_[% subsystem %]_lua_get_flush_chain([% req_type %] *r, ngx_[% subsystem %]_l
 {
     ngx_chain_t  *cl;
 
-    cl = ngx_[% subsystem %]_lua_chain_get_free_buf(r->connection->log, r->pool,
-                                         &ctx->free_bufs, 0);
+    cl = ngx_[% subsys %]_lua_chain_get_free_buf(r->connection->log, r->pool,
+                                                 &ctx->free_bufs, 0);
     if (cl == NULL) {
         return NULL;
     }

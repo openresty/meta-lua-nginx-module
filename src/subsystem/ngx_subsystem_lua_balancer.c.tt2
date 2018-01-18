@@ -86,8 +86,8 @@ ngx_[% subsystem %]_lua_balancer_handler_file([% req_type %] *r,
     ngx_int_t           rc;
 
     rc = ngx_[% subsystem %]_lua_cache_loadfile(r->connection->log, L,
-                                     lscf->balancer.src.data,
-                                     lscf->balancer.src_key);
+                                                lscf->balancer.src.data,
+                                                lscf->balancer.src_key);
     if (rc != NGX_OK) {
         return rc;
     }
@@ -106,10 +106,10 @@ ngx_[% subsystem %]_lua_balancer_handler_inline([% req_type %] *r,
     ngx_int_t           rc;
 
     rc = ngx_[% subsystem %]_lua_cache_loadbuffer(r->connection->log, L,
-                                       lscf->balancer.src.data,
-                                       lscf->balancer.src.len,
-                                       lscf->balancer.src_key,
-                                       "=balancer_by_lua");
+                                                  lscf->balancer.src.data,
+                                                  lscf->balancer.src.len,
+                                                  lscf->balancer.src_key,
+                                                  "=balancer_by_lua");
     if (rc != NGX_OK) {
         return rc;
     }
@@ -170,7 +170,7 @@ ngx_[% subsystem %]_lua_balancer_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
         /* Lua code in an external file */
 
         name = ngx_[% subsystem %]_lua_rebase_path(cf->pool, value[1].data,
-                                        value[1].len);
+                                                   value[1].len);
         if (name == NULL) {
             return NGX_CONF_ERROR;
         }

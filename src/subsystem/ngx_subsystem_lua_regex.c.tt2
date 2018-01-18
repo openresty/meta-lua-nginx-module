@@ -508,9 +508,9 @@ exec:
 #if LUA_HAVE_PCRE_DFA
 
         int ws[NGX_LUA_RE_DFA_MODE_WORKSPACE_COUNT];
-        rc = ngx_[% subsystem %]_lua_regex_dfa_exec(re_comp.regex, sd, &subj,
-                                         (int) pos, cap, ovecsize, ws,
-                                         sizeof(ws)/sizeof(ws[0]), exec_opts);
+        rc = ngx_[% subsys %]_lua_regex_dfa_exec(re_comp.regex, sd, &subj,
+                                                 (int) pos, cap, ovecsize, ws,
+                                                 sizeof(ws)/sizeof(ws[0]), exec_opts);
 
 #else /* LUA_HAVE_PCRE_DFA */
 
@@ -520,8 +520,8 @@ exec:
 #endif /* LUA_HAVE_PCRE_DFA */
 
     } else {
-        rc = ngx_[% subsystem %]_lua_regex_exec(re_comp.regex, sd, &subj, (int) pos, cap,
-                                     ovecsize, exec_opts);
+        rc = ngx_[% subsys %]_lua_regex_exec(re_comp.regex, sd, &subj, (int) pos, cap,
+                                             ovecsize, exec_opts);
     }
 
     if (rc == NGX_REGEX_NO_MATCHED) {
@@ -618,9 +618,9 @@ exec:
     }
 
     if (name_count > 0) {
-        ngx_[% subsystem %]_lua_re_collect_named_captures(L, res_tb_idx, name_table,
-                                               name_count, name_entry_size,
-                                               flags, &subj);
+        ngx_[% subsys %]_lua_re_collect_named_captures(L, res_tb_idx, name_table,
+                                                       name_count, name_entry_size,
+                                                       flags, &subj);
     }
 
     if (!(flags & NGX_LUA_RE_COMPILE_ONCE)) {
@@ -1077,9 +1077,9 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L)
 
         int ws[NGX_LUA_RE_DFA_MODE_WORKSPACE_COUNT];
 
-        rc = ngx_[% subsystem %]_lua_regex_dfa_exec(ctx->regex, ctx->regex_sd, &subj,
-                                         offset, cap, ctx->captures_len, ws,
-                                         sizeof(ws)/sizeof(ws[0]), exec_opts);
+        rc = ngx_[% subsys %]_lua_regex_dfa_exec(ctx->regex, ctx->regex_sd, &subj,
+                                                 offset, cap, ctx->captures_len, ws,
+                                                 sizeof(ws)/sizeof(ws[0]), exec_opts);
 
 #else /* LUA_HAVE_PCRE_DFA */
         msg = "at least pcre 6.0 is required for the DFA mode";
@@ -1088,9 +1088,9 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L)
 #endif /* LUA_HAVE_PCRE_DFA */
 
     } else {
-        rc = ngx_[% subsystem %]_lua_regex_exec(ctx->regex, ctx->regex_sd, &subj,
-                                     offset, cap, ctx->captures_len,
-                                     exec_opts);
+        rc = ngx_[% subsys %]_lua_regex_exec(ctx->regex, ctx->regex_sd, &subj,
+                                             offset, cap, ctx->captures_len,
+                                             exec_opts);
     }
 
     if (rc == NGX_REGEX_NO_MATCHED) {
@@ -1145,9 +1145,9 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L)
     }
 
     if (name_count > 0) {
-        ngx_[% subsystem %]_lua_re_collect_named_captures(L, lua_gettop(L), name_table,
-                                               name_count, name_entry_size,
-                                               ctx->flags, &subj);
+        ngx_[% subsys %]_lua_re_collect_named_captures(L, lua_gettop(L), name_table,
+                                                       name_count, name_entry_size,
+                                                       ctx->flags, &subj);
     }
 
     offset = cap[1];
@@ -1714,10 +1714,10 @@ exec:
 #if LUA_HAVE_PCRE_DFA
 
             int ws[NGX_LUA_RE_DFA_MODE_WORKSPACE_COUNT];
-            rc = ngx_[% subsystem %]_lua_regex_dfa_exec(re_comp.regex, sd, &subj,
-                                             offset, cap, ovecsize, ws,
-                                             sizeof(ws)/sizeof(ws[0]),
-                                             exec_opts);
+            rc = ngx_[% subsys %]_lua_regex_dfa_exec(re_comp.regex, sd, &subj,
+                                                     offset, cap, ovecsize, ws,
+                                                     sizeof(ws)/sizeof(ws[0]),
+                                                     exec_opts);
 
 #else /* LUA_HAVE_PCRE_DFA */
 
@@ -1727,8 +1727,8 @@ exec:
 #endif /* LUA_HAVE_PCRE_DFA */
 
         } else {
-            rc = ngx_[% subsystem %]_lua_regex_exec(re_comp.regex, sd, &subj, offset, cap,
-                                         ovecsize, exec_opts);
+            rc = ngx_[% subsys %]_lua_regex_exec(re_comp.regex, sd, &subj, offset, cap,
+                                                 ovecsize, exec_opts);
         }
 
         if (rc == NGX_REGEX_NO_MATCHED) {
@@ -1782,11 +1782,11 @@ exec:
             }
 
             if (name_count > 0) {
-                ngx_[% subsystem %]_lua_re_collect_named_captures(L, lua_gettop(L),
-                                                       name_table,
-                                                       name_count,
-                                                       name_entry_size,
-                                                       flags, &subj);
+                ngx_[% subsys %]_lua_re_collect_named_captures(L, lua_gettop(L),
+                                                               name_table,
+                                                               name_count,
+                                                               name_entry_size,
+                                                               flags, &subj);
             }
 
             dd("stack size at call: %d", lua_gettop(L));
@@ -1832,8 +1832,8 @@ exec:
             break;
         }
 
-        rc = ngx_[% subsystem %]_lua_complex_value(r, &subj, cp_offset, rc, cap, ctpl,
-                                        &luabuf);
+        rc = ngx_[% subsys %]_lua_complex_value(r, &subj, cp_offset, rc, cap, ctpl,
+                                                &luabuf);
 
         if (rc != NGX_OK) {
             msg = lua_pushfstring(L, "failed to eval the template for "
@@ -1930,11 +1930,11 @@ ngx_[% subsystem %]_lua_ffi_set_jit_stack_size(int size, u_char *errstr,
 {
 #if LUA_HAVE_PCRE_JIT
 
-    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
+    ngx_[% subsys %]_lua_main_conf_t    *lmcf;
     ngx_pool_t                  *pool, *old_pool;
 
-    lmcf = ngx_[% subsystem %]_cycle_get_module_main_conf(ngx_cycle,
-                                               ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% subsys %]_cycle_get_module_main_conf(ngx_cycle,
+                                                       ngx_[% subsys %]_lua_module);
 
     if (size < NGX_LUA_RE_MIN_JIT_STACK_SIZE) {
         size = NGX_LUA_RE_MIN_JIT_STACK_SIZE;
@@ -2082,8 +2082,8 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch_cleanup(void *data)
 
     if (ctx) {
         if (ctx->regex_sd) {
-            ngx_[% subsystem %]_lua_regex_free_study_data(ctx->request->pool,
-                                               ctx->regex_sd);
+            ngx_[% subsys %]_lua_regex_free_study_data(ctx->request->pool,
+                                                       ctx->regex_sd);
             ctx->regex_sd = NULL;
         }
 
@@ -2228,8 +2228,8 @@ ngx_[% subsystem %]_lua_ffi_compile_regex(const unsigned char *pat, size_t pat_l
         goto error;
     }
 
-    lmcf = ngx_[% subsystem %]_cycle_get_module_main_conf(ngx_cycle,
-                                               ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% subsys %]_cycle_get_module_main_conf(ngx_cycle,
+                                                       ngx_[% subsys %]_lua_module);
 
 #if (LUA_HAVE_PCRE_JIT)
 
@@ -2379,9 +2379,9 @@ ngx_[% subsystem %]_lua_ffi_exec_regex(ngx_[% subsystem %]_lua_regex_t *re, int 
 #if LUA_HAVE_PCRE_DFA
 
         int ws[NGX_LUA_RE_DFA_MODE_WORKSPACE_COUNT];
-        rc = ngx_[% subsystem %]_lua_regex_dfa_exec(re->regex, sd, &subj,
-                                         (int) pos, cap, ovecsize, ws,
-                                         sizeof(ws)/sizeof(ws[0]), exec_opts);
+        rc = ngx_[% subsys %]_lua_regex_dfa_exec(re->regex, sd, &subj,
+                                                 (int) pos, cap, ovecsize, ws,
+                                                 sizeof(ws)/sizeof(ws[0]), exec_opts);
 
 #else
 
@@ -2390,8 +2390,8 @@ ngx_[% subsystem %]_lua_ffi_exec_regex(ngx_[% subsystem %]_lua_regex_t *re, int 
 #endif /* LUA_HAVE_PCRE_DFA */
 
     } else {
-        rc = ngx_[% subsystem %]_lua_regex_exec(re->regex, sd, &subj, (int) pos, cap,
-                                     ovecsize, exec_opts);
+        rc = ngx_[% subsys %]_lua_regex_exec(re->regex, sd, &subj, (int) pos, cap,
+                                             ovecsize, exec_opts);
     }
 
     return rc;
@@ -2533,8 +2533,8 @@ uint32_t
 ngx_[% subsystem %]_lua_ffi_max_regex_cache_size(void)
 {
     ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
-    lmcf = ngx_[% subsystem %]_cycle_get_module_main_conf(ngx_cycle,
-                                               ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% subsys %]_cycle_get_module_main_conf(ngx_cycle,
+                                                       ngx_[% subsystem %]_lua_module);
     if (lmcf == NULL) {
         return 0;
     }

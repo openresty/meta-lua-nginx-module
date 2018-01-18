@@ -126,8 +126,8 @@ ngx_[% subsystem %]_lua_ngx_escape_uri(lua_State *L)
         return 1;
     }
 
-    escape = 2 * ngx_[% subsystem %]_lua_escape_uri(NULL, src, len,
-                                         NGX_ESCAPE_URI_COMPONENT);
+    escape = 2 * ngx_[% subsys %]_lua_escape_uri(NULL, src, len,
+                                                 NGX_ESCAPE_URI_COMPONENT);
 
     if (escape) {
         dlen = escape + len;
@@ -743,8 +743,8 @@ ngx_[% subsystem %]_lua_ffi_unescape_uri(const u_char *src, size_t len, u_char *
 {
     u_char      *p = dst;
 
-    ngx_[% subsystem %]_lua_unescape_uri(&p, (u_char **) &src, len,
-                              NGX_UNESCAPE_URI_COMPONENT);
+    ngx_[% subsys %]_lua_unescape_uri(&p, (u_char **) &src, len,
+                                      NGX_UNESCAPE_URI_COMPONENT);
     return p - dst;
 }
 
@@ -752,8 +752,8 @@ ngx_[% subsystem %]_lua_ffi_unescape_uri(const u_char *src, size_t len, u_char *
 size_t
 ngx_[% subsystem %]_lua_ffi_uri_escaped_length(const u_char *src, size_t len)
 {
-    return len + 2 * ngx_[% subsystem %]_lua_escape_uri(NULL, (u_char *) src, len,
-                                             NGX_ESCAPE_URI_COMPONENT);
+    return len + 2 * ngx_[% subsys %]_lua_escape_uri(NULL, (u_char *) src, len,
+                                                     NGX_ESCAPE_URI_COMPONENT);
 }
 
 

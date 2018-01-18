@@ -409,8 +409,8 @@ ngx_[% subsystem %]_lua_ffi_errlog_get_msg(char **log, int *loglevel, u_char *er
         return NGX_DONE;
     }
 
-    ngx_[% subsystem %]_lua_log_ringbuf_read(ringbuf, loglevel, (void **) log, &loglen,
-                                  log_time);
+    ngx_[% subsys %]_lua_log_ringbuf_read(ringbuf, loglevel, (void **) log, &loglen,
+                                          log_time);
     return loglen;
 #else
     *errlen = ngx_snprintf(err, *errlen,
