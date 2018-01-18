@@ -948,9 +948,9 @@ ngx_[% subsystem %]_lua_request_cleanup_handler(void *data)
 void
 ngx_[% subsystem %]_lua_request_cleanup(ngx_[% subsystem %]_lua_ctx_t *ctx, int forcible)
 {
-    lua_State                   *L;
-    [% req_type %]          *r;
-    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
+    lua_State                           *L;
+    [% req_type %]                      *r;
+    ngx_[% subsys %]_lua_main_conf_t    *lmcf;
 
     /*  force coroutine handling the request quit */
     if (ctx == NULL) {
@@ -4270,8 +4270,8 @@ ngx_[% subsystem %]_lua_do_call(ngx_log_t *log, lua_State *L)
 static int
 ngx_[% subsystem %]_lua_get_raw_phase_context(lua_State *L)
 {
-    [% req_type %]      *r;
-    ngx_[% subsystem %]_lua_ctx_t      *ctx;
+    [% req_type %]                  *r;
+    ngx_[% subsys %]_lua_ctx_t      *ctx;
 
     r = lua_touserdata(L, 1);
     if (r == NULL) {

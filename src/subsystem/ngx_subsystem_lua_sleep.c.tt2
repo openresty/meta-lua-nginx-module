@@ -27,9 +27,10 @@ ngx_[% subsystem %]_lua_ngx_sleep(lua_State *L)
 {
     int                          n;
     ngx_int_t                    delay; /* in msec */
-    [% req_type %]          *r;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
-    ngx_[% subsystem %]_lua_co_ctx_t       *coctx;
+    [% req_type %]              *r;
+
+    ngx_[% subsys %]_lua_ctx_t          *ctx;
+    ngx_[% subsys %]_lua_co_ctx_t       *coctx;
 
     n = lua_gettop(L);
     if (n != 1) {
@@ -116,21 +117,16 @@ ngx_[% subsystem %]_lua_sleep_handler(ngx_event_t *ev)
 [% IF stream_subsys %]
 #if (NGX_DEBUG)
 [% END %]
-
-    ngx_connection_t        *c;
-
+    ngx_connection_t                *c;
 [% IF stream_subsys %]
 #endif
 [% END %]
-
-    [% req_type %]      *r;
-    ngx_[% subsystem %]_lua_ctx_t      *ctx;
-
+    [% req_type %]                  *r;
+    ngx_[% subsys %]_lua_ctx_t      *ctx;
 [% IF http_subsys %]
-    ngx_http_log_ctx_t      *log_ctx;
+    ngx_http_log_ctx_t              *log_ctx;
 [% END %]
-
-    ngx_[% subsystem %]_lua_co_ctx_t   *coctx;
+    ngx_[% subsys %]_lua_co_ctx_t   *coctx;
 
     coctx = ev->data;
 

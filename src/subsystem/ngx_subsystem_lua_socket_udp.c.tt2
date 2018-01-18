@@ -119,8 +119,8 @@ ngx_[% subsystem %]_lua_inject_socket_udp_api(ngx_log_t *log, lua_State *L)
 static int
 ngx_[% subsystem %]_lua_socket_udp(lua_State *L)
 {
-    [% req_type %]      *r;
-    ngx_[% subsystem %]_lua_ctx_t      *ctx;
+    [% req_type %]              *r;
+    ngx_[% subsys %]_lua_ctx_t  *ctx;
 
     if (lua_gettop(L) != 0) {
         return luaL_error(L, "expecting zero arguments, but got %d",
@@ -137,17 +137,15 @@ ngx_[% subsystem %]_lua_socket_udp(lua_State *L)
         return luaL_error(L, "no ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
+    ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
 
 [% IF http_subsys -%]
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-
 [% ELSIF stream_subsys -%]
                                | NGX_STREAM_LUA_CONTEXT_PREREAD
 [% END -%]
-
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER);
 
     lua_createtable(L, 3 /* narr */, 1 /* nrec */);
@@ -164,19 +162,16 @@ ngx_[% subsystem %]_lua_socket_udp(lua_State *L)
 static int
 ngx_[% subsystem %]_lua_socket_udp_setpeername(lua_State *L)
 {
-    [% req_type %]          *r;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
+    [% req_type %]              *r;
+    ngx_[% subsys %]_lua_ctx_t  *ctx;
     ngx_str_t                    host;
     int                          port;
     ngx_resolver_ctx_t          *rctx, temp;
-
 [% IF http_subsys %]
     ngx_http_core_loc_conf_t    *clcf;
-
 [% ELSIF stream_subsys %]
     ngx_stream_core_srv_conf_t  *clcf;
 [% END %]
-
     int                          saved_top;
     int                          n;
     u_char                      *p;
@@ -1322,9 +1317,9 @@ ngx_[% subsystem %]_lua_socket_udp_handle_error([% req_type %] *r,
 static void
 ngx_[% subsystem %]_lua_socket_udp_cleanup(void *data)
 {
-    ngx_[% subsystem %]_lua_socket_udp_upstream_t  *u = data;
+    ngx_[% subsys %]_lua_socket_udp_upstream_t  *u = data;
 
-    [% req_type %]  *r;
+    [% req_type %]              *r;
 
     r = u->request;
 

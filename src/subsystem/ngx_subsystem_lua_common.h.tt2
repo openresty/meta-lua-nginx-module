@@ -548,12 +548,12 @@ typedef struct {
 
 typedef struct ngx_[% subsystem %]_lua_ctx_s {
     /* for lua_coce_cache off: */
-    ngx_[% subsystem %]_lua_vm_state_t  *vm_state;
+    ngx_[% subsys %]_lua_vm_state_t     *vm_state;
 
-    [% req_type %]      *request;
-    ngx_[% req_subsystem %]_handler_pt      resume_handler;
+    [% req_type %]                      *request;
+    ngx_[% req_subsys %]_handler_pt      resume_handler;
 
-    ngx_[% subsystem %]_lua_co_ctx_t   *cur_co_ctx; /* co ctx for the current coroutine */
+    ngx_[% subsys %]_lua_co_ctx_t       *cur_co_ctx; /* co ctx for the current coroutine */
 
     /* FIXME: we should use rbtree here to prevent O(n) lookup overhead */
     ngx_list_t              *user_co_ctx; /* coroutine contexts for user

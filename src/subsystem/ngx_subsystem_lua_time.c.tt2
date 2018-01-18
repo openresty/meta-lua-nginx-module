@@ -187,7 +187,7 @@ ngx_[% subsystem %]_lua_ngx_parse_http_time(lua_State *L)
 static int
 ngx_[% subsystem %]_lua_ngx_req_start_time(lua_State *L)
 {
-    [% req_type %]  *r;
+    [% req_type %]              *r;
 
     r = ngx_[% subsystem %]_lua_get_req(L);
     if (r == NULL) {
