@@ -541,8 +541,7 @@ ngx_[% subsystem %]_lua_balancer_save_session(ngx_peer_connection_t *pc, void *d
 
 
 [%- IF subsystem == 'http' -%]
-[%#- if not under http, always build those APIs as a workaround
-     for no lua-resty-core support in subsystems other than http -%]
+[%#- if not under http, always build those APIs as a workaround for no lua-resty-core support in subsystems other than http -%]
 
 #ifndef NGX_LUA_NO_FFI_API
 [%- END -%]
