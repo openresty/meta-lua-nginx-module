@@ -16,11 +16,6 @@
 #include "ngx_[% subsystem %]_lua_probe.h"
 
 
-[% IF stream_subsys %]
-[% log_prefix = 'stream ' %]
-[% END %]
-
-
 typedef struct {
     void        **main_conf;
     void        **srv_conf;

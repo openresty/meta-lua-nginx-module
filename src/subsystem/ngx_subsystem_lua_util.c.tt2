@@ -57,11 +57,6 @@
 [% END %]
 
 
-[% IF stream_subsys %]
-[% log_prefix = 'stream ' %]
-[% END %]
-
-
 #if 1
 #undef ngx_[% subsystem %]_lua_probe_info
 #define ngx_[% subsystem %]_lua_probe_info(msg)
