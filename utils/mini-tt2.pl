@@ -47,6 +47,7 @@ my %tt2_vars;
 
     $tt2_vars{req_type} = $req_type;
     $tt2_vars{req_subsys} = $tt2_vars{req_subsystem} = $req_subsys;
+    $tt2_vars{"${subsys}_subsys"} = 1;
 }
 
 my $infile = shift
@@ -79,7 +80,6 @@ my ($out, $tmpfile) = tempfile "$subsys-XXXXXXX", TMPDIR => 1;
 
 my $in_if;
 my $in_else;
-my %tested;
 my $skip;
 my $if_branch_hit;
 my $in_block;
@@ -150,6 +150,8 @@ while (<$in>) {
 
         $in_if = $.;
 
+        $cond =~ s/\s+$//;
+
         if ($cond =~ /^ (\w+) \s* == \s* (?: (['"]) (.*?) \2 | (\d+) )
             \s* (?:\#.*?)? $/x)
         {
@@ -160,9 +162,22 @@ while (<$in>) {
                 die "$infile: line $.: bad subsystem value to be compared: $v\n";
             }
 
-            $tested{$v} = 1;
-
             if ($v eq $tt2_vars{$var}) {
+                $if_branch_hit = 1;
+                undef $skip;
+
+            } else {
+                $skip = 1;
+            }
+
+        } elsif ($cond =~ /^ (\w+) $/x) {
+            my $var = $1;
+
+            if ($var =~ /^ (?: subsys(?:tem)? | req_type | req_subsys ) $/ix) {
+                die "$infile: line $.: variable $var is always true: $tt2_vars{$var}.\n";
+            }
+
+            if ($tt2_vars{$var}) {
                 $if_branch_hit = 1;
                 undef $skip;
 
@@ -203,7 +218,6 @@ while (<$in>) {
         if ($in_if) {
             undef $in_if;
             undef $in_else;
-            undef %tested;
             undef $skip;
             undef $if_branch_hit;
             next;
