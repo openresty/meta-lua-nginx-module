@@ -37,11 +37,11 @@ int
 ngx_[% subsystem %]_lua_ngx_log(lua_State *L)
 {
     ngx_log_t                   *log;
-    [% req_type %]          *r;
+    [% req_type %]              *r;
     const char                  *msg;
     int                          level;
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
 
     if (r && r->connection && r->connection->log) {
         log = r->connection->log;
@@ -79,9 +79,9 @@ int
 ngx_[% subsystem %]_lua_print(lua_State *L)
 {
     ngx_log_t                   *log;
-    [% req_type %]          *r;
+    [% req_type %]              *r;
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
 
     if (r && r->connection && r->connection->log) {
         log = r->connection->log;
@@ -92,7 +92,6 @@ ngx_[% subsystem %]_lua_print(lua_State *L)
 
 [% IF http_subsys %]
     return log_wrapper(log, "[lua] ", NGX_LOG_NOTICE, L);
-
 [% ELSIF stream_subsys %]
     return log_wrapper(log, "stream [lua] ", NGX_LOG_NOTICE, L);
 [% END %]

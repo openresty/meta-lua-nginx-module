@@ -86,6 +86,7 @@ open my $in, $infile
 my ($out, $tmpfile) = tempfile "$subsys-XXXXXXX", TMPDIR => 1;
 
 my ($raw_line, $skip);
+my ($prev_var_decl, $prev_var_var_col);
 my ($continued_func_call, $func_name, $func_prefix_len_diff, $func_indent_len);
 my ($func_raw_prefix_len);
 my ($in_if, $in_else, $if_branch_hit);
@@ -291,6 +292,64 @@ while (<$in>) {
         $indent_len = length $indent;
     }
 
+    my $passthrough;
+
+    # check local variable declaration and struct member declaration alignment
+
+    my $var_with_init_pat = qr/(\**) \b [a-z]\w* \s* (?: = \s* \w+ )?/x;
+
+    if (/^ (\s+) ([a-z]\w*) \b (\s*) $var_with_init_pat
+           (?: \s* , \s* $var_with_init_pat )* \s* ; \s* $/x
+        && $2 !~ /^(?:goto|return)$/)
+    {
+        my ($indent, $type, $padding, $pointer) = ($1, $2, $3, $4);
+
+        my $padding_len = length $padding;
+        my $var_col = length($indent) + length($type) + $padding_len
+                      + length($pointer);
+
+        if ($raw_line !~ /^ ( \s+ (?: \w+ | \[\% .*? \%] )+
+                            (?: \s* \*+ | \s+ ) ) /x)
+        {
+            die "$infile: line $.: failed to match raw line for variable ",
+                "declaration: $_";
+        }
+
+        my $raw_var_col = length $1;
+
+        my $var_col_diff = $raw_var_col - $var_col;
+
+        #if ($var_col_diff != 0) {
+            #warn "HIT a var declaration (col $var_col): $raw_line";
+            #warn "line $.: raw var column: $raw_var_col (diff: $var_col_diff)";
+        #}
+
+        if ($var_col_diff > 0) {
+            $_ = $indent . $type . $padding . (" " x $var_col_diff)
+                . $pointer . substr $_, $var_col;
+            #warn "NEW: $_";
+        }
+
+        if ($var_col_diff < 0) {
+            #warn "HIT a var declaration (col $var_col): $raw_line";
+            #warn "line $.: raw var column: $raw_var_col (diff: $var_col_diff)";
+
+            my $diff = -$var_col_diff;
+            if ($diff >= $padding_len) {
+                die "$infile: line $.: existing padding ($padding_len bytes) ",
+                    "not enough to compensate the variable name alignment ",
+                    "requirement ($diff difference).\n";
+            }
+
+            $_ = $indent . $type . (" " x ($padding_len - $diff))
+                . $pointer . substr $_, $var_col;
+            #warn "NEW: $_";
+        }
+
+        undef $continued_func_call;
+        $passthrough = 1;
+    }
+
     # check function calls spanning multiple lines
 
     if ($continued_func_call) {
@@ -355,7 +414,7 @@ while (<$in>) {
             }
         }
 
-    } else {
+    } elsif (!$passthrough) {
         if (/^ ( .*? \s ([a-z]\w*) \( ) .*? , \s* $/x) {
             # found a function call
             my ($prefix);
