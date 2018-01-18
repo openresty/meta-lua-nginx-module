@@ -150,17 +150,19 @@ while (<$in>) {
 
         $in_if = $.;
 
-        if ($cond =~ /^ subsys(?:tem)? \s* == \s* (['"]) ([^'"]*) \1
+        if ($cond =~ /^ (\w+) \s* == \s* (?: (['"]) (.*?) \2 | (\d+) )
             \s* (?:\#.*?)? $/x)
         {
-            my $v = $2;
-            if ($v !~ /^(?:http|stream)$/) {
-                die "$infile: line $.: bad subsystem value: $v\n";
+            my $var = $1;
+            my $v = $3 // $4;
+
+            if ($var =~ /^subsys(?:tem)?$/ && $v !~ /^(?:http|stream)$/) {
+                die "$infile: line $.: bad subsystem value to be compared: $v\n";
             }
 
             $tested{$v} = 1;
 
-            if ($v eq $subsys) {
+            if ($v eq $tt2_vars{$var}) {
                 $if_branch_hit = 1;
                 undef $skip;
 
