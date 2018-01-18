@@ -129,8 +129,8 @@ ngx_[% subsystem %]_lua_ngx_echo(lua_State *L, unsigned newline)
 
             case LUA_TTABLE:
 
-                size += ngx_[% subsystem %]_lua_calc_strlen_in_table(L, i, i,
-                                                          0 /* strict */);
+                size += ngx_[% subsys %]_lua_calc_strlen_in_table(L, i, i,
+                                                                  0 /* strict */);
                 break;
 
             case LUA_TLIGHTUSERDATA:
@@ -174,8 +174,8 @@ ngx_[% subsystem %]_lua_ngx_echo(lua_State *L, unsigned newline)
 
     ctx->seen_body_data = 1;
 
-    cl = ngx_[% subsystem %]_lua_chain_get_free_buf(r->connection->log, r->pool,
-                                         &ctx->free_bufs, size);
+    cl = ngx_[% subsys %]_lua_chain_get_free_buf(r->connection->log, r->pool,
+                                                 &ctx->free_bufs, size);
 
     if (cl == NULL) {
         return luaL_error(L, "no memory");

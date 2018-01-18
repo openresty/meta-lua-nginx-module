@@ -891,8 +891,8 @@ ngx_[% subsystem %]_lua_init(ngx_conf_t *cf)
         ngx_[% subsystem %]_lua_location_hash = ngx_[% subsystem %]_lua_hash_literal("location");
 [% END %]
 
-        lmcf->lua = ngx_[% subsystem %]_lua_init_vm(NULL, cf->cycle, cf->pool, lmcf,
-                                         cf->log, NULL);
+        lmcf->lua = ngx_[% subsys %]_lua_init_vm(NULL, cf->cycle, cf->pool, lmcf,
+                                                 cf->log, NULL);
         if (lmcf->lua == NULL) {
             ngx_conf_log_error(NGX_LOG_ERR, cf, 0,
                                "failed to initialize Lua VM");

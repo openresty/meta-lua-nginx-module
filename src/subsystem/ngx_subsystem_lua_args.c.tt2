@@ -257,8 +257,8 @@ ngx_[% subsystem %]_lua_parse_args(lua_State *L, u_char *buf, u_char *last, int 
 
             src = q; dst = q;
 
-            ngx_[% subsystem %]_lua_unescape_uri(&dst, &src, p - q,
-                                      NGX_UNESCAPE_URI_COMPONENT);
+            ngx_[% subsys %]_lua_unescape_uri(&dst, &src, p - q,
+                                              NGX_UNESCAPE_URI_COMPONENT);
 
             dd("pushing key %.*s", (int) (dst - q), q);
 
@@ -275,8 +275,8 @@ ngx_[% subsystem %]_lua_parse_args(lua_State *L, u_char *buf, u_char *last, int 
             /* reached the end of a key or a value, just save it */
             src = q; dst = q;
 
-            ngx_[% subsystem %]_lua_unescape_uri(&dst, &src, p - q,
-                                      NGX_UNESCAPE_URI_COMPONENT);
+            ngx_[% subsys %]_lua_unescape_uri(&dst, &src, p - q,
+                                              NGX_UNESCAPE_URI_COMPONENT);
 
             dd("pushing key or value %.*s", (int) (dst - q), q);
 
@@ -327,8 +327,8 @@ ngx_[% subsystem %]_lua_parse_args(lua_State *L, u_char *buf, u_char *last, int 
     if (p != q || parsing_value) {
         src = q; dst = q;
 
-        ngx_[% subsystem %]_lua_unescape_uri(&dst, &src, p - q,
-                                  NGX_UNESCAPE_URI_COMPONENT);
+        ngx_[% subsys %]_lua_unescape_uri(&dst, &src, p - q,
+                                          NGX_UNESCAPE_URI_COMPONENT);
 
         dd("pushing key or value %.*s", (int) (dst - q), q);
 
@@ -460,8 +460,8 @@ ngx_[% subsystem %]_lua_ffi_req_get_uri_args([% req_type %] *r, u_char *buf,
 
             src = q; dst = q;
 
-            ngx_[% subsystem %]_lua_unescape_uri(&dst, &src, p - q,
-                                      NGX_UNESCAPE_URI_COMPONENT);
+            ngx_[% subsys %]_lua_unescape_uri(&dst, &src, p - q,
+                                              NGX_UNESCAPE_URI_COMPONENT);
 
             dd("saving key %.*s", (int) (dst - q), q);
 
@@ -478,8 +478,8 @@ ngx_[% subsystem %]_lua_ffi_req_get_uri_args([% req_type %] *r, u_char *buf,
             /* reached the end of a key or a value, just save it */
             src = q; dst = q;
 
-            ngx_[% subsystem %]_lua_unescape_uri(&dst, &src, p - q,
-                                      NGX_UNESCAPE_URI_COMPONENT);
+            ngx_[% subsys %]_lua_unescape_uri(&dst, &src, p - q,
+                                              NGX_UNESCAPE_URI_COMPONENT);
 
             dd("pushing key or value %.*s", (int) (dst - q), q);
 
@@ -523,8 +523,8 @@ ngx_[% subsystem %]_lua_ffi_req_get_uri_args([% req_type %] *r, u_char *buf,
     if (p != q || parsing_value) {
         src = q; dst = q;
 
-        ngx_[% subsystem %]_lua_unescape_uri(&dst, &src, p - q,
-                                  NGX_UNESCAPE_URI_COMPONENT);
+        ngx_[% subsys %]_lua_unescape_uri(&dst, &src, p - q,
+                                          NGX_UNESCAPE_URI_COMPONENT);
 
         dd("pushing key or value %.*s", (int) (dst - q), q);
 

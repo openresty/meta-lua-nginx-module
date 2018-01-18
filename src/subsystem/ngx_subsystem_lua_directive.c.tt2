@@ -132,8 +132,8 @@ ngx_[% subsystem %]_lua_shared_dict(ngx_conf_t *cf, ngx_command_t *cmd, void *co
     ctx->main_conf = lmcf;
     ctx->log = &cf->cycle->new_log;
 
-    zone = ngx_[% subsystem %]_lua_shared_memory_add(cf, &name, (size_t) size,
-                                          &ngx_[% subsystem %]_lua_module);
+    zone = ngx_[% subsys %]_lua_shared_memory_add(cf, &name, (size_t) size,
+                                                  &ngx_[% subsystem %]_lua_module);
     if (zone == NULL) {
         return NGX_CONF_ERROR;
     }
@@ -369,16 +369,16 @@ ngx_[% subsystem %]_lua_filter_set_by_lua_inline([% req_type %] *r, ngx_str_t *v
     L = ngx_[% subsystem %]_lua_get_lua_vm(r, NULL);
 
     /*  load Lua inline script (w/ cache)        sp = 1 */
-    rc = ngx_[% subsystem %]_lua_cache_loadbuffer(r->connection->log, L,
-                                       filter_data->script.data,
-                                       filter_data->script.len,
-                                       filter_data->key, "=set_by_lua");
+    rc = ngx_[% subsys %]_lua_cache_loadbuffer(r->connection->log, L,
+                                               filter_data->script.data,
+                                               filter_data->script.len,
+                                               filter_data->key, "=set_by_lua");
     if (rc != NGX_OK) {
         return NGX_ERROR;
     }
 
-    rc = ngx_[% subsystem %]_lua_set_by_chunk(L, r, val, v, filter_data->size,
-                                   &filter_data->script);
+    rc = ngx_[% subsys %]_lua_set_by_chunk(L, r, val, v, filter_data->size,
+                                           &filter_data->script);
     if (rc != NGX_OK) {
         return NGX_ERROR;
     }
@@ -414,8 +414,8 @@ ngx_[% subsystem %]_lua_filter_set_by_lua_file([% req_type %] *r, ngx_str_t *val
     dd("script: %.*s", (int) filter_data->script.len, filter_data->script.data);
     dd("nargs: %d", (int) nargs);
 
-    script_path = ngx_[% subsystem %]_lua_rebase_path(r->pool, filter_data->script.data,
-                                           filter_data->script.len);
+    script_path = ngx_[% subsys %]_lua_rebase_path(r->pool, filter_data->script.data,
+                                                   filter_data->script.len);
     if (script_path == NULL) {
         return NGX_ERROR;
     }
@@ -423,8 +423,8 @@ ngx_[% subsystem %]_lua_filter_set_by_lua_file([% req_type %] *r, ngx_str_t *val
     L = ngx_[% subsystem %]_lua_get_lua_vm(r, NULL);
 
     /*  load Lua script file (w/ cache)        sp = 1 */
-    rc = ngx_[% subsystem %]_lua_cache_loadfile(r->connection->log, L, script_path,
-                                     filter_data->key);
+    rc = ngx_[% subsys %]_lua_cache_loadfile(r->connection->log, L, script_path,
+                                             filter_data->key);
     if (rc != NGX_OK) {
         return NGX_ERROR;
     }
@@ -496,8 +496,8 @@ ngx_[% subsystem %]_lua_rewrite_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
     }
 
     if (cmd->post == ngx_[% subsystem %]_lua_rewrite_handler_inline) {
-        chunkname = ngx_[% subsystem %]_lua_gen_chunk_name(cf, "rewrite_by_lua",
-                                                sizeof("rewrite_by_lua") - 1);
+        chunkname = ngx_[% subsys %]_lua_gen_chunk_name(cf, "rewrite_by_lua",
+                                                        sizeof("rewrite_by_lua") - 1);
         if (chunkname == NULL) {
             return NGX_CONF_ERROR;
         }
@@ -608,8 +608,8 @@ ngx_[% subsystem %]_lua_access_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *
     }
 
     if (cmd->post == ngx_[% subsystem %]_lua_access_handler_inline) {
-        chunkname = ngx_[% subsystem %]_lua_gen_chunk_name(cf, "access_by_lua",
-                                                sizeof("access_by_lua") - 1);
+        chunkname = ngx_[% subsys %]_lua_gen_chunk_name(cf, "access_by_lua",
+                                                        sizeof("access_by_lua") - 1);
         if (chunkname == NULL) {
             return NGX_CONF_ERROR;
         }
@@ -842,8 +842,8 @@ ngx_[% subsystem %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
     }
 
     if (cmd->post == ngx_[% subsystem %]_lua_content_handler_inline) {
-        chunkname = ngx_[% subsystem %]_lua_gen_chunk_name(cf, "content_by_lua",
-                                                sizeof("content_by_lua") - 1);
+        chunkname = ngx_[% subsys %]_lua_gen_chunk_name(cf, "content_by_lua",
+                                                        sizeof("content_by_lua") - 1);
         if (chunkname == NULL) {
             return NGX_CONF_ERROR;
         }
@@ -969,8 +969,8 @@ ngx_[% subsystem %]_lua_log_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *con
     }
 
     if (cmd->post == ngx_[% subsystem %]_lua_log_handler_inline) {
-        chunkname = ngx_[% subsystem %]_lua_gen_chunk_name(cf, "log_by_lua",
-                                                sizeof("log_by_lua") - 1);
+        chunkname = ngx_[% subsys %]_lua_gen_chunk_name(cf, "log_by_lua",
+                                                        sizeof("log_by_lua") - 1);
         if (chunkname == NULL) {
             return NGX_CONF_ERROR;
         }
@@ -1280,8 +1280,8 @@ ngx_[% subsystem %]_lua_init_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
     lmcf->init_handler = (ngx_[% subsystem %]_lua_main_conf_handler_pt) cmd->post;
 
     if (cmd->post == ngx_[% subsystem %]_lua_init_by_file) {
-        name = ngx_[% subsystem %]_lua_rebase_path(cf->pool, value[1].data,
-                                        value[1].len);
+        name = ngx_[% subsys %]_lua_rebase_path(cf->pool, value[1].data,
+                                                value[1].len);
         if (name == NULL) {
             return NGX_CONF_ERROR;
         }
@@ -1340,8 +1340,8 @@ ngx_[% subsystem %]_lua_init_worker_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
     lmcf->init_worker_handler = (ngx_[% subsystem %]_lua_main_conf_handler_pt) cmd->post;
 
     if (cmd->post == ngx_[% subsystem %]_lua_init_worker_by_file) {
-        name = ngx_[% subsystem %]_lua_rebase_path(cf->pool, value[1].data,
-                                        value[1].len);
+        name = ngx_[% subsys %]_lua_rebase_path(cf->pool, value[1].data,
+                                                value[1].len);
         if (name == NULL) {
             return NGX_CONF_ERROR;
         }
@@ -1798,8 +1798,8 @@ ngx_[% subsystem %]_lua_conf_read_lua_token(ngx_conf_t *cf,
             dd("search pattern for the closing long bracket: \"%.*s\" (len=%d)",
                (int) (b->pos + ovec[1] - p), p, (int) (b->pos + ovec[1] - p));
 
-            q = ngx_[% subsystem %]_lua_strlstrn(b->pos + ovec[1], b->last, p,
-                                      b->pos + ovec[1] - p - 1);
+            q = ngx_[% subsys %]_lua_strlstrn(b->pos + ovec[1], b->last, p,
+                                              b->pos + ovec[1] - p - 1);
 
             if (q == NULL) {
                 ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,

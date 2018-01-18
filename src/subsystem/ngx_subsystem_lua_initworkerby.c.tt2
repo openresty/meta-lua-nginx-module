@@ -207,7 +207,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
 [% END %]
 
     [% subsystem %]_ctx.srv_conf = ngx_pcalloc(conf.pool,
-                                    sizeof(void *) * ngx_[% subsystem %]_max_module);
+                                               sizeof(void *) * ngx_[% subsystem %]_max_module);
     if ([% subsystem %]_ctx.srv_conf == NULL) {
         return NGX_ERROR;
     }

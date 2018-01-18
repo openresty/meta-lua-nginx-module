@@ -280,8 +280,8 @@ ngx_[% subsystem %]_lua_new_state(lua_State *parent_vm, ngx_cycle_t *cycle,
                             lmcf->lua_path.len);
             new_path = lua_tostring(L, -1);
 
-            ngx_[% subsystem %]_lua_set_path(cycle, L, -3, "path", new_path, old_path,
-                                  log);
+            ngx_[% subsys %]_lua_set_path(cycle, L, -3, "path", new_path, old_path,
+                                          log);
 
             lua_pop(L, 2);
         }
@@ -296,8 +296,8 @@ ngx_[% subsystem %]_lua_new_state(lua_State *parent_vm, ngx_cycle_t *cycle,
                             lmcf->lua_cpath.len);
             new_cpath = lua_tostring(L, -1);
 
-            ngx_[% subsystem %]_lua_set_path(cycle, L, -3, "cpath", new_cpath, old_cpath,
-                                  log);
+            ngx_[% subsys %]_lua_set_path(cycle, L, -3, "cpath", new_cpath, old_cpath,
+                                          log);
 
 
             lua_pop(L, 2);
@@ -848,8 +848,8 @@ ngx_[% subsystem %]_lua_add_copy_chain([% req_type %] *r, ngx_[% subsystem %]_lu
         return NGX_OK;
     }
 
-    cl = ngx_[% subsystem %]_lua_chain_get_free_buf(r->connection->log, r->pool,
-                                         &ctx->free_bufs, len);
+    cl = ngx_[% subsys %]_lua_chain_get_free_buf(r->connection->log, r->pool,
+                                                 &ctx->free_bufs, len);
     if (cl == NULL) {
         return NGX_ERROR;
     }
@@ -1253,11 +1253,11 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
                 ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
 
                 if (ctx->cur_co_ctx->zombie_child_threads) {
-                    ngx_[% subsystem %]_lua_cleanup_zombie_child_uthreads(r, L, ctx,
-                                                               ctx->cur_co_ctx);
+                    ngx_[% subsys %]_lua_cleanup_zombie_child_uthreads(r, L, ctx,
+                                                                       ctx->cur_co_ctx);
                 }
 
-                ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+                ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                                "lua light thread ended normally");
 
                 if (ngx_[% subsystem %]_lua_is_entry_thread(ctx)) {
@@ -1410,10 +1410,10 @@ user_co_done:
 
             ngx_[% subsystem %]_lua_probe_coroutine_done(r, ctx->cur_co_ctx->co, 0);
 
-            ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
+            ctx->cur_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_DEAD;
 
-            ngx_[% subsystem %]_lua_thread_traceback(L, ctx->cur_co_ctx->co,
-                                          ctx->cur_co_ctx);
+            ngx_[% subsys %]_lua_thread_traceback(L, ctx->cur_co_ctx->co,
+                                                  ctx->cur_co_ctx);
             trace = lua_tostring(L, -1);
 
             if (ctx->cur_co_ctx->is_uthread) {
@@ -1566,8 +1566,8 @@ done:
     if (ctx->entered_content_phase
         && r->connection->fd != (ngx_socket_t) -1)
     {
-        rc = ngx_[% subsystem %]_lua_send_chain_link(r, ctx,
-                                          NULL /* last_buf */);
+        rc = ngx_[% subsys %]_lua_send_chain_link(r, ctx,
+                                                  NULL /* last_buf */);
 
         if (rc == NGX_ERROR || rc >= NGX_HTTP_SPECIAL_RESPONSE) {
             return rc;
@@ -2466,8 +2466,8 @@ ngx_[% subsystem %]_lua_process_args_option([% req_type %] *r, lua_State *L,
 
         key = (u_char *) lua_tolstring(L, -2, &key_len);
 
-        key_escape = 2 * ngx_[% subsystem %]_lua_escape_uri(NULL, key, key_len,
-                                                 NGX_ESCAPE_URI_COMPONENT);
+        key_escape = 2 * ngx_[% subsys %]_lua_escape_uri(NULL, key, key_len,
+                                                         NGX_ESCAPE_URI_COMPONENT);
         total_escape += key_escape;
 
         switch (lua_type(L, -1)) {
@@ -2475,8 +2475,8 @@ ngx_[% subsystem %]_lua_process_args_option([% req_type %] *r, lua_State *L,
         case LUA_TSTRING:
             value = (u_char *) lua_tolstring(L, -1, &value_len);
 
-            total_escape += 2 * ngx_[% subsystem %]_lua_escape_uri(NULL, value, value_len,
-                                                      NGX_ESCAPE_URI_COMPONENT);
+            total_escape += 2 * ngx_[% subsys %]_lua_escape_uri(NULL, value, value_len,
+                                                                NGX_ESCAPE_URI_COMPONENT);
 
             len += key_len + value_len + (sizeof("=") - 1);
             n++;
@@ -2515,9 +2515,9 @@ ngx_[% subsystem %]_lua_process_args_option([% req_type %] *r, lua_State *L,
                     }
 
                     total_escape +=
-                        2 * ngx_[% subsystem %]_lua_escape_uri(NULL, value,
-                                                    value_len,
-                                                    NGX_ESCAPE_URI_COMPONENT);
+                        2 * ngx_[% subsys %]_lua_escape_uri(NULL, value,
+                                                            value_len,
+                                                            NGX_ESCAPE_URI_COMPONENT);
 
                     len += key_len + value_len + (sizeof("=") - 1);
                 }
@@ -2573,9 +2573,8 @@ ngx_[% subsystem %]_lua_process_args_option([% req_type %] *r, lua_State *L,
         case LUA_TSTRING:
 
             if (total_escape) {
-                p = (u_char *) ngx_[% subsystem %]_lua_escape_uri(p, key, key_len,
-                                                       NGX_ESCAPE_URI_COMPONENT
-                                                       );
+                p = (u_char *) ngx_[% subsys %]_lua_escape_uri(p, key, key_len,
+                                                               NGX_ESCAPE_URI_COMPONENT);
 
             } else {
                 dd("shortcut: no escape required");
@@ -2588,9 +2587,8 @@ ngx_[% subsystem %]_lua_process_args_option([% req_type %] *r, lua_State *L,
             value = (u_char *) lua_tolstring(L, -1, &value_len);
 
             if (total_escape) {
-                p = (u_char *) ngx_[% subsystem %]_lua_escape_uri(p, value, value_len,
-                                                       NGX_ESCAPE_URI_COMPONENT
-                                                       );
+                p = (u_char *) ngx_[% subsys %]_lua_escape_uri(p, value, value_len,
+                                                               NGX_ESCAPE_URI_COMPONENT);
 
             } else {
                 p = ngx_copy(p, value, value_len);
@@ -2608,8 +2606,8 @@ ngx_[% subsystem %]_lua_process_args_option([% req_type %] *r, lua_State *L,
         case LUA_TBOOLEAN:
             if (lua_toboolean(L, -1)) {
                 if (total_escape) {
-                    p = (u_char *) ngx_[% subsystem %]_lua_escape_uri(p, key, key_len,
-                                                NGX_ESCAPE_URI_COMPONENT);
+                    p = (u_char *) ngx_[% subsys %]_lua_escape_uri(p, key, key_len,
+                                                                   NGX_ESCAPE_URI_COMPONENT);
 
                 } else {
                     dd("shortcut: no escape required");
@@ -2635,9 +2633,9 @@ ngx_[% subsystem %]_lua_process_args_option([% req_type %] *r, lua_State *L,
                 if (lua_isboolean(L, -1)) {
                     if (lua_toboolean(L, -1)) {
                         if (total_escape) {
-                            p = (u_char *) ngx_[% subsystem %]_lua_escape_uri(p, key,
-    key_len,
-    NGX_ESCAPE_URI_COMPONENT);
+                            p = (u_char *) ngx_[% subsys %]_lua_escape_uri(p, key,
+                                                                           key_len,
+                                                                           NGX_ESCAPE_URI_COMPONENT);
 
                         } else {
                             dd("shortcut: no escape required");
@@ -2655,9 +2653,8 @@ ngx_[% subsystem %]_lua_process_args_option([% req_type %] *r, lua_State *L,
                     if (total_escape) {
                         p = (u_char *)
                                 ngx_[% subsystem %]_lua_escape_uri(p, key,
-                                                        key_len,
-                                                        NGX_ESCAPE_URI_COMPONENT
-                                                        );
+                                                                   key_len,
+                                                                   NGX_ESCAPE_URI_COMPONENT);
 
                     } else {
                         dd("shortcut: no escape required");
@@ -2671,10 +2668,9 @@ ngx_[% subsystem %]_lua_process_args_option([% req_type %] *r, lua_State *L,
 
                     if (total_escape) {
                         p = (u_char *)
-                                ngx_[% subsystem %]_lua_escape_uri(p, value,
-                                                        value_len,
-                                                        NGX_ESCAPE_URI_COMPONENT
-                                                        );
+                                ngx_[% subsys %]_lua_escape_uri(p, value,
+                                                                value_len,
+                                                                NGX_ESCAPE_URI_COMPONENT);
 
                     } else {
                         p = ngx_copy(p, value, value_len);
@@ -3202,8 +3198,8 @@ ngx_[% subsystem %]_lua_run_posted_threads(ngx_connection_t *c, lua_State *L,
 
         ctx->posted_threads = pt->next;
 
-        ngx_[% subsystem %]_lua_probe_run_posted_thread(r, pt->co_ctx->co,
-                                             (int) pt->co_ctx->co_status);
+        ngx_[% subsys %]_lua_probe_run_posted_thread(r, pt->co_ctx->co,
+                                                     (int) pt->co_ctx->co_status);
 
         if (pt->co_ctx->co_status != NGX_[% subsystem FILTER upper %]_LUA_CO_RUNNING) {
             continue;
@@ -3582,10 +3578,10 @@ ngx_[% subsystem %]_lua_rd_check_broken_connection([% req_type %] *r)
 
         if ((ngx_event_flags & NGX_USE_LEVEL_EVENT) && rev->active) {
             if (ngx_del_event(rev, NGX_READ_EVENT, 0) != NGX_OK) {
-                ngx_[% subsystem %]_lua_request_cleanup(ctx, 0);
+                ngx_[% subsys %]_lua_request_cleanup(ctx, 0);
 
-                ngx_[% subsystem %]_lua_finalize_request(r,
-                    NGX_[% subsystem FILTER upper %]_INTERNAL_SERVER_ERROR);
+                ngx_[% subsys %]_lua_finalize_request(r,
+                                                      NGX_[% SUBSYS %]_INTERNAL_SERVER_ERROR);
                 return;
             }
         }
@@ -3598,7 +3594,7 @@ ngx_[% subsystem %]_lua_rd_check_broken_connection([% req_type %] *r)
     ctx->on_abort_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_RUNNING;
     ctx->cur_co_ctx = ctx->on_abort_co_ctx;
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua waking up the on_abort callback thread");
 
     if (ctx->entered_content_phase) {

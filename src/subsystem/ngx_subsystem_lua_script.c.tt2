@@ -323,8 +323,8 @@ ngx_[% subsystem %]_lua_script_add_copy_code(ngx_[% subsystem %]_lua_script_comp
 
     len = value->len;
 
-    code = ngx_[% subsystem %]_lua_script_add_code(*sc->lengths,
-                                    sizeof(ngx_[% subsystem %]_lua_script_copy_code_t));
+    code = ngx_[% subsys %]_lua_script_add_code(*sc->lengths,
+                                                sizeof(ngx_[% subsystem %]_lua_script_copy_code_t));
     if (code == NULL) {
         return NGX_ERROR;
     }
@@ -393,8 +393,8 @@ ngx_[% subsystem %]_lua_script_add_capture_code(ngx_[% subsystem %]_lua_script_c
 {
     ngx_[% subsystem %]_lua_script_capture_code_t  *code;
 
-    code = ngx_[% subsystem %]_lua_script_add_code(*sc->lengths,
-                                  sizeof(ngx_[% subsystem %]_lua_script_capture_code_t));
+    code = ngx_[% subsys %]_lua_script_add_code(*sc->lengths,
+                                                sizeof(ngx_[% subsys %]_lua_script_capture_code_t));
     if (code == NULL) {
         return NGX_ERROR;
     }
@@ -403,8 +403,8 @@ ngx_[% subsystem %]_lua_script_add_capture_code(ngx_[% subsystem %]_lua_script_c
                  ngx_[% subsystem %]_lua_script_copy_capture_len_code;
     code->n = 2 * n;
 
-    code = ngx_[% subsystem %]_lua_script_add_code(*sc->values,
-                                  sizeof(ngx_[% subsystem %]_lua_script_capture_code_t));
+    code = ngx_[% subsys %]_lua_script_add_code(*sc->values,
+                                                sizeof(ngx_[% subsys %]_lua_script_capture_code_t));
     if (code == NULL) {
         return NGX_ERROR;
     }

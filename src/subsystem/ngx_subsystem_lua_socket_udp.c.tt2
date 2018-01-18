@@ -524,8 +524,8 @@ ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
 #endif
 
         u->prepare_retvals = ngx_[% subsystem %]_lua_socket_error_retval_handler;
-        ngx_[% subsystem %]_lua_socket_udp_handle_error(r, u,
-                                             NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_RESOLVER);
+        ngx_[% subsys %]_lua_socket_udp_handle_error(r, u,
+                                                     NGX_[% SUBSYS %]_LUA_SOCKET_FT_RESOLVER);
 
 [% IF http_subsys %]
         if (waiting) {
@@ -670,7 +670,7 @@ nomem:
 
     u->prepare_retvals = ngx_[% subsystem %]_lua_socket_error_retval_handler;
     ngx_[% subsystem %]_lua_socket_udp_handle_error(r, u,
-                                         NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_NOMEM);
+                                                    NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_NOMEM);
 
     if (waiting) {
 [% IF http_subsys %]
@@ -1214,7 +1214,7 @@ ngx_[% subsystem %]_lua_socket_udp_read([% req_type %] *r,
     if (n == NGX_ERROR) {
         u->socket_errno = ngx_socket_errno;
         ngx_[% subsystem %]_lua_socket_udp_handle_error(r, u,
-                                             NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_ERROR);
+                                                        NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_ERROR);
         return NGX_ERROR;
     }
 
@@ -1223,7 +1223,7 @@ ngx_[% subsystem %]_lua_socket_udp_read([% req_type %] *r,
 #if 1
     if (ngx_handle_read_event(rev, 0) != NGX_OK) {
         ngx_[% subsystem %]_lua_socket_udp_handle_error(r, u,
-                                             NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_ERROR);
+                                                        NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_ERROR);
         return NGX_ERROR;
     }
 #endif
@@ -1262,7 +1262,7 @@ ngx_[% subsystem %]_lua_socket_udp_read_handler([% req_type %] *r,
         }
 
         ngx_[% subsystem %]_lua_socket_udp_handle_error(r, u,
-                                             NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_TIMEOUT);
+                                                        NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_TIMEOUT);
         return;
     }
 
