@@ -8,7 +8,7 @@
 #define _NGX_[% SUBSYS %]_LUA_SSL_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
 #if (NGX_[% SUBSYS %]_SSL)
@@ -32,13 +32,13 @@ typedef struct {
 
     unsigned                 entered_cert_handler:1;
     unsigned                 entered_sess_fetch_handler:1;
-} ngx_[% subsystem %]_lua_ssl_ctx_t;
+} ngx_[% subsys %]_lua_ssl_ctx_t;
 
 
-ngx_int_t ngx_[% subsystem %]_lua_ssl_init(ngx_log_t *log);
+ngx_int_t ngx_[% subsys %]_lua_ssl_init(ngx_log_t *log);
 
 
-extern int ngx_[% subsystem %]_lua_ssl_ctx_index;
+extern int ngx_[% subsys %]_lua_ssl_ctx_index;
 
 
 #endif

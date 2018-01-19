@@ -8,10 +8,10 @@
 #define _NGX_[% SUBSYS %]_LUA_WORKER_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
-void ngx_[% subsystem %]_lua_inject_worker_api(lua_State *L);
+void ngx_[% subsys %]_lua_inject_worker_api(lua_State *L);
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_WORKER_H_INCLUDED_ */

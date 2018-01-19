@@ -9,34 +9,34 @@
 #endif
 
 #include "ddebug.h"
-#include "ngx_[% subsystem %]_lua_initby.h"
-#include "ngx_[% subsystem %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_initby.h"
+#include "ngx_[% subsys %]_lua_util.h"
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_init_by_inline(ngx_log_t *log, ngx_[% subsystem %]_lua_main_conf_t *lmcf,
+ngx_[% subsys %]_lua_init_by_inline(ngx_log_t *log, ngx_[% subsys %]_lua_main_conf_t *lmcf,
     lua_State *L)
 {
     int         status;
 
     status = luaL_loadbuffer(L, (char *) lmcf->init_src.data,
                              lmcf->init_src.len, "=init_by_lua")
-             || ngx_[% subsystem %]_lua_do_call(log, L);
+             || ngx_[% subsys %]_lua_do_call(log, L);
 
-    return ngx_[% subsystem %]_lua_report(log, L, status, "init_by_lua");
+    return ngx_[% subsys %]_lua_report(log, L, status, "init_by_lua");
 }
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_init_by_file(ngx_log_t *log, ngx_[% subsystem %]_lua_main_conf_t *lmcf,
+ngx_[% subsys %]_lua_init_by_file(ngx_log_t *log, ngx_[% subsys %]_lua_main_conf_t *lmcf,
     lua_State *L)
 {
     int         status;
 
     status = luaL_loadfile(L, (char *) lmcf->init_src.data)
-             || ngx_[% subsystem %]_lua_do_call(log, L);
+             || ngx_[% subsys %]_lua_do_call(log, L);
 
-    return ngx_[% subsystem %]_lua_report(log, L, status, "init_by_lua_file");
+    return ngx_[% subsys %]_lua_report(log, L, status, "init_by_lua_file");
 }
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

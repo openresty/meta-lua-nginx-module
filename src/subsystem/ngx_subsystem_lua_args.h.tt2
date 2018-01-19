@@ -8,14 +8,14 @@
 #define _NGX_[% SUBSYS %]_LUA_ARGS_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
 [% IF http_subsys %]
-void ngx_[% subsystem %]_lua_inject_req_args_api(lua_State *L);
+void ngx_[% subsys %]_lua_inject_req_args_api(lua_State *L);
 [% END %]
 
-int ngx_[% subsystem %]_lua_parse_args(lua_State *L, u_char *buf, u_char *last, int max);
+int ngx_[% subsys %]_lua_parse_args(lua_State *L, u_char *buf, u_char *last, int max);
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_ARGS_H_INCLUDED_ */

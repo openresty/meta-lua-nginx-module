@@ -9,13 +9,13 @@
 #define _NGX_[% SUBSYS %]_LUA_CTX_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
-int ngx_[% subsystem %]_lua_ngx_get_ctx(lua_State *L);
-int ngx_[% subsystem %]_lua_ngx_set_ctx(lua_State *L);
-int ngx_[% subsystem %]_lua_ngx_set_ctx_helper(lua_State *L, [% req_type %] *r,
-    ngx_[% subsystem %]_lua_ctx_t *ctx, int index);
+int ngx_[% subsys %]_lua_ngx_get_ctx(lua_State *L);
+int ngx_[% subsys %]_lua_ngx_set_ctx(lua_State *L);
+int ngx_[% subsys %]_lua_ngx_set_ctx_helper(lua_State *L, [% req_type %] *r,
+    ngx_[% subsys %]_lua_ctx_t *ctx, int index);
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_CTX_H_INCLUDED_ */

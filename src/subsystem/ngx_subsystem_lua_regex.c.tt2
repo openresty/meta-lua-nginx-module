@@ -12,11 +12,11 @@
 
 #if (NGX_PCRE)
 
-#include "ngx_[% subsystem %]_lua_regex.h"
-#include "ngx_[% subsystem %]_lua_pcrefix.h"
-#include "ngx_[% subsystem %]_lua_script.h"
-#include "ngx_[% subsystem %]_lua_pcrefix.h"
-#include "ngx_[% subsystem %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_regex.h"
+#include "ngx_[% subsys %]_lua_pcrefix.h"
+#include "ngx_[% subsys %]_lua_script.h"
+#include "ngx_[% subsys %]_lua_pcrefix.h"
+#include "ngx_[% subsys %]_lua_util.h"
 
 
 #if (PCRE_MAJOR >= 6)
@@ -51,13 +51,13 @@ typedef struct {
     pcre                         *regex;
     pcre_extra                   *regex_sd;
 
-    ngx_[% subsystem %]_lua_complex_value_t    *replace;
+    ngx_[% subsys %]_lua_complex_value_t    *replace;
 
 #ifndef NGX_LUA_NO_FFI_API
     /* only for (stap) debugging, and may be an invalid pointer */
     const u_char                 *pattern;
 #endif
-} ngx_[% subsystem %]_lua_regex_t;
+} ngx_[% subsys %]_lua_regex_t;
 
 
 typedef struct {
@@ -68,7 +68,7 @@ typedef struct {
     pcre         *regex;
     int           captures;
     ngx_str_t     err;
-} ngx_[% subsystem %]_lua_regex_compile_t;
+} ngx_[% subsys %]_lua_regex_compile_t;
 
 
 typedef struct {
@@ -84,53 +84,53 @@ typedef struct {
 } ngx_[% subsys %]_lua_regex_ctx_t;
 
 
-static int ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L);
-static ngx_uint_t ngx_[% subsystem %]_lua_ngx_re_parse_opts(lua_State *L,
-    ngx_[% subsystem %]_lua_regex_compile_t *re, ngx_str_t *opts, int narg);
-static int ngx_[% subsystem %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global);
-static int ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps);
-static int ngx_[% subsystem %]_lua_ngx_re_find(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_re_match(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_re_sub(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_re_gsub(lua_State *L);
-static void ngx_[% subsystem %]_lua_regex_free_study_data(ngx_pool_t *pool,
+static int ngx_[% subsys %]_lua_ngx_re_gmatch_iterator(lua_State *L);
+static ngx_uint_t ngx_[% subsys %]_lua_ngx_re_parse_opts(lua_State *L,
+    ngx_[% subsys %]_lua_regex_compile_t *re, ngx_str_t *opts, int narg);
+static int ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global);
+static int ngx_[% subsys %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps);
+static int ngx_[% subsys %]_lua_ngx_re_find(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_re_match(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_re_gmatch(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_re_sub(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_re_gsub(lua_State *L);
+static void ngx_[% subsys %]_lua_regex_free_study_data(ngx_pool_t *pool,
     pcre_extra *sd);
-static ngx_int_t ngx_[% subsystem %]_lua_regex_compile(ngx_[% subsystem %]_lua_regex_compile_t *rc);
-static void ngx_[% subsystem %]_lua_ngx_re_gmatch_cleanup(void *data);
-static int ngx_[% subsystem %]_lua_ngx_re_gmatch_gc(lua_State *L);
-static void ngx_[% subsystem %]_lua_re_collect_named_captures(lua_State *L,
+static ngx_int_t ngx_[% subsys %]_lua_regex_compile(ngx_[% subsys %]_lua_regex_compile_t *rc);
+static void ngx_[% subsys %]_lua_ngx_re_gmatch_cleanup(void *data);
+static int ngx_[% subsys %]_lua_ngx_re_gmatch_gc(lua_State *L);
+static void ngx_[% subsys %]_lua_re_collect_named_captures(lua_State *L,
     int res_tb_idx, u_char *name_table, int name_count, int name_entry_size,
     unsigned flags, ngx_str_t *subj);
 
 
-#define ngx_[% subsystem %]_lua_regex_exec(re, e, s, start, captures, size, opts)       \
+#define ngx_[% subsys %]_lua_regex_exec(re, e, s, start, captures, size, opts)       \
     pcre_exec(re, e, (const char *) (s)->data, (s)->len, start, opts,        \
               captures, size)
 
 
-#define ngx_[% subsystem %]_lua_regex_dfa_exec(re, e, s, start, captures, size, ws,     \
+#define ngx_[% subsys %]_lua_regex_dfa_exec(re, e, s, start, captures, size, ws,     \
                                     wscount, opts)                           \
     pcre_dfa_exec(re, e, (const char *) (s)->data, (s)->len, start, opts,    \
                   captures, size, ws, wscount)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_re_match(lua_State *L)
+ngx_[% subsys %]_lua_ngx_re_match(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_ngx_re_match_helper(L, 1 /* want captures */);
+    return ngx_[% subsys %]_lua_ngx_re_match_helper(L, 1 /* want captures */);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_re_find(lua_State *L)
+ngx_[% subsys %]_lua_ngx_re_find(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_ngx_re_match_helper(L, 0 /* want captures */);
+    return ngx_[% subsys %]_lua_ngx_re_match_helper(L, 0 /* want captures */);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
+ngx_[% subsys %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
 {
     /* u_char                      *p; */
     int                          res_tb_idx = 0;
@@ -167,7 +167,7 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
                           "but got %d", nargs);
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request object found");
     }
@@ -175,7 +175,7 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
     subj.data = (u_char *) luaL_checklstring(L, 1, &subj.len);
     pat.data = (u_char *) luaL_checklstring(L, 2, &pat.len);
 
-    ngx_memzero(&re_comp, sizeof(ngx_[% subsystem %]_lua_regex_compile_t));
+    ngx_memzero(&re_comp, sizeof(ngx_[% subsys %]_lua_regex_compile_t));
 
     if (nargs >= 3) {
         opts.data = (u_char *) luaL_checklstring(L, 3, &opts.len);
@@ -241,16 +241,16 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
 
     re_comp.options = 0;
 
-    flags = ngx_[% subsystem %]_lua_ngx_re_parse_opts(L, &re_comp, &opts, 3);
+    flags = ngx_[% subsys %]_lua_ngx_re_parse_opts(L, &re_comp, &opts, 3);
 
-    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsys %]_lua_module);
 
     if (flags & NGX_LUA_RE_COMPILE_ONCE) {
         pool = lmcf->pool;
 
         dd("server pool %p", lmcf->pool);
 
-        lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_regex_cache_key);
+        lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_regex_cache_key);
         lua_rawget(L, LUA_REGISTRYINDEX); /* table */
 
         lua_pushliteral(L, "m");
@@ -334,11 +334,11 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
                    (flags & NGX_LUA_RE_MODE_DFA) != 0,
                    (flags & NGX_LUA_RE_MODE_JIT) != 0);
 
-    old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+    old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
-    rc = ngx_[% subsystem %]_lua_regex_compile(&re_comp);
+    rc = ngx_[% subsys %]_lua_regex_compile(&re_comp);
 
-    ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+    ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
     if (rc != NGX_OK) {
         dd("compile failed");
@@ -355,7 +355,7 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
 
     if (flags & NGX_LUA_RE_MODE_JIT) {
 
-        old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+        old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
         sd = pcre_study(re_comp.regex, PCRE_STUDY_JIT_COMPILE, &msg);
 
@@ -363,7 +363,7 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
             pcre_assign_jit_stack(sd, NULL, lmcf->jit_stack);
         }
 
-        ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+        ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
 #   if (NGX_DEBUG)
         dd("sd = %p", sd);
@@ -377,11 +377,11 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
         if (sd != NULL) {
             int         jitted;
 
-            old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+            old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
             pcre_fullinfo(re_comp.regex, sd, PCRE_INFO_JIT, &jitted);
 
-            ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+            ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
             ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                            "pcre JIT compiling result: %d", jitted);
@@ -389,11 +389,11 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
 #   endif /* !(NGX_DEBUG) */
 
     } else {
-        old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+        old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
         sd = pcre_study(re_comp.regex, 0, &msg);
 
-        ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+        ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
 #   if (NGX_DEBUG)
         dd("sd = %p", sd);
@@ -448,7 +448,7 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
                        "(entries %i)", re_comp.captures,
                        lmcf->regex_cache_entries);
 
-        re = ngx_palloc(pool, sizeof(ngx_[% subsystem %]_lua_regex_t));
+        re = ngx_palloc(pool, sizeof(ngx_[% subsys %]_lua_regex_t));
         if (re == NULL) {
             msg = "no memory";
             goto error;
@@ -532,7 +532,7 @@ exec:
 
         if (!(flags & NGX_LUA_RE_COMPILE_ONCE)) {
             if (sd) {
-                ngx_[% subsystem %]_lua_regex_free_study_data(pool, sd);
+                ngx_[% subsys %]_lua_regex_free_study_data(pool, sd);
             }
 
             ngx_pfree(pool, re_comp.regex);
@@ -627,7 +627,7 @@ exec:
     if (!(flags & NGX_LUA_RE_COMPILE_ONCE)) {
 
         if (sd) {
-            ngx_[% subsystem %]_lua_regex_free_study_data(pool, sd);
+            ngx_[% subsys %]_lua_regex_free_study_data(pool, sd);
         }
 
         ngx_pfree(pool, re_comp.regex);
@@ -640,7 +640,7 @@ error:
 
     if (!(flags & NGX_LUA_RE_COMPILE_ONCE)) {
         if (sd) {
-            ngx_[% subsystem %]_lua_regex_free_study_data(pool, sd);
+            ngx_[% subsys %]_lua_regex_free_study_data(pool, sd);
         }
 
         if (re_comp.regex) {
@@ -662,7 +662,7 @@ error:
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
+ngx_[% subsys %]_lua_ngx_re_gmatch(lua_State *L)
 {
     [% req_type %]              *r;
     ngx_str_t                    subj;
@@ -691,7 +691,7 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
                           nargs);
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request object found");
     }
@@ -712,16 +712,16 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
 
     re_comp.options = 0;
 
-    flags = ngx_[% subsystem %]_lua_ngx_re_parse_opts(L, &re_comp, &opts, 3);
+    flags = ngx_[% subsys %]_lua_ngx_re_parse_opts(L, &re_comp, &opts, 3);
 
-    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsys %]_lua_module);
 
     if (flags & NGX_LUA_RE_COMPILE_ONCE) {
         pool = lmcf->pool;
 
         dd("server pool %p", lmcf->pool);
 
-        lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_regex_cache_key);
+        lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_regex_cache_key);
         lua_rawget(L, LUA_REGISTRYINDEX); /* table */
 
         lua_pushliteral(L, "m");
@@ -803,11 +803,11 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
                    (flags & NGX_LUA_RE_MODE_DFA) != 0,
                    (flags & NGX_LUA_RE_MODE_JIT) != 0);
 
-    old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+    old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
-    rc = ngx_[% subsystem %]_lua_regex_compile(&re_comp);
+    rc = ngx_[% subsys %]_lua_regex_compile(&re_comp);
 
-    ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+    ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
     if (rc != NGX_OK) {
         dd("compile failed");
@@ -821,7 +821,7 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
 
     if (flags & NGX_LUA_RE_MODE_JIT) {
 
-        old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+        old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
         sd = pcre_study(re_comp.regex, PCRE_STUDY_JIT_COMPILE, &msg);
 
@@ -829,7 +829,7 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
             pcre_assign_jit_stack(sd, NULL, lmcf->jit_stack);
         }
 
-        ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+        ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
 #   if (NGX_DEBUG)
         dd("sd = %p", sd);
@@ -843,11 +843,11 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
         if (sd != NULL) {
             int         jitted;
 
-            old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+            old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
             pcre_fullinfo(re_comp.regex, sd, PCRE_INFO_JIT, &jitted);
 
-            ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+            ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
             ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                            "pcre JIT compiling result: %d", jitted);
@@ -856,11 +856,11 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
 
     } else {
 
-        old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+        old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
         sd = pcre_study(re_comp.regex, 0, &msg);
 
-        ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+        ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
 #   if (NGX_DEBUG)
         dd("sd = %p", sd);
@@ -912,7 +912,7 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
                        "(entries %i)", re_comp.captures,
                        lmcf->regex_cache_entries);
 
-        re = ngx_palloc(pool, sizeof(ngx_[% subsystem %]_lua_regex_t));
+        re = ngx_palloc(pool, sizeof(ngx_[% subsys %]_lua_regex_t));
         if (re == NULL) {
             msg = "no memory";
             goto error;
@@ -940,7 +940,7 @@ compiled:
 
     lua_settop(L, 1);
 
-    ctx = lua_newuserdata(L, sizeof(ngx_[% subsystem %]_lua_regex_ctx_t));
+    ctx = lua_newuserdata(L, sizeof(ngx_[% subsys %]_lua_regex_ctx_t));
 
     ctx->request = r;
     ctx->regex = re_comp.regex;
@@ -952,7 +952,7 @@ compiled:
 
     if (!(flags & NGX_LUA_RE_COMPILE_ONCE)) {
         lua_createtable(L, 0 /* narr */, 1 /* nrec */); /* metatable */
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_re_gmatch_gc);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_re_gmatch_gc);
         lua_setfield(L, -2, "__gc");
         lua_setmetatable(L, -2);
 
@@ -962,7 +962,7 @@ compiled:
             goto error;
         }
 
-        cln->handler = ngx_[% subsystem %]_lua_ngx_re_gmatch_cleanup;
+        cln->handler = ngx_[% subsys %]_lua_ngx_re_gmatch_cleanup;
         cln->data = ctx;
         ctx->cleanup = &cln->handler;
 
@@ -973,7 +973,7 @@ compiled:
     lua_pushinteger(L, 0);
 
     /* upvalues in order: subj ctx offset */
-    lua_pushcclosure(L, ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator, 3);
+    lua_pushcclosure(L, ngx_[% subsys %]_lua_ngx_re_gmatch_iterator, 3);
 
     return 1;
 
@@ -981,7 +981,7 @@ error:
 
     if (!(flags & NGX_LUA_RE_COMPILE_ONCE)) {
         if (sd) {
-            ngx_[% subsystem %]_lua_regex_free_study_data(pool, sd);
+            ngx_[% subsys %]_lua_regex_free_study_data(pool, sd);
         }
 
         if (re_comp.regex) {
@@ -1000,7 +1000,7 @@ error:
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L)
+ngx_[% subsys %]_lua_ngx_re_gmatch_iterator(lua_State *L)
 {
     [% req_type %]              *r;
     int                         *cap;
@@ -1019,7 +1019,7 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L)
     /* upvalues in order: subj ctx offset */
 
     subj.data = (u_char *) lua_tolstring(L, lua_upvalueindex(1), &subj.len);
-    ctx = (ngx_[% subsystem %]_lua_regex_ctx_t *) lua_touserdata(L, lua_upvalueindex(2));
+    ctx = (ngx_[% subsys %]_lua_regex_ctx_t *) lua_touserdata(L, lua_upvalueindex(2));
     offset = (int) lua_tointeger(L, lua_upvalueindex(3));
 
     if (offset < 0) {
@@ -1031,7 +1031,7 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L)
 
     dd("offset %d, r %p, subj %s", (int) offset, ctx->request, subj.data);
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request object found");
     }
@@ -1102,7 +1102,7 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L)
 
         if (!(ctx->flags & NGX_LUA_RE_COMPILE_ONCE)) {
             if (ctx->regex_sd) {
-                ngx_[% subsystem %]_lua_regex_free_study_data(r->pool, ctx->regex_sd);
+                ngx_[% subsys %]_lua_regex_free_study_data(r->pool, ctx->regex_sd);
                 ctx->regex_sd = NULL;
             }
 
@@ -1162,7 +1162,7 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch_iterator(lua_State *L)
 
         if (!(ctx->flags & NGX_LUA_RE_COMPILE_ONCE)) {
             if (ctx->regex_sd) {
-                ngx_[% subsystem %]_lua_regex_free_study_data(r->pool, ctx->regex_sd);
+                ngx_[% subsys %]_lua_regex_free_study_data(r->pool, ctx->regex_sd);
                 ctx->regex_sd = NULL;
             }
 
@@ -1182,7 +1182,7 @@ error:
 
     if (!(ctx->flags & NGX_LUA_RE_COMPILE_ONCE)) {
         if (ctx->regex_sd) {
-            ngx_[% subsystem %]_lua_regex_free_study_data(r->pool, ctx->regex_sd);
+            ngx_[% subsys %]_lua_regex_free_study_data(r->pool, ctx->regex_sd);
             ctx->regex_sd = NULL;
         }
 
@@ -1196,7 +1196,7 @@ error:
 
 
 static ngx_uint_t
-ngx_[% subsystem %]_lua_ngx_re_parse_opts(lua_State *L, ngx_[% subsystem %]_lua_regex_compile_t *re,
+ngx_[% subsys %]_lua_ngx_re_parse_opts(lua_State *L, ngx_[% subsys %]_lua_regex_compile_t *re,
     ngx_str_t *opts, int narg)
 {
     u_char          *p;
@@ -1281,16 +1281,16 @@ ngx_[% subsystem %]_lua_ngx_re_parse_opts(lua_State *L, ngx_[% subsystem %]_lua_
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_re_sub(lua_State *L)
+ngx_[% subsys %]_lua_ngx_re_sub(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_ngx_re_sub_helper(L, 0 /* global */);
+    return ngx_[% subsys %]_lua_ngx_re_sub_helper(L, 0 /* global */);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_re_gsub(lua_State *L)
+ngx_[% subsys %]_lua_ngx_re_gsub(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_ngx_re_sub_helper(L, 1 /* global */);
+    return ngx_[% subsys %]_lua_ngx_re_sub_helper(L, 1 /* global */);
 }
 
 
@@ -1337,7 +1337,7 @@ ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
                           nargs);
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request object found");
     }
@@ -1366,7 +1366,7 @@ ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
             return luaL_argerror(L, 3, msg);
     }
 
-    ngx_memzero(&re_comp, sizeof(ngx_[% subsystem %]_lua_regex_compile_t));
+    ngx_memzero(&re_comp, sizeof(ngx_[% subsys %]_lua_regex_compile_t));
 
     if (nargs == 4) {
         opts.data = (u_char *) luaL_checklstring(L, 4, &opts.len);
@@ -1381,16 +1381,16 @@ ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
 
     re_comp.options = 0;
 
-    flags = ngx_[% subsystem %]_lua_ngx_re_parse_opts(L, &re_comp, &opts, 4);
+    flags = ngx_[% subsys %]_lua_ngx_re_parse_opts(L, &re_comp, &opts, 4);
 
-    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsys %]_lua_module);
 
     if (flags & NGX_LUA_RE_COMPILE_ONCE) {
         pool = lmcf->pool;
 
         dd("server pool %p", lmcf->pool);
 
-        lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_regex_cache_key);
+        lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_regex_cache_key);
         lua_rawget(L, LUA_REGISTRYINDEX); /* table */
 
         lua_pushliteral(L, "s");
@@ -1491,11 +1491,11 @@ ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
                    (flags & NGX_LUA_RE_MODE_DFA) != 0,
                    (flags & NGX_LUA_RE_MODE_JIT) != 0);
 
-    old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+    old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
-    rc = ngx_[% subsystem %]_lua_regex_compile(&re_comp);
+    rc = ngx_[% subsys %]_lua_regex_compile(&re_comp);
 
-    ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+    ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
     if (rc != NGX_OK) {
         dd("compile failed");
@@ -1510,11 +1510,11 @@ ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
 
     if (flags & NGX_LUA_RE_MODE_JIT) {
 
-        old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+        old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
         sd = pcre_study(re_comp.regex, PCRE_STUDY_JIT_COMPILE, &msg);
 
-        ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+        ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
 #   if (NGX_DEBUG)
         dd("sd = %p", sd);
@@ -1528,11 +1528,11 @@ ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
         if (sd != NULL) {
             int         jitted;
 
-            old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+            old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
             pcre_fullinfo(re_comp.regex, sd, PCRE_INFO_JIT, &jitted);
 
-            ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+            ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
             ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                            "pcre JIT compiling result: %d", jitted);
@@ -1541,11 +1541,11 @@ ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
 
     } else {
 
-        old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+        old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
         sd = pcre_study(re_comp.regex, 0, &msg);
 
-        ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+        ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
 #   if (NGX_DEBUG)
         dd("sd = %p", sd);
@@ -1594,7 +1594,7 @@ ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
         ctpl = NULL;
 
     } else {
-        ctpl = ngx_palloc(pool, sizeof(ngx_[% subsystem %]_lua_complex_value_t));
+        ctpl = ngx_palloc(pool, sizeof(ngx_[% subsys %]_lua_complex_value_t));
         if (ctpl == NULL) {
             flags &= ~NGX_LUA_RE_COMPILE_ONCE;
             msg = "no memory";
@@ -1616,13 +1616,13 @@ ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
             tpl.data = p;
         }
 
-        ngx_memzero(&ccv, sizeof(ngx_[% subsystem %]_lua_compile_complex_value_t));
+        ngx_memzero(&ccv, sizeof(ngx_[% subsys %]_lua_compile_complex_value_t));
         ccv.pool = pool;
         ccv.log = r->connection->log;
         ccv.value = &tpl;
         ccv.complex_value = ctpl;
 
-        if (ngx_[% subsystem %]_lua_compile_complex_value(&ccv) != NGX_OK) {
+        if (ngx_[% subsys %]_lua_compile_complex_value(&ccv) != NGX_OK) {
             ngx_pfree(pool, cap);
             ngx_pfree(pool, ctpl);
 
@@ -1631,7 +1631,7 @@ ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
             }
 
             if (sd) {
-                ngx_[% subsystem %]_lua_regex_free_study_data(pool, sd);
+                ngx_[% subsys %]_lua_regex_free_study_data(pool, sd);
             }
 
             ngx_pfree(pool, re_comp.regex);
@@ -1650,7 +1650,7 @@ ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
                        "the cache (entries %i)", re_comp.captures,
                        lmcf->regex_cache_entries);
 
-        re = ngx_palloc(pool, sizeof(ngx_[% subsystem %]_lua_regex_t));
+        re = ngx_palloc(pool, sizeof(ngx_[% subsys %]_lua_regex_t));
         if (re == NULL) {
             msg = "no memory";
             goto error;
@@ -1880,7 +1880,7 @@ exec:
 
     if (!(flags & NGX_LUA_RE_COMPILE_ONCE)) {
         if (sd) {
-            ngx_[% subsystem %]_lua_regex_free_study_data(pool, sd);
+            ngx_[% subsys %]_lua_regex_free_study_data(pool, sd);
         }
 
         if (re_comp.regex) {
@@ -1903,7 +1903,7 @@ error:
 
     if (!(flags & NGX_LUA_RE_COMPILE_ONCE)) {
         if (sd) {
-            ngx_[% subsystem %]_lua_regex_free_study_data(pool, sd);
+            ngx_[% subsys %]_lua_regex_free_study_data(pool, sd);
         }
 
         if (re_comp.regex) {
@@ -1927,7 +1927,7 @@ error:
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_ffi_set_jit_stack_size(int size, u_char *errstr,
+ngx_[% subsys %]_lua_ffi_set_jit_stack_size(int size, u_char *errstr,
     size_t *errstr_size)
 {
 #if LUA_HAVE_PCRE_JIT
@@ -1947,19 +1947,19 @@ ngx_[% subsystem %]_lua_ffi_set_jit_stack_size(int size, u_char *errstr,
     dd("server pool %p", lmcf->pool);
 
     if (lmcf->jit_stack) {
-        old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+        old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
         pcre_jit_stack_free(lmcf->jit_stack);
 
-        ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+        ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
     }
 
-    old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+    old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
     lmcf->jit_stack = pcre_jit_stack_alloc(NGX_LUA_RE_MIN_JIT_STACK_SIZE,
                                            size);
 
-    ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+    ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
     if (lmcf->jit_stack == NULL) {
         *errstr_size = ngx_snprintf(errstr, *errstr_size,
@@ -1981,25 +1981,25 @@ ngx_[% subsystem %]_lua_ffi_set_jit_stack_size(int size, u_char *errstr,
 
 
 void
-ngx_[% subsystem %]_lua_inject_regex_api(lua_State *L)
+ngx_[% subsys %]_lua_inject_regex_api(lua_State *L)
 {
     /* ngx.re */
 
     lua_createtable(L, 0, 5 /* nrec */);    /* .re */
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_re_find);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_re_find);
     lua_setfield(L, -2, "find");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_re_match);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_re_match);
     lua_setfield(L, -2, "match");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_re_gmatch);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_re_gmatch);
     lua_setfield(L, -2, "gmatch");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_re_sub);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_re_sub);
     lua_setfield(L, -2, "sub");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_re_gsub);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_re_gsub);
     lua_setfield(L, -2, "gsub");
 
     lua_setfield(L, -2, "re");
@@ -2007,11 +2007,11 @@ ngx_[% subsystem %]_lua_inject_regex_api(lua_State *L)
 
 
 static void
-ngx_[% subsystem %]_lua_regex_free_study_data(ngx_pool_t *pool, pcre_extra *sd)
+ngx_[% subsys %]_lua_regex_free_study_data(ngx_pool_t *pool, pcre_extra *sd)
 {
     ngx_pool_t              *old_pool;
 
-    old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+    old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
 #if LUA_HAVE_PCRE_JIT
     pcre_free_study(sd);
@@ -2019,12 +2019,12 @@ ngx_[% subsystem %]_lua_regex_free_study_data(ngx_pool_t *pool, pcre_extra *sd)
     pcre_free(sd);
 #endif
 
-    ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+    ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 }
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_regex_compile(ngx_[% subsystem %]_lua_regex_compile_t *rc)
+ngx_[% subsys %]_lua_regex_compile(ngx_[% subsys %]_lua_regex_compile_t *rc)
 {
     int           n, erroff;
     char         *p;
@@ -2032,12 +2032,12 @@ ngx_[% subsystem %]_lua_regex_compile(ngx_[% subsystem %]_lua_regex_compile_t *r
     pcre         *re;
     ngx_pool_t   *old_pool;
 
-    old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(rc->pool);
+    old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(rc->pool);
 
     re = pcre_compile((const char *) rc->pattern.data, (int) rc->options,
                       &errstr, &erroff, NULL);
 
-    ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+    ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
     if (re == NULL) {
         if ((size_t) erroff == rc->pattern.len) {
@@ -2078,9 +2078,9 @@ failed:
 
 
 static void
-ngx_[% subsystem %]_lua_ngx_re_gmatch_cleanup(void *data)
+ngx_[% subsys %]_lua_ngx_re_gmatch_cleanup(void *data)
 {
-    ngx_[% subsystem %]_lua_regex_ctx_t    *ctx = data;
+    ngx_[% subsys %]_lua_regex_ctx_t    *ctx = data;
 
     if (ctx) {
         if (ctx->regex_sd) {
@@ -2102,14 +2102,14 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch_cleanup(void *data)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_re_gmatch_gc(lua_State *L)
+ngx_[% subsys %]_lua_ngx_re_gmatch_gc(lua_State *L)
 {
-    ngx_[% subsystem %]_lua_regex_ctx_t    *ctx;
+    ngx_[% subsys %]_lua_regex_ctx_t    *ctx;
 
     ctx = lua_touserdata(L, 1);
 
     if (ctx && ctx->cleanup) {
-        ngx_[% subsystem %]_lua_ngx_re_gmatch_cleanup(ctx);
+        ngx_[% subsys %]_lua_ngx_re_gmatch_cleanup(ctx);
     }
 
     return 0;
@@ -2117,7 +2117,7 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch_gc(lua_State *L)
 
 
 static void
-ngx_[% subsystem %]_lua_re_collect_named_captures(lua_State *L, int res_tb_idx,
+ngx_[% subsys %]_lua_re_collect_named_captures(lua_State *L, int res_tb_idx,
     u_char *name_table, int name_count, int name_entry_size, unsigned flags,
     ngx_str_t *subj)
 {
@@ -2179,8 +2179,8 @@ ngx_[% subsystem %]_lua_re_collect_named_captures(lua_State *L, int res_tb_idx,
 
 
 #ifndef NGX_LUA_NO_FFI_API
-ngx_[% subsystem %]_lua_regex_t *
-ngx_[% subsystem %]_lua_ffi_compile_regex(const unsigned char *pat, size_t pat_len,
+ngx_[% subsys %]_lua_regex_t *
+ngx_[% subsys %]_lua_ffi_compile_regex(const unsigned char *pat, size_t pat_len,
     int flags, int pcre_opts, u_char *errstr,
     size_t errstr_size)
 {
@@ -2203,7 +2203,7 @@ ngx_[% subsystem %]_lua_ffi_compile_regex(const unsigned char *pat, size_t pat_l
 
     pool->log = (ngx_log_t *) &ngx_cycle->new_log;
 
-    re = ngx_palloc(pool, sizeof(ngx_[% subsystem %]_lua_regex_t));
+    re = ngx_palloc(pool, sizeof(ngx_[% subsys %]_lua_regex_t));
     if (re == NULL) {
         ngx_destroy_pool(pool);
         pool = NULL;
@@ -2220,9 +2220,9 @@ ngx_[% subsystem %]_lua_ffi_compile_regex(const unsigned char *pat, size_t pat_l
     re_comp.err.data     = errstr;
     re_comp.pool         = pool;
 
-    old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
-    rc = ngx_[% subsystem %]_lua_regex_compile(&re_comp);
-    ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+    old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
+    rc = ngx_[% subsys %]_lua_regex_compile(&re_comp);
+    ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
     if (rc != NGX_OK) {
         re_comp.err.data[re_comp.err.len] = '\0';
@@ -2237,9 +2237,9 @@ ngx_[% subsystem %]_lua_ffi_compile_regex(const unsigned char *pat, size_t pat_l
 
     if (flags & NGX_LUA_RE_MODE_JIT) {
 
-        old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+        old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
         sd = pcre_study(re_comp.regex, PCRE_STUDY_JIT_COMPILE, &msg);
-        ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+        ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
 #   if (NGX_DEBUG)
         if (msg != NULL) {
@@ -2251,11 +2251,11 @@ ngx_[% subsystem %]_lua_ffi_compile_regex(const unsigned char *pat, size_t pat_l
         if (sd != NULL) {
             int         jitted;
 
-            old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+            old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
 
             pcre_fullinfo(re_comp.regex, sd, PCRE_INFO_JIT, &jitted);
 
-            ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+            ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
 
             ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], ngx_cycle->log, 0,
                            "pcre JIT compiling result: %d", jitted);
@@ -2263,9 +2263,9 @@ ngx_[% subsystem %]_lua_ffi_compile_regex(const unsigned char *pat, size_t pat_l
 #   endif /* !(NGX_DEBUG) */
 
     } else {
-        old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(pool);
+        old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(pool);
         sd = pcre_study(re_comp.regex, 0, &msg);
-        ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+        ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
     }
 
     if (sd && lmcf->jit_stack) {
@@ -2336,7 +2336,7 @@ error:
     *p = '\0';
 
     if (sd) {
-        ngx_[% subsystem %]_lua_regex_free_study_data(pool, sd);
+        ngx_[% subsys %]_lua_regex_free_study_data(pool, sd);
     }
 
     if (pool) {
@@ -2348,7 +2348,7 @@ error:
 
 
 int
-ngx_[% subsystem %]_lua_ffi_exec_regex(ngx_[% subsystem %]_lua_regex_t *re, int flags,
+ngx_[% subsys %]_lua_ffi_exec_regex(ngx_[% subsys %]_lua_regex_t *re, int flags,
     const u_char *s, size_t len, int pos)
 {
     int             rc, ovecsize, exec_opts, *cap;
@@ -2401,7 +2401,7 @@ ngx_[% subsystem %]_lua_ffi_exec_regex(ngx_[% subsystem %]_lua_regex_t *re, int 
 
 
 void
-ngx_[% subsystem %]_lua_ffi_destroy_regex(ngx_[% subsystem %]_lua_regex_t *re)
+ngx_[% subsys %]_lua_ffi_destroy_regex(ngx_[% subsys %]_lua_regex_t *re)
 {
     ngx_pool_t                  *old_pool;
 
@@ -2412,13 +2412,13 @@ ngx_[% subsystem %]_lua_ffi_destroy_regex(ngx_[% subsystem %]_lua_regex_t *re)
     }
 
     if (re->regex_sd) {
-        old_pool = ngx_[% subsystem %]_lua_pcre_malloc_init(re->pool);
+        old_pool = ngx_[% subsys %]_lua_pcre_malloc_init(re->pool);
 #if LUA_HAVE_PCRE_JIT
         pcre_free_study(re->regex_sd);
 #else
         pcre_free(re->regex_sd);
 #endif
-        ngx_[% subsystem %]_lua_pcre_malloc_done(old_pool);
+        ngx_[% subsys %]_lua_pcre_malloc_done(old_pool);
         re->regex_sd = NULL;
     }
 
@@ -2427,7 +2427,7 @@ ngx_[% subsystem %]_lua_ffi_destroy_regex(ngx_[% subsystem %]_lua_regex_t *re)
 
 
 int
-ngx_[% subsystem %]_lua_ffi_compile_replace_template(ngx_[% subsystem %]_lua_regex_t *re,
+ngx_[% subsys %]_lua_ffi_compile_replace_template(ngx_[% subsys %]_lua_regex_t *re,
     const u_char *replace_data, size_t replace_len)
 {
     ngx_int_t                                rc;
@@ -2436,7 +2436,7 @@ ngx_[% subsystem %]_lua_ffi_compile_replace_template(ngx_[% subsystem %]_lua_reg
     ngx_[% subsys %]_lua_complex_value_t            *ctpl;
     ngx_[% subsys %]_lua_compile_complex_value_t     ccv;
 
-    ctpl = ngx_palloc(re->pool, sizeof(ngx_[% subsystem %]_lua_complex_value_t));
+    ctpl = ngx_palloc(re->pool, sizeof(ngx_[% subsys %]_lua_complex_value_t));
     if (ctpl == NULL) {
         return NGX_ERROR;
     }
@@ -2457,13 +2457,13 @@ ngx_[% subsystem %]_lua_ffi_compile_replace_template(ngx_[% subsystem %]_lua_reg
 
     tpl.len = replace_len;
 
-    ngx_memzero(&ccv, sizeof(ngx_[% subsystem %]_lua_compile_complex_value_t));
+    ngx_memzero(&ccv, sizeof(ngx_[% subsys %]_lua_compile_complex_value_t));
     ccv.pool = re->pool;
     ccv.log = ngx_cycle->log;
     ccv.value = &tpl;
     ccv.complex_value = ctpl;
 
-    rc = ngx_[% subsystem %]_lua_compile_complex_value(&ccv);
+    rc = ngx_[% subsys %]_lua_compile_complex_value(&ccv);
 
     re->replace = ctpl;
 
@@ -2471,16 +2471,16 @@ ngx_[% subsystem %]_lua_ffi_compile_replace_template(ngx_[% subsystem %]_lua_reg
 }
 
 
-ngx_[% subsystem %]_lua_script_engine_t *
-ngx_[% subsystem %]_lua_ffi_create_script_engine(void)
+ngx_[% subsys %]_lua_script_engine_t *
+ngx_[% subsys %]_lua_ffi_create_script_engine(void)
 {
-    return ngx_calloc(sizeof(ngx_[% subsystem %]_lua_script_engine_t), ngx_cycle->log);
+    return ngx_calloc(sizeof(ngx_[% subsys %]_lua_script_engine_t), ngx_cycle->log);
 }
 
 
 void
-ngx_[% subsystem %]_lua_ffi_init_script_engine(ngx_[% subsystem %]_lua_script_engine_t *e,
-    const unsigned char *subj, ngx_[% subsystem %]_lua_regex_t *compiled, int count)
+ngx_[% subsys %]_lua_ffi_init_script_engine(ngx_[% subsys %]_lua_script_engine_t *e,
+    const unsigned char *subj, ngx_[% subsys %]_lua_regex_t *compiled, int count)
 {
     e->log = ngx_cycle->log;
     e->ncaptures = count * 2;
@@ -2490,25 +2490,25 @@ ngx_[% subsystem %]_lua_ffi_init_script_engine(ngx_[% subsystem %]_lua_script_en
 
 
 void
-ngx_[% subsystem %]_lua_ffi_destroy_script_engine(ngx_[% subsystem %]_lua_script_engine_t *e)
+ngx_[% subsys %]_lua_ffi_destroy_script_engine(ngx_[% subsys %]_lua_script_engine_t *e)
 {
     ngx_free(e);
 }
 
 
 size_t
-ngx_[% subsystem %]_lua_ffi_script_eval_len(ngx_[% subsystem %]_lua_script_engine_t *e,
-    ngx_[% subsystem %]_lua_complex_value_t *val)
+ngx_[% subsys %]_lua_ffi_script_eval_len(ngx_[% subsys %]_lua_script_engine_t *e,
+    ngx_[% subsys %]_lua_complex_value_t *val)
 {
     size_t          len;
 
-    ngx_[% subsystem %]_lua_script_len_code_pt   lcode;
+    ngx_[% subsys %]_lua_script_len_code_pt   lcode;
 
     e->ip = val->lengths;
     len = 0;
 
     while (*(uintptr_t *) e->ip) {
-        lcode = *(ngx_[% subsystem %]_lua_script_len_code_pt *) e->ip;
+        lcode = *(ngx_[% subsys %]_lua_script_len_code_pt *) e->ip;
         len += lcode(e);
     }
 
@@ -2517,27 +2517,27 @@ ngx_[% subsystem %]_lua_ffi_script_eval_len(ngx_[% subsystem %]_lua_script_engin
 
 
 void
-ngx_[% subsystem %]_lua_ffi_script_eval_data(ngx_[% subsystem %]_lua_script_engine_t *e,
-    ngx_[% subsystem %]_lua_complex_value_t *val, u_char *dst)
+ngx_[% subsys %]_lua_ffi_script_eval_data(ngx_[% subsys %]_lua_script_engine_t *e,
+    ngx_[% subsys %]_lua_complex_value_t *val, u_char *dst)
 {
-    ngx_[% subsystem %]_lua_script_code_pt       code;
+    ngx_[% subsys %]_lua_script_code_pt       code;
 
     e->ip = val->values;
     e->pos = dst;
 
     while (*(uintptr_t *) e->ip) {
-        code = *(ngx_[% subsystem %]_lua_script_code_pt *) e->ip;
+        code = *(ngx_[% subsys %]_lua_script_code_pt *) e->ip;
         code(e);
     }
 }
 
 
 uint32_t
-ngx_[% subsystem %]_lua_ffi_max_regex_cache_size(void)
+ngx_[% subsys %]_lua_ffi_max_regex_cache_size(void)
 {
-    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
+    ngx_[% subsys %]_lua_main_conf_t    *lmcf;
     lmcf = ngx_[% subsys %]_cycle_get_module_main_conf(ngx_cycle,
-                                                       ngx_[% subsystem %]_lua_module);
+                                                       ngx_[% subsys %]_lua_module);
     if (lmcf == NULL) {
         return 0;
     }

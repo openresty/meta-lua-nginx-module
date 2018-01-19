@@ -8,20 +8,20 @@
 #define _NGX_[% SUBSYS %]_LUA_SOCKET_UDP_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
-typedef struct ngx_[% subsystem %]_lua_socket_udp_upstream_s
-    ngx_[% subsystem %]_lua_socket_udp_upstream_t;
+typedef struct ngx_[% subsys %]_lua_socket_udp_upstream_s
+    ngx_[% subsys %]_lua_socket_udp_upstream_t;
 
 
 typedef
-    int (*ngx_[% subsystem %]_lua_socket_udp_retval_handler)([% req_type %] *r,
-        ngx_[% subsystem %]_lua_socket_udp_upstream_t *u, lua_State *L);
+    int (*ngx_[% subsys %]_lua_socket_udp_retval_handler)([% req_type %] *r,
+        ngx_[% subsys %]_lua_socket_udp_upstream_t *u, lua_State *L);
 
 
-typedef void (*ngx_[% subsystem %]_lua_socket_udp_upstream_handler_pt)
-    ([% req_type %] *r, ngx_[% subsystem %]_lua_socket_udp_upstream_t *u);
+typedef void (*ngx_[% subsys %]_lua_socket_udp_upstream_handler_pt)
+    ([% req_type %] *r, ngx_[% subsys %]_lua_socket_udp_upstream_t *u);
 
 
 typedef struct {
@@ -30,7 +30,7 @@ typedef struct {
     socklen_t                 socklen;
     ngx_str_t                 server;
     ngx_log_t                 log;
-} ngx_[% subsystem %]_lua_udp_connection_t;
+} ngx_[% subsys %]_lua_udp_connection_t;
 
 
 struct ngx_[% subsys %]_lua_socket_udp_upstream_s {
@@ -57,7 +57,7 @@ struct ngx_[% subsys %]_lua_socket_udp_upstream_s {
 };
 
 
-void ngx_[% subsystem %]_lua_inject_socket_udp_api(ngx_log_t *log, lua_State *L);
+void ngx_[% subsys %]_lua_inject_socket_udp_api(ngx_log_t *log, lua_State *L);
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_SOCKET_UDP_H_INCLUDED_ */

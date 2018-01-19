@@ -8,10 +8,10 @@
 #define _NGX_[% SUBSYS %]_LUA_LEX_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
-int ngx_[% subsystem %]_lua_lex(const u_char *const s, size_t len, int *const ovec);
+int ngx_[% subsys %]_lua_lex(const u_char *const s, size_t len, int *const ovec);
 
 
 #endif
