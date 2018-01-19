@@ -55,7 +55,7 @@ static char *ngx_[% subsystem %]_lua_merge_loc_conf(ngx_conf_t *cf, void *parent
 
 static ngx_int_t ngx_[% subsystem %]_lua_init(ngx_conf_t *cf);
 static char *ngx_[% subsystem %]_lua_lowat_check(ngx_conf_t *cf, void *post, void *data);
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
 static ngx_int_t ngx_[% subsystem %]_lua_set_ssl(ngx_conf_t *cf,
     ngx_[% subsystem %]_lua_loc_conf_t *llcf);
 #endif
@@ -72,7 +72,7 @@ static volatile ngx_cycle_t  *ngx_[% subsystem %]_lua_prev_cycle = NULL;
 [% END %]
 
 
-#if (NGX_[% subsystem FILTER upper %]_SSL) && defined(nginx_version) && nginx_version >= 1001013
+#if (NGX_[% SUBSYS %]_SSL) && defined(nginx_version) && nginx_version >= 1001013
 
 static ngx_conf_bitmask_t  ngx_[% subsystem %]_lua_ssl_protocols[] = {
     { ngx_string("SSLv2"), NGX_SSL_SSLv2 },
@@ -96,21 +96,21 @@ static ngx_conf_bitmask_t  ngx_[% subsystem %]_lua_ssl_protocols[] = {
 static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
 
     { ngx_string("lua_max_running_timers"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_conf_set_num_slot,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       offsetof(ngx_[% subsystem %]_lua_main_conf_t, max_running_timers),
       NULL },
 
     { ngx_string("lua_max_pending_timers"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_conf_set_num_slot,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       offsetof(ngx_[% subsystem %]_lua_main_conf_t, max_pending_timers),
       NULL },
 
     { ngx_string("lua_shared_dict"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_TAKE2,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE2,
       ngx_[% subsystem %]_lua_shared_dict,
       0,
       0,
@@ -127,31 +127,31 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
 
 #if (NGX_PCRE)
     { ngx_string("lua_regex_cache_max_entries"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_conf_set_num_slot,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       offsetof(ngx_[% subsystem %]_lua_main_conf_t, regex_cache_max_entries),
       NULL },
 
     { ngx_string("lua_regex_match_limit"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_conf_set_num_slot,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       offsetof(ngx_[% subsystem %]_lua_main_conf_t, regex_match_limit),
       NULL },
 #endif
 
     { ngx_string("lua_package_cpath"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_[% subsystem %]_lua_package_cpath,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       0,
       NULL },
 
     { ngx_string("lua_package_path"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_[% subsystem %]_lua_package_path,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       0,
       NULL },
 
@@ -198,44 +198,44 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       NULL },
 
     { ngx_string("init_by_lua_block"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
       ngx_[% subsystem %]_lua_init_by_lua_block,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       0,
       (void *) ngx_[% subsystem %]_lua_init_by_inline },
 
     { ngx_string("init_by_lua"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_[% subsystem %]_lua_init_by_lua,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       0,
       (void *) ngx_[% subsystem %]_lua_init_by_inline },
 
     { ngx_string("init_by_lua_file"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_[% subsystem %]_lua_init_by_lua,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       0,
       (void *) ngx_[% subsystem %]_lua_init_by_file },
 
     { ngx_string("init_worker_by_lua_block"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
       ngx_[% subsystem %]_lua_init_worker_by_lua_block,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       0,
       (void *) ngx_[% subsystem %]_lua_init_worker_by_inline },
 
     { ngx_string("init_worker_by_lua"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_[% subsystem %]_lua_init_worker_by_lua,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       0,
       (void *) ngx_[% subsystem %]_lua_init_worker_by_inline },
 
     { ngx_string("init_worker_by_lua_file"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_[% subsystem %]_lua_init_worker_by_lua,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       0,
       (void *) ngx_[% subsystem %]_lua_init_worker_by_file },
 
@@ -483,16 +483,16 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
 [% END -%]
 
     { ngx_string("balancer_by_lua_block"),
-      NGX_[% subsystem FILTER upper %]_UPS_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
+      NGX_[% SUBSYS %]_UPS_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
       ngx_[% subsystem %]_lua_balancer_by_lua_block,
-      NGX_[% subsystem FILTER upper %]_SRV_CONF_OFFSET,
+      NGX_[% SUBSYS %]_SRV_CONF_OFFSET,
       0,
       (void *) ngx_[% subsystem %]_lua_balancer_handler_inline },
 
     { ngx_string("balancer_by_lua_file"),
-      NGX_[% subsystem FILTER upper %]_UPS_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_UPS_CONF|NGX_CONF_TAKE1,
       ngx_[% subsystem %]_lua_balancer_by_lua,
-      NGX_[% subsystem FILTER upper %]_SRV_CONF_OFFSET,
+      NGX_[% SUBSYS %]_SRV_CONF_OFFSET,
       0,
       (void *) ngx_[% subsystem %]_lua_balancer_handler_file },
 
@@ -598,7 +598,7 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
     [% lua_ssl_conf_t = 'ngx_stream_lua_srv_conf_t' %]
 [% END %]
 
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
 
 #   if defined(nginx_version) && nginx_version >= 1001013
 
@@ -683,12 +683,12 @@ static ngx_command_t ngx_[% subsystem %]_lua_cmds[] = {
       offsetof([% lua_ssl_conf_t %], ssl_crl),
       NULL },
 
-#endif  /* NGX_[% subsystem FILTER upper %]_SSL */
+#endif  /* NGX_[% SUBSYS %]_SSL */
 
      { ngx_string("lua_malloc_trim"),
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_[% subsystem %]_lua_malloc_trim,
-      NGX_[% subsystem FILTER upper %]_MAIN_CONF_OFFSET,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
       0,
       NULL },
 
@@ -726,7 +726,7 @@ ngx_module_t ngx_[% subsystem %]_lua_module = {
     NGX_MODULE_V1,
     &ngx_[% subsystem %]_lua_module_ctx,       /*  module context */
     ngx_[% subsystem %]_lua_cmds,              /*  module directives */
-    NGX_[% subsystem FILTER upper %]_MODULE,   /*  module type */
+    NGX_[% SUBSYS %]_MODULE,   /*  module type */
     NULL,                                      /*  init master */
     NULL,                                      /*  init module */
     ngx_[% subsystem %]_lua_init_worker,       /*  init process */
@@ -822,7 +822,7 @@ ngx_[% subsystem %]_lua_init(ngx_conf_t *cf)
     dd("requires log: %d", (int) lmcf->requires_log);
 
     if (lmcf->requires_log) {
-        arr = &cmcf->phases[NGX_[% subsystem FILTER upper %]_LOG_PHASE].handlers;
+        arr = &cmcf->phases[NGX_[% SUBSYS %]_LOG_PHASE].handlers;
         h = ngx_array_push(arr);
         if (h == NULL) {
             return NGX_ERROR;
@@ -1003,7 +1003,7 @@ ngx_[% subsystem %]_lua_create_main_conf(ngx_conf_t *cf)
     lmcf->postponed_to_preread_phase_end = NGX_CONF_UNSET;
 [% END -%]
 
-#if (NGX_[% subsystem FILTER upper %]_LUA_HAVE_MALLOC_TRIM)
+#if (NGX_[% SUBSYS %]_LUA_HAVE_MALLOC_TRIM)
     lmcf->malloc_trim_cycle = NGX_CONF_UNSET_UINT;
 #endif
 
@@ -1043,7 +1043,7 @@ ngx_[% subsystem %]_lua_init_main_conf(ngx_conf_t *cf, void *conf)
         lmcf->max_running_timers = 256;
     }
 
-#if (NGX_[% subsystem FILTER upper %]_LUA_HAVE_MALLOC_TRIM)
+#if (NGX_[% SUBSYS %]_LUA_HAVE_MALLOC_TRIM)
     if (lmcf->malloc_trim_cycle == NGX_CONF_UNSET_UINT) {
         lmcf->malloc_trim_cycle = 1000;  /* number of reqs */
     }
@@ -1056,7 +1056,7 @@ ngx_[% subsystem %]_lua_init_main_conf(ngx_conf_t *cf, void *conf)
 
 
 [% BLOCK merge_common_conf %]
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
 
 #   if defined(nginx_version) && nginx_version >= 1001013
 
@@ -1124,7 +1124,7 @@ ngx_[% subsystem %]_lua_init_main_conf(ngx_conf_t *cf, void *conf)
 
     conf->log_socket_errors = NGX_CONF_UNSET;
 
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
     conf->ssl_verify_depth = NGX_CONF_UNSET_UINT;
 #endif
 [% END # init_common_conf %]
@@ -1170,7 +1170,7 @@ static char *
 ngx_[% subsys %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
 {
 [% IF http_subsys %]
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
     ngx_[% subsys %]_lua_srv_conf_t *prev = parent;
     ngx_[% subsys %]_lua_srv_conf_t *conf = child;
     ngx_http_ssl_srv_conf_t         *sscf;
@@ -1259,7 +1259,7 @@ ngx_[% subsys %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
         }
     }
 
-#endif  /* NGX_[% subsystem FILTER upper %]_SSL */
+#endif  /* NGX_[% SUBSYS %]_SSL */
 
 [% ELSIF stream_subsys %]
     ngx_[% subsystem %]_lua_srv_conf_t *prev = parent;
@@ -1392,7 +1392,7 @@ ngx_[% subsystem %]_lua_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child
 [% END # http %]
 
 
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
 
 static ngx_int_t
 [% IF http_subsys %]
@@ -1463,13 +1463,13 @@ ngx_stream_lua_set_ssl(ngx_conf_t *cf, ngx_stream_lua_srv_conf_t *lxcf)
     return NGX_OK;
 }
 
-#endif  /* NGX_[% subsystem FILTER upper %]_SSL */
+#endif  /* NGX_[% SUBSYS %]_SSL */
 
 
 static char *
 ngx_[% subsystem %]_lua_malloc_trim(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
-#if (NGX_[% subsystem FILTER upper %]_LUA_HAVE_MALLOC_TRIM)
+#if (NGX_[% SUBSYS %]_LUA_HAVE_MALLOC_TRIM)
 
     ngx_int_t       nreqs;
     ngx_str_t      *value;

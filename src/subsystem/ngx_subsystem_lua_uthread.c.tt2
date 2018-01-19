@@ -84,8 +84,8 @@ ngx_[% subsys %]_lua_uthread_spawn(lua_State *L)
     coctx->is_uthread = 1;
     ctx->uthreads++;
 
-    coctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_RUNNING;
-    ctx->co_op = NGX_[% subsystem FILTER upper %]_LUA_USER_THREAD_RESUME;
+    coctx->co_status = NGX_[% SUBSYS %]_LUA_CO_RUNNING;
+    ctx->co_op = NGX_[% SUBSYS %]_LUA_USER_THREAD_RESUME;
 
     ctx->cur_co_ctx->thread_spawn_yielded = 1;
 
@@ -124,18 +124,18 @@ ngx_[% subsystem %]_lua_uthread_wait(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
 
 [% IF http_subsys -%]
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
 
 [% ELSIF stream_subsys -%]
                                | NGX_STREAM_LUA_CONTEXT_PREREAD
 [% END -%]
 
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER);
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER);
 
     coctx = ctx->cur_co_ctx;
 
@@ -162,7 +162,7 @@ ngx_[% subsystem %]_lua_uthread_wait(lua_State *L)
         }
 
         switch (sub_coctx->co_status) {
-        case NGX_[% subsystem FILTER upper %]_LUA_CO_ZOMBIE:
+        case NGX_[% SUBSYS %]_LUA_CO_ZOMBIE:
 
             ngx_[% subsystem %]_lua_probe_info("found zombie child");
 
@@ -183,7 +183,7 @@ ngx_[% subsystem %]_lua_uthread_wait(lua_State *L)
 
             return nrets;
 
-        case NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD:
+        case NGX_[% SUBSYS %]_LUA_CO_DEAD:
             dd("uthread already waited: %p (parent %p)", sub_coctx,
                coctx);
 
@@ -230,18 +230,18 @@ ngx_[% subsystem %]_lua_uthread_kill(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
 
 [% IF http_subsys -%]
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
 
 [% ELSIF stream_subsys -%]
                                | NGX_STREAM_LUA_CONTEXT_PREREAD
 [% END -%]
 
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER);
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER);
 
     coctx = ctx->cur_co_ctx;
 
@@ -275,7 +275,7 @@ ngx_[% subsystem %]_lua_uthread_kill(lua_State *L)
 [% END %]
 
     switch (sub_coctx->co_status) {
-    case NGX_[% subsystem FILTER upper %]_LUA_CO_ZOMBIE:
+    case NGX_[% SUBSYS %]_LUA_CO_ZOMBIE:
         ngx_[% subsystem %]_lua_del_thread(r, L, ctx, sub_coctx);
         ctx->uthreads--;
 
@@ -283,7 +283,7 @@ ngx_[% subsystem %]_lua_uthread_kill(lua_State *L)
         lua_pushliteral(L, "already terminated");
         return 2;
 
-    case NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD:
+    case NGX_[% SUBSYS %]_LUA_CO_DEAD:
         lua_pushnil(L);
         lua_pushliteral(L, "already waited or killed");
         return 2;

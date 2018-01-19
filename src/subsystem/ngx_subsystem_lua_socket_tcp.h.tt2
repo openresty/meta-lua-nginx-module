@@ -4,22 +4,22 @@
  */
 
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_SOCKET_TCP_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_SOCKET_TCP_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_SOCKET_TCP_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_SOCKET_TCP_H_INCLUDED_
 
 
 #include "ngx_[% subsystem %]_lua_common.h"
 
 
-#define NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_ERROR         0x0001
-#define NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_TIMEOUT       0x0002
-#define NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_CLOSED        0x0004
-#define NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_RESOLVER      0x0008
-#define NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_BUFTOOSMALL   0x0010
-#define NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_NOMEM         0x0020
-#define NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_PARTIALWRITE  0x0040
-#define NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_CLIENTABORT   0x0080
-#define NGX_[% subsystem FILTER upper %]_LUA_SOCKET_FT_SSL           0x0100
+#define NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR         0x0001
+#define NGX_[% SUBSYS %]_LUA_SOCKET_FT_TIMEOUT       0x0002
+#define NGX_[% SUBSYS %]_LUA_SOCKET_FT_CLOSED        0x0004
+#define NGX_[% SUBSYS %]_LUA_SOCKET_FT_RESOLVER      0x0008
+#define NGX_[% SUBSYS %]_LUA_SOCKET_FT_BUFTOOSMALL   0x0010
+#define NGX_[% SUBSYS %]_LUA_SOCKET_FT_NOMEM         0x0020
+#define NGX_[% SUBSYS %]_LUA_SOCKET_FT_PARTIALWRITE  0x0040
+#define NGX_[% SUBSYS %]_LUA_SOCKET_FT_CLIENTABORT   0x0080
+#define NGX_[% SUBSYS %]_LUA_SOCKET_FT_SSL           0x0100
 
 
 typedef struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s
@@ -91,7 +91,7 @@ struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s {
 
     ngx_uint_t                       reused;
 
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
     ngx_str_t                        ssl_name;
 #endif
 
@@ -105,7 +105,7 @@ struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s {
     unsigned                         raw_downstream:1;
     unsigned                         read_closed:1;
     unsigned                         write_closed:1;
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
     unsigned                         ssl_verify:1;
     unsigned                         ssl_session_reuse:1;
 #endif
@@ -152,6 +152,6 @@ void ngx_[% subsystem %]_lua_inject_req_socket_api(lua_State *L);
 void ngx_[% subsystem %]_lua_cleanup_conn_pools(lua_State *L);
 
 
-#endif /* _NGX_[% subsystem FILTER upper %]_LUA_SOCKET_TCP_H_INCLUDED_ */
+#endif /* _NGX_[% SUBSYS %]_LUA_SOCKET_TCP_H_INCLUDED_ */
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

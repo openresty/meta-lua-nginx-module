@@ -178,14 +178,14 @@ ngx_[% subsystem %]_lua_balancer_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
         lscf->balancer.src.data = name;
         lscf->balancer.src.len = ngx_strlen(name);
 
-        p = ngx_palloc(cf->pool, NGX_[% subsystem FILTER upper %]_LUA_FILE_KEY_LEN + 1);
+        p = ngx_palloc(cf->pool, NGX_[% SUBSYS %]_LUA_FILE_KEY_LEN + 1);
         if (p == NULL) {
             return NGX_CONF_ERROR;
         }
 
         lscf->balancer.src_key = p;
 
-        p = ngx_copy(p, NGX_[% subsystem FILTER upper %]_LUA_FILE_TAG, NGX_[% subsystem FILTER upper %]_LUA_FILE_TAG_LEN);
+        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG, NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
         p = ngx_[% subsystem %]_lua_digest_hex(p, value[1].data, value[1].len);
         *p = '\0';
 
@@ -194,14 +194,14 @@ ngx_[% subsystem %]_lua_balancer_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 
         lscf->balancer.src = value[1];
 
-        p = ngx_palloc(cf->pool, NGX_[% subsystem FILTER upper %]_LUA_INLINE_KEY_LEN + 1);
+        p = ngx_palloc(cf->pool, NGX_[% SUBSYS %]_LUA_INLINE_KEY_LEN + 1);
         if (p == NULL) {
             return NGX_CONF_ERROR;
         }
 
         lscf->balancer.src_key = p;
 
-        p = ngx_copy(p, NGX_[% subsystem FILTER upper %]_LUA_INLINE_TAG, NGX_[% subsystem FILTER upper %]_LUA_INLINE_TAG_LEN);
+        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG, NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
         p = ngx_[% subsystem %]_lua_digest_hex(p, value[1].data, value[1].len);
         *p = '\0';
     }
@@ -215,11 +215,11 @@ ngx_[% subsystem %]_lua_balancer_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 
     uscf->peer.init_upstream = ngx_[% subsystem %]_lua_balancer_init;
 
-    uscf->flags = NGX_[% subsystem FILTER upper %]_UPSTREAM_CREATE
-                  |NGX_[% subsystem FILTER upper %]_UPSTREAM_WEIGHT
-                  |NGX_[% subsystem FILTER upper %]_UPSTREAM_MAX_FAILS
-                  |NGX_[% subsystem FILTER upper %]_UPSTREAM_FAIL_TIMEOUT
-                  |NGX_[% subsystem FILTER upper %]_UPSTREAM_DOWN;
+    uscf->flags = NGX_[% SUBSYS %]_UPSTREAM_CREATE
+                  |NGX_[% SUBSYS %]_UPSTREAM_WEIGHT
+                  |NGX_[% SUBSYS %]_UPSTREAM_MAX_FAILS
+                  |NGX_[% SUBSYS %]_UPSTREAM_FAIL_TIMEOUT
+                  |NGX_[% SUBSYS %]_UPSTREAM_DOWN;
 
     return NGX_CONF_OK;
 }
@@ -326,7 +326,7 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
     ngx_[% subsys %]_lua_main_conf_t           *lmcf;
     ngx_[% subsys %]_lua_balancer_peer_data_t  *bp = data;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], pc->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], pc->log, 0,
                    "lua balancer peer, tries: %ui", pc->tries);
 
     lscf = bp->conf;
@@ -359,7 +359,7 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
         ngx_[% subsystem %]_lua_reset_ctx(r, L, ctx);
     }
 
-    ctx->context = NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER;
+    ctx->context = NGX_[% SUBSYS %]_LUA_CONTEXT_BALANCER;
 
     bp->sockaddr = NULL;
     bp->socklen = 0;
@@ -386,7 +386,7 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
             || rc == NGX_BUSY
             || rc == NGX_DECLINED
 #ifdef HAVE_BALANCER_STATUS_CODE_PATCH
-            || rc >= NGX_[% subsystem FILTER upper %]_SPECIAL_RESPONSE
+            || rc >= NGX_[% SUBSYS %]_SPECIAL_RESPONSE
 #endif
         ) {
             return rc;
@@ -581,7 +581,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_current_peer([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    if ((ctx->context & NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER) == 0) {
+    if ((ctx->context & NGX_[% SUBSYS %]_LUA_CONTEXT_BALANCER) == 0) {
         *err = "API disabled in the current context";
         return NGX_ERROR;
     }
@@ -827,7 +827,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    if ((ctx->context & NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER) == 0) {
+    if ((ctx->context & NGX_[% SUBSYS %]_LUA_CONTEXT_BALANCER) == 0) {
         *err = "API disabled in the current context";
         return NGX_ERROR;
     }
@@ -917,7 +917,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_get_last_failure([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    if ((ctx->context & NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER) == 0) {
+    if ((ctx->context & NGX_[% SUBSYS %]_LUA_CONTEXT_BALANCER) == 0) {
         *err = "API disabled in the current context";
         return NGX_ERROR;
     }

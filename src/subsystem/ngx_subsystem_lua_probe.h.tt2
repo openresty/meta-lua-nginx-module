@@ -4,8 +4,8 @@
  *  https://github.com/agentzh/nginx-devel-utils
  */
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_PROBE_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_PROBE_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_PROBE_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_PROBE_H_INCLUDED_
 
 
 #include <ngx_config.h>
@@ -86,4 +86,4 @@
 
 #endif
 
-#endif /* _NGX_[% subsystem FILTER upper %]_LUA_PROBE_H_INCLUDED_ */
+#endif /* _NGX_[% SUBSYS %]_LUA_PROBE_H_INCLUDED_ */

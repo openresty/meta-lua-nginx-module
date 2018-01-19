@@ -10,7 +10,7 @@
 #include "ddebug.h"
 
 
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
 
 
 int ngx_[% subsystem %]_lua_ssl_ctx_index = -1;
@@ -36,4 +36,4 @@ ngx_[% subsystem %]_lua_ssl_init(ngx_log_t *log)
 }
 
 
-#endif /* NGX_[% subsystem FILTER upper %]_SSL */
+#endif /* NGX_[% SUBSYS %]_SSL */

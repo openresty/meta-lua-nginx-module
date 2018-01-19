@@ -617,7 +617,7 @@ ngx_[% subsystem %]_lua_ngx_decode_args(lua_State *L)
         lua_pop(L, 1);
 
     } else {
-        max = NGX_[% subsystem FILTER upper %]_LUA_MAX_ARGS;
+        max = NGX_[% SUBSYS %]_LUA_MAX_ARGS;
     }
 
     tmp = lua_newuserdata(L, len);

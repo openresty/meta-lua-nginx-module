@@ -74,13 +74,13 @@ ngx_[% subsys %]_lua_coroutine_create_helper(lua_State *L, [% req_type %] *r,
     luaL_argcheck(L, lua_isfunction(L, 1) && !lua_iscfunction(L, 1), 1,
                   "Lua function expected");
 
-    ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
+    ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
 [% IF http_subsys -%]
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 
 [% ELSIF stream_subsys -%]
                                | NGX_STREAM_LUA_CONTEXT_PREREAD
@@ -109,7 +109,7 @@ ngx_[% subsys %]_lua_coroutine_create_helper(lua_State *L, [% req_type %] *r,
     }
 
     coctx->co = co;
-    coctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_SUSPENDED;
+    coctx->co_status = NGX_[% SUBSYS %]_LUA_CO_SUSPENDED;
 
     /* make new coroutine share globals of the parent coroutine.
      * NOTE: globals don't have to be separated! */
@@ -157,13 +157,13 @@ ngx_[% subsystem %]_lua_coroutine_resume(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
 [% IF http_subsys -%]
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 
 [% ELSIF stream_subsys -%]
                                | NGX_STREAM_LUA_CONTEXT_PREREAD
@@ -182,7 +182,7 @@ ngx_[% subsystem %]_lua_coroutine_resume(lua_State *L)
 
     ngx_[% subsystem %]_lua_probe_user_coroutine_resume(r, L, co);
 
-    if (coctx->co_status != NGX_[% subsystem FILTER upper %]_LUA_CO_SUSPENDED) {
+    if (coctx->co_status != NGX_[% SUBSYS %]_LUA_CO_SUSPENDED) {
         dd("coroutine resume: %d", coctx->co_status);
 
         lua_pushboolean(L, 0);
@@ -191,14 +191,14 @@ ngx_[% subsystem %]_lua_coroutine_resume(lua_State *L)
         return 2;
     }
 
-    p_coctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_NORMAL;
+    p_coctx->co_status = NGX_[% SUBSYS %]_LUA_CO_NORMAL;
 
     coctx->parent_co_ctx = p_coctx;
 
     dd("set coroutine to running");
-    coctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_RUNNING;
+    coctx->co_status = NGX_[% SUBSYS %]_LUA_CO_RUNNING;
 
-    ctx->co_op = NGX_[% subsystem FILTER upper %]_LUA_USER_CORO_RESUME;
+    ctx->co_op = NGX_[% SUBSYS %]_LUA_USER_CORO_RESUME;
     ctx->cur_co_ctx = coctx;
 
     /* yield and pass args to main thread, and resume target coroutine from
@@ -224,13 +224,13 @@ ngx_[% subsystem %]_lua_coroutine_yield(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
-        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
+        | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
 [% IF http_subsys -%]
-        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH
+        | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
+        | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
+        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
+        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 [% ELSIF stream_subsys -%]
         | NGX_STREAM_LUA_CONTEXT_PREREAD
 [% END -%]
@@ -238,13 +238,13 @@ ngx_[% subsystem %]_lua_coroutine_yield(lua_State *L)
 
     coctx = ctx->cur_co_ctx;
 
-    coctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_SUSPENDED;
+    coctx->co_status = NGX_[% SUBSYS %]_LUA_CO_SUSPENDED;
 
-    ctx->co_op = NGX_[% subsystem FILTER upper %]_LUA_USER_CORO_YIELD;
+    ctx->co_op = NGX_[% SUBSYS %]_LUA_USER_CORO_YIELD;
 
     if (!coctx->is_uthread && coctx->parent_co_ctx) {
         dd("set coroutine to running");
-        coctx->parent_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_RUNNING;
+        coctx->parent_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_RUNNING;
 
         ngx_[% subsystem %]_lua_probe_user_coroutine_yield(r, coctx->parent_co_ctx->co, L);
 
@@ -394,8 +394,8 @@ ngx_[% subsys %]_lua_coroutine_status(lua_State *L)
     coctx = ngx_[% subsys %]_lua_get_co_ctx(co, ctx);
     if (coctx == NULL) {
         lua_pushlstring(L, (const char *)
-                        ngx_[% subsystem %]_lua_co_status_names[NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD].data,
-                        ngx_[% subsystem %]_lua_co_status_names[NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD].len);
+                        ngx_[% subsystem %]_lua_co_status_names[NGX_[% SUBSYS %]_LUA_CO_DEAD].data,
+                        ngx_[% subsystem %]_lua_co_status_names[NGX_[% SUBSYS %]_LUA_CO_DEAD].len);
         return 1;
     }
 

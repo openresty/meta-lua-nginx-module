@@ -190,7 +190,7 @@ ngx_[% subsystem %]_lua_ngx_timer_helper(lua_State *L, int every)
     if (lmcf->watcher == NULL) {
         /* create the watcher fake connection */
 
-        ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+        ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ngx_cycle->log, 0,
                        "lua creating fake watcher connection");
 
         if (ngx_cycle->files) {
@@ -561,7 +561,7 @@ ngx_[% subsystem %]_lua_timer_handler(ngx_event_t *ev)
     ngx_stream_session_t              *s;
 [% END %]
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ngx_cycle->log, 0,
                    "[% log_prefix %]lua ngx.timer expired");
 
     ngx_memcpy(&tctx, ev->data, sizeof(ngx_[% subsystem %]_lua_timer_ctx_t));
@@ -702,13 +702,13 @@ ngx_[% subsystem %]_lua_timer_handler(ngx_event_t *ev)
     ctx->cleanup = &cln->handler;
 
     ctx->entered_content_phase = 1;
-    ctx->context = NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER;
+    ctx->context = NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER;
 
     r->read_event_handler = ngx_[% req_subsystem %]_block_reading;
 
     ctx->cur_co_ctx->co_ref = tctx.co_ref;
     ctx->cur_co_ctx->co = tctx.co;
-    ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_RUNNING;
+    ctx->cur_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_RUNNING;
 
     dd("r connection: %p, log %p", r->connection, r->connection->log);
 
@@ -817,7 +817,7 @@ ngx_[% subsystem %]_lua_abort_pending_timers(ngx_event_t *ev)
     ngx_[% subsys %]_lua_timer_ctx_t    *tctx;
     ngx_[% subsys %]_lua_main_conf_t    *lmcf;
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ngx_cycle->log, 0,
                    "lua abort pending timers");
 
     c = ev->data;
@@ -931,7 +931,7 @@ ngx_[% subsystem %]_lua_abort_pending_timers(ngx_event_t *ev)
     /* restore the old tree root's parent */
     ngx_event_timer_rbtree.root->parent = temp;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], ngx_cycle->log, 0,
                    "[% log_prefix %]lua found %i pending timers to be aborted prematurely",
                    n);
 

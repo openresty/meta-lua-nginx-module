@@ -5,8 +5,8 @@
  */
 
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_COROUTINE_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_COROUTINE_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_COROUTINE_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_COROUTINE_H_INCLUDED_
 
 
 #include "ngx_[% subsystem %]_lua_common.h"
@@ -18,6 +18,6 @@ int ngx_[% subsystem %]_lua_coroutine_create_helper(lua_State *L, [% req_type %]
     ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_[% subsystem %]_lua_co_ctx_t **pcoctx);
 
 
-#endif /* _NGX_[% subsystem FILTER upper %]_LUA_COROUTINE_H_INCLUDED_ */
+#endif /* _NGX_[% SUBSYS %]_LUA_COROUTINE_H_INCLUDED_ */
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

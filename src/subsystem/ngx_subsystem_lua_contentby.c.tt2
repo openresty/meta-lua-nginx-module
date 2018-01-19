@@ -110,7 +110,7 @@ ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
     }
     /*  }}} */
 
-    ctx->context = NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT;
+    ctx->context = NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT;
 
     llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 

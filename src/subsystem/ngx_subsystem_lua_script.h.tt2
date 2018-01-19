@@ -82,6 +82,6 @@ ngx_int_t ngx_[% subsystem %]_lua_complex_value([% req_type %] *r, ngx_str_t *su
     ngx_[% subsystem %]_lua_complex_value_t *val, luaL_Buffer *luabuf);
 
 
-#endif /* _NGX_[% subsystem FILTER upper %]_LUA_SCRIPT_H_INCLUDED_ */
+#endif /* _NGX_[% SUBSYS %]_LUA_SCRIPT_H_INCLUDED_ */
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

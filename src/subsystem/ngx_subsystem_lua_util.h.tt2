@@ -5,8 +5,8 @@
  */
 
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_UTIL_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_UTIL_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_UTIL_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_UTIL_H_INCLUDED_
 
 
 #include "ngx_[% subsystem %]_lua_common.h"
@@ -560,6 +560,6 @@ extern ngx_uint_t  ngx_[% subsystem %]_lua_location_hash;
 extern ngx_uint_t  ngx_[% subsystem %]_lua_content_length_hash;
 
 
-#endif /* _NGX_[% subsystem FILTER upper %]_LUA_UTIL_H_INCLUDED_ */
+#endif /* _NGX_[% SUBSYS %]_LUA_UTIL_H_INCLUDED_ */
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */
