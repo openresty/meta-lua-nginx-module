@@ -1,7 +1,8 @@
 # Name
 
 meta-lua-nginx-module - templates and toolchains for generating
-http-lua-nginx-module and stream-lua-nginx-module.
+[http-lua-nginx-module](https://github.com/openresty/lua-nginx-module) and
+[stream-lua-nginx-module](https://github.com/openresty/stream-lua-nginx-module).
 
 # Usage
 
@@ -11,7 +12,7 @@ $ make SUBSYS=stream DESTDIR=/path/to/stream-lua-nginx-module/src -j4
 
 All make options are optional.
 
-## Supported Options
+## Supported Make Options
 
 | Option        | Meaning                                             | Default     |
 | ------------- | --------------------------------------------------- | ----------- |
@@ -21,25 +22,25 @@ All make options are optional.
 # Directory Structures
 ```
 ├── src: all source files
-│   ├── http: http subsystem specific files, not rendered through the template engine
-│   ├── stream: stream subsystem specific files, not rendered through the template engine
-│   └── subsystem: templates file that are shared between subsystems, rendered the template engine
+│   ├── http: http subsystem specific files, not rendered by the template engine
+│   ├── stream: stream subsystem specific files, not rendered by the template engine
+│   └── subsystem: templates file that are shared between subsystems, rendered by the template engine
 └── utils: build toolchains
 ```
 # Developing
 ## General Workflow
 
-First, determine where the change should goes to. As an example, if you would like to change
+First, determine where the change should go to. As an example, if you would like to change
 a file inside `lua-nginx-module`, that file could either be rendered through the template engine,
 or be simply copied from the `src/http` directory as-is without going through the template engine.
 
 To tell which one is the case, look at the first few lines of the generated file. A file rendered by
-the template engine will have something like this:
+the template engine will have something like this at it's beginning:
 
 ```C
 /*
  * !!! DO NOT EDIT, YOUR CHANGES WILL BE OVERWRITTEN !!!
- * Generated from: src/subsystem/ddebug.h.tt2
+ * Generated from: src/subsystem/ngx_subsystem_foo.c.tt2
  */
 ```
 
@@ -51,17 +52,18 @@ $ make SUBSYS=http DESTDIR=../lua-nginx-module/src -j4
 
 Next, update the tests inside the respective repository. In this case, they will be under `../lua-nginx-module/t`.
 
-Finally, create PR for both the `meta-lua-nginx-module` and `lua-nginx-module`.
+Finally, create PRs for both the `meta-lua-nginx-module` and `lua-nginx-module`.
 
 ## Template Features
 
-All the files under `src/subsystem` are valid [Perl TT2](http://www.template-toolkit.org) files and should be able
-to be rendered using the `mini-tt2.pl` tool inside this repo, the [lemplate](https://github.com/openresty/lemplate)
+All the files under `src/subsystem` are valid [Perl TT2](http://www.template-toolkit.org) files and should be renderable
+using the `mini-tt2.pl` tool inside this repo, the [lemplate](https://github.com/openresty/lemplate)
 or the official [Perl TT2](http://www.template-toolkit.org) renderer.
 
 **Note:** The `mini-tt2.pl` tool has been specifically tailored for rendering C source codes and will reformat
-to make sure the rendered file follows the general styling guidelines of NGINX. Rendering using other TT2 compatible
-should yield files that can be built successfully but not necessarily style wise correct.
+to make sure the rendered file follows the general styling guidelines of NGINX and OpenResty projects.
+Rendering using other TT2 compatible renderers should yield files that can be build but not necessarily correct
+in terms of styling.
 
 In general, you should always use the `mini-tt2.pl` tool while working with this repository and only submit
 files rendered by it to `lua-nginx-module` and `stream-lua-nginx-module`. You should also avoid using any TT2 features
@@ -86,15 +88,19 @@ Note that `SET` is optional and both forms above are equivalent.
 ```
 [% IF foo == 'abc' %]
 Foo is abc!
-
 [% ELSIF subsys %]
 Foo is not abc!
+[% END %]
+
+
+[% IF foo == 'def' %]
+Foo is def!
 [% END %]
 ```
 
 ### Comment
 ```
-[%# this will not appear in rendered files #%]
+[%# this will not appear inside rendered file #%]
 ```
 
 ### Snippet Reuse
@@ -115,13 +121,14 @@ Hello!
 I am a snippet.
 ```
 
-**Note:** Passing variables to block is **not** supported. `INCLUDE` and `PROCESS` are equivalent.
+**Note:** Passing variables to block is **not** supported. `INCLUDE` and `PROCESS` directives
+are equivalent.
 
 ### Built-in Variables
 For convenience, the `mini-tt2.pl` tool always automatically inject the following variables
-into the template:
+into the template context:
 
-Their value depends only on the `SUBSYS` passed when invoking `make`.
+Their value depends only on the `SUBSYS` option passed when invoking `make`.
 
 **Note:** Variable names in TT2 are case-sensitive.
 
@@ -135,7 +142,7 @@ Their value depends only on the `SUBSYS` passed when invoking `make`.
 | `stream_subsys` | Boolean  | `0`                           | `1`                             |
 
 ### Whitespace Control
-Whitespace control using output modifiers like `[% foo -%]` is not necessary. The `mini-tt2.pl`
+Whitespace control using output modifiers like `[% foo -%]` is not necessary. The `mini-tt2.pl` tool
 always suppresses whitespaces caused by template directives in the rendered files.
 
 # Community
