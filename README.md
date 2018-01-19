@@ -4,6 +4,28 @@ meta-lua-nginx-module - templates and toolchains for generating
 [http-lua-nginx-module](https://github.com/openresty/lua-nginx-module) and
 [stream-lua-nginx-module](https://github.com/openresty/stream-lua-nginx-module).
 
+Table of Contents
+=================
+
+* [Name](#name)
+* [Usage](#usage)
+    * [Supported Make Options](#supported-make-options)
+* [Directory Structures](#directory-structures)
+* [Developing](#developing)
+    * [General Workflow](#general-workflow)
+    * [Template Features](#template-features)
+        * [Variable Assignments](#variable-assignments)
+        * [Variable Output](#variable-output)
+        * [Branching](#branching)
+        * [Comment](#comment)
+        * [Snippet Reuse](#snippet-reuse)
+        * [Built-in Variables](#built-in-variables)
+        * [Whitespace Control](#whitespace-control)
+* [Community](#community)
+    * [English Mailing List](#english-mailing-list)
+    * [Chinese Mailing List](#chinese-mailing-list)
+* [Copyright and License](#copyright-and-license)
+
 # Usage
 
 ```shell
@@ -27,6 +49,9 @@ All make options are optional.
 │   └── subsystem: templates file that are shared between subsystems, rendered by the template engine
 └── utils: build toolchains
 ```
+
+[Back to TOC](#table-of-contents)
+
 # Developing
 ## General Workflow
 
@@ -54,6 +79,8 @@ Next, update the tests inside the respective repository. In this case, they will
 
 Finally, create PRs for both the `meta-lua-nginx-module` and `lua-nginx-module`.
 
+[Back to TOC](#table-of-contents)
+
 ## Template Features
 
 All the files under `src/subsystem` are valid [Perl TT2](http://www.template-toolkit.org) files and should be renderable
@@ -71,6 +98,8 @@ that the `mini-tt2.pl` tool does not support unless there is a very good reason 
 
 The `mini-tt2.pl` tool supports the following subset of TT2 features:
 
+[Back to TOC](#table-of-contents)
+
 ### Variable Assignments
 ```
 [% foo = 'abc' %]
@@ -79,10 +108,14 @@ The `mini-tt2.pl` tool supports the following subset of TT2 features:
 
 Note that `SET` is optional and both forms above are equivalent.
 
+[Back to TOC](#table-of-contents)
+
 ### Variable Output
 ```
 [% foo %]
 ```
+
+[Back to TOC](#table-of-contents)
 
 ### Branching
 ```
@@ -98,10 +131,14 @@ Foo is def!
 [% END %]
 ```
 
+[Back to TOC](#table-of-contents)
+
 ### Comment
 ```
 [%# this will not appear inside rendered file #%]
 ```
+
+[Back to TOC](#table-of-contents)
 
 ### Snippet Reuse
 ```
@@ -124,6 +161,8 @@ I am a snippet.
 **Note:** Passing variables to block is **not** supported. `INCLUDE` and `PROCESS` directives
 are equivalent.
 
+[Back to TOC](#table-of-contents)
+
 ### Built-in Variables
 For convenience, the `mini-tt2.pl` tool always automatically inject the following variables
 into the template context:
@@ -141,9 +180,13 @@ Their value depends only on the `SUBSYS` option passed when invoking `make`.
 | `http_subsys`   | Boolean  | `1`                           | `0`                             |
 | `stream_subsys` | Boolean  | `0`                           | `1`                             |
 
+[Back to TOC](#table-of-contents)
+
 ### Whitespace Control
 Whitespace control using output modifiers like `[% foo -%]` is not necessary. The `mini-tt2.pl` tool
 always suppresses whitespaces caused by template directives in the rendered files.
+
+[Back to TOC](#table-of-contents)
 
 # Community
 
@@ -151,9 +194,13 @@ always suppresses whitespaces caused by template directives in the rendered file
 
 The [openresty-en](https://groups.google.com/group/openresty-en) mailing list is for English speakers.
 
+[Back to TOC](#table-of-contents)
+
 ## Chinese Mailing List
 
 The [openresty](https://groups.google.com/group/openresty) mailing list is for Chinese speakers.
+
+[Back to TOC](#table-of-contents)
 
 # Copyright and License
 
@@ -172,3 +219,6 @@ Redistribution and use in source and binary forms, with or without modification,
 * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+[Back to TOC](#table-of-contents)
+
