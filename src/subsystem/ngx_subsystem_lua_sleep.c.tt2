@@ -48,7 +48,7 @@ ngx_[% subsystem %]_lua_ngx_sleep(lua_State *L)
         return luaL_error(L, "invalid sleep duration \"%d\"", delay);
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -142,7 +142,7 @@ ngx_[% subsystem %]_lua_sleep_handler(ngx_event_t *ev)
 #endif
 [% END %]
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     if (ctx == NULL) {
         return;
@@ -173,7 +173,7 @@ ngx_[% subsystem %]_lua_sleep_handler(ngx_event_t *ev)
 
     } else {
         ctx->resume_handler = ngx_[% subsystem %]_lua_sleep_resume;
-        ngx_[% req_subsystem %]_core_run_phases(r);
+        ngx_[% req_subsys %]_core_run_phases(r);
     }
 
 [% IF http_subsys -%]
@@ -222,7 +222,7 @@ ngx_[% subsystem %]_lua_sleep_resume([% req_type %] *r)
     ngx_uint_t                              nreqs;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return NGX_ERROR;
     }

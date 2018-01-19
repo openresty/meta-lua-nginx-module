@@ -410,14 +410,14 @@ ngx_[% subsystem %]_lua_get_lua_vm([% req_type %] *r, ngx_[% subsystem %]_lua_ct
     ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
 
     if (ctx == NULL) {
-        ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     }
 
     if (ctx && ctx->vm_state) {
         return ctx->vm_state->vm;
     }
 
-    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
     dd("lmcf->lua: %p", lmcf->lua);
     return lmcf->lua;
 }
@@ -487,7 +487,7 @@ ngx_[% subsystem %]_lua_set_content_type([% req_type %] *r)
 {
     ngx_[% subsystem %]_lua_loc_conf_t     *llcf;
 
-    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
     if (llcf->use_default_type
         && r->headers_out.status != NGX_HTTP_NOT_MODIFIED)
     {

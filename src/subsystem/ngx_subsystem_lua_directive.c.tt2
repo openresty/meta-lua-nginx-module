@@ -895,7 +895,7 @@ ngx_[% subsystem %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void 
         }
     }
 
-    llcf->content_handler = (ngx_[% req_subsystem %]_handler_pt) cmd->post;
+    llcf->content_handler = (ngx_[% req_subsys %]_handler_pt) cmd->post;
 
 [% IF http_subsys %]
     lmcf = ngx_[% subsystem %]_conf_get_module_main_conf(cf, ngx_[% subsystem %]_lua_module);
@@ -1017,7 +1017,7 @@ ngx_[% subsystem %]_lua_log_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *con
         }
     }
 
-    llcf->log_handler = (ngx_[% req_subsystem %]_handler_pt) cmd->post;
+    llcf->log_handler = (ngx_[% req_subsys %]_handler_pt) cmd->post;
 
     lmcf = ngx_[% subsystem %]_conf_get_module_main_conf(cf, ngx_[% subsystem %]_lua_module);
 
