@@ -10,35 +10,35 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_script.h"
+#include "ngx_[% subsys %]_lua_script.h"
 
 
-static void *ngx_[% subsystem %]_lua_script_add_code(ngx_array_t *codes, size_t size);
-static size_t ngx_[% subsystem %]_lua_script_copy_len_code(
-    ngx_[% subsystem %]_lua_script_engine_t *e);
-static void ngx_[% subsystem %]_lua_script_copy_code(ngx_[% subsystem %]_lua_script_engine_t *e);
-static ngx_int_t ngx_[% subsystem %]_lua_script_add_copy_code(
-    ngx_[% subsystem %]_lua_script_compile_t *sc, ngx_str_t *value, ngx_uint_t last);
-static ngx_int_t ngx_[% subsystem %]_lua_script_compile(ngx_[% subsystem %]_lua_script_compile_t *sc);
-static ngx_int_t ngx_[% subsystem %]_lua_script_add_capture_code(
-    ngx_[% subsystem %]_lua_script_compile_t *sc, ngx_uint_t n);
-static size_t ngx_[% subsystem %]_lua_script_copy_capture_len_code(
-    ngx_[% subsystem %]_lua_script_engine_t *e);
-static void ngx_[% subsystem %]_lua_script_copy_capture_code(
-    ngx_[% subsystem %]_lua_script_engine_t *e);
-static ngx_int_t ngx_[% subsystem %]_lua_script_done(ngx_[% subsystem %]_lua_script_compile_t *sc);
-static ngx_int_t ngx_[% subsystem %]_lua_script_init_arrays(
-    ngx_[% subsystem %]_lua_script_compile_t *sc);
+static void *ngx_[% subsys %]_lua_script_add_code(ngx_array_t *codes, size_t size);
+static size_t ngx_[% subsys %]_lua_script_copy_len_code(
+    ngx_[% subsys %]_lua_script_engine_t *e);
+static void ngx_[% subsys %]_lua_script_copy_code(ngx_[% subsys %]_lua_script_engine_t *e);
+static ngx_int_t ngx_[% subsys %]_lua_script_add_copy_code(
+    ngx_[% subsys %]_lua_script_compile_t *sc, ngx_str_t *value, ngx_uint_t last);
+static ngx_int_t ngx_[% subsys %]_lua_script_compile(ngx_[% subsys %]_lua_script_compile_t *sc);
+static ngx_int_t ngx_[% subsys %]_lua_script_add_capture_code(
+    ngx_[% subsys %]_lua_script_compile_t *sc, ngx_uint_t n);
+static size_t ngx_[% subsys %]_lua_script_copy_capture_len_code(
+    ngx_[% subsys %]_lua_script_engine_t *e);
+static void ngx_[% subsys %]_lua_script_copy_capture_code(
+    ngx_[% subsys %]_lua_script_engine_t *e);
+static ngx_int_t ngx_[% subsys %]_lua_script_done(ngx_[% subsys %]_lua_script_compile_t *sc);
+static ngx_int_t ngx_[% subsys %]_lua_script_init_arrays(
+    ngx_[% subsys %]_lua_script_compile_t *sc);
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_compile_complex_value(ngx_[% subsystem %]_lua_compile_complex_value_t *ccv)
+ngx_[% subsys %]_lua_compile_complex_value(ngx_[% subsys %]_lua_compile_complex_value_t *ccv)
 {
     ngx_str_t                  *v;
     ngx_uint_t                  i, n, nv;
     ngx_array_t                 lengths, values, *pl, *pv;
 
-    ngx_[% subsystem %]_lua_script_compile_t   sc;
+    ngx_[% subsys %]_lua_script_compile_t   sc;
 
     v = ccv->value;
 
@@ -58,16 +58,16 @@ ngx_[% subsystem %]_lua_compile_complex_value(ngx_[% subsystem %]_lua_compile_co
         return NGX_OK;
     }
 
-    n = nv * (2 * sizeof(ngx_[% subsystem %]_lua_script_copy_code_t)
-              + sizeof(ngx_[% subsystem %]_lua_script_capture_code_t))
+    n = nv * (2 * sizeof(ngx_[% subsys %]_lua_script_copy_code_t)
+              + sizeof(ngx_[% subsys %]_lua_script_capture_code_t))
         + sizeof(uintptr_t);
 
     if (ngx_array_init(&lengths, ccv->pool, n, 1) != NGX_OK) {
         return NGX_ERROR;
     }
 
-    n = (nv * (2 * sizeof(ngx_[% subsystem %]_lua_script_copy_code_t)
-                   + sizeof(ngx_[% subsystem %]_lua_script_capture_code_t))
+    n = (nv * (2 * sizeof(ngx_[% subsys %]_lua_script_copy_code_t)
+                   + sizeof(ngx_[% subsys %]_lua_script_capture_code_t))
                 + sizeof(uintptr_t)
                 + sizeof(uintptr_t) - 1)
             & ~(sizeof(uintptr_t) - 1);
@@ -79,7 +79,7 @@ ngx_[% subsystem %]_lua_compile_complex_value(ngx_[% subsystem %]_lua_compile_co
     pl = &lengths;
     pv = &values;
 
-    ngx_memzero(&sc, sizeof(ngx_[% subsystem %]_lua_script_compile_t));
+    ngx_memzero(&sc, sizeof(ngx_[% subsys %]_lua_script_compile_t));
 
     sc.pool = ccv->pool;
     sc.log = ccv->log;
@@ -89,7 +89,7 @@ ngx_[% subsystem %]_lua_compile_complex_value(ngx_[% subsystem %]_lua_compile_co
     sc.complete_lengths = 1;
     sc.complete_values = 1;
 
-    if (ngx_[% subsystem %]_lua_script_compile(&sc) != NGX_OK) {
+    if (ngx_[% subsys %]_lua_script_compile(&sc) != NGX_OK) {
         ngx_array_destroy(&lengths);
         ngx_array_destroy(&values);
         return NGX_ERROR;
@@ -133,7 +133,7 @@ ngx_[% subsys %]_lua_complex_value([% req_type %] *r, ngx_str_t *subj,
     len = 0;
 
     while (*(uintptr_t *) e.ip) {
-        lcode = *(ngx_[% subsystem %]_lua_script_len_code_pt *) e.ip;
+        lcode = *(ngx_[% subsys %]_lua_script_len_code_pt *) e.ip;
         len += lcode(&e);
     }
 
@@ -146,8 +146,8 @@ ngx_[% subsys %]_lua_complex_value([% req_type %] *r, ngx_str_t *subj,
     e.pos = p;
 
     while (*(uintptr_t *) e.ip) {
-        code = *(ngx_[% subsystem %]_lua_script_code_pt *) e.ip;
-        code((ngx_[% subsystem %]_lua_script_engine_t *) &e);
+        code = *(ngx_[% subsys %]_lua_script_code_pt *) e.ip;
+        code((ngx_[% subsys %]_lua_script_engine_t *) &e);
     }
 
     luaL_addlstring(luabuf, (char *) &subj->data[offset], cap[0] - offset);
@@ -160,7 +160,7 @@ ngx_[% subsys %]_lua_complex_value([% req_type %] *r, ngx_str_t *subj,
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_script_compile(ngx_[% subsystem %]_lua_script_compile_t *sc)
+ngx_[% subsys %]_lua_script_compile(ngx_[% subsys %]_lua_script_compile_t *sc)
 {
     u_char       ch;
     ngx_str_t    name;
@@ -168,7 +168,7 @@ ngx_[% subsystem %]_lua_script_compile(ngx_[% subsystem %]_lua_script_compile_t 
     unsigned     num_var;
     ngx_uint_t   n = 0;
 
-    if (ngx_[% subsystem %]_lua_script_init_arrays(sc) != NGX_OK) {
+    if (ngx_[% subsys %]_lua_script_init_arrays(sc) != NGX_OK) {
         return NGX_ERROR;
     }
 
@@ -187,7 +187,7 @@ ngx_[% subsystem %]_lua_script_compile(ngx_[% subsystem %]_lua_script_compile_t 
                 i++;
                 name.len++;
 
-                if (ngx_[% subsystem %]_lua_script_add_copy_code(sc, &name,
+                if (ngx_[% subsys %]_lua_script_add_copy_code(sc, &name,
                                                       (i == sc->source->len))
                     != NGX_OK)
                 {
@@ -277,7 +277,7 @@ ngx_[% subsystem %]_lua_script_compile(ngx_[% subsystem %]_lua_script_compile_t 
 
             sc->variables++;
 
-            if (ngx_[% subsystem %]_lua_script_add_capture_code(sc, n) != NGX_OK) {
+            if (ngx_[% subsys %]_lua_script_add_capture_code(sc, n) != NGX_OK) {
                 return NGX_ERROR;
             }
 
@@ -296,14 +296,14 @@ ngx_[% subsystem %]_lua_script_compile(ngx_[% subsystem %]_lua_script_compile_t 
             name.len++;
         }
 
-        if (ngx_[% subsystem %]_lua_script_add_copy_code(sc, &name, (i == sc->source->len))
+        if (ngx_[% subsys %]_lua_script_add_copy_code(sc, &name, (i == sc->source->len))
             != NGX_OK)
         {
             return NGX_ERROR;
         }
     }
 
-    return ngx_[% subsystem %]_lua_script_done(sc);
+    return ngx_[% subsys %]_lua_script_done(sc);
 
 invalid_variable:
 
@@ -343,10 +343,10 @@ ngx_[% subsys %]_lua_script_add_copy_code(ngx_[% subsys %]_lua_script_compile_t 
         return NGX_ERROR;
     }
 
-    code->code = ngx_[% subsystem %]_lua_script_copy_code;
+    code->code = ngx_[% subsys %]_lua_script_copy_code;
     code->len = len;
 
-    ngx_memcpy((u_char *) code + sizeof(ngx_[% subsystem %]_lua_script_copy_code_t),
+    ngx_memcpy((u_char *) code + sizeof(ngx_[% subsys %]_lua_script_copy_code_t),
                value->data, value->len);
 
     return NGX_OK;
@@ -354,13 +354,13 @@ ngx_[% subsys %]_lua_script_add_copy_code(ngx_[% subsys %]_lua_script_compile_t 
 
 
 static size_t
-ngx_[% subsystem %]_lua_script_copy_len_code(ngx_[% subsystem %]_lua_script_engine_t *e)
+ngx_[% subsys %]_lua_script_copy_len_code(ngx_[% subsys %]_lua_script_engine_t *e)
 {
-    ngx_[% subsystem %]_lua_script_copy_code_t  *code;
+    ngx_[% subsys %]_lua_script_copy_code_t  *code;
 
-    code = (ngx_[% subsystem %]_lua_script_copy_code_t *) e->ip;
+    code = (ngx_[% subsys %]_lua_script_copy_code_t *) e->ip;
 
-    e->ip += sizeof(ngx_[% subsystem %]_lua_script_copy_code_t);
+    e->ip += sizeof(ngx_[% subsys %]_lua_script_copy_code_t);
 
     return code->len;
 }
@@ -391,10 +391,10 @@ ngx_[% subsys %]_lua_script_copy_code(ngx_[% subsys %]_lua_script_engine_t *e)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_script_add_capture_code(ngx_[% subsystem %]_lua_script_compile_t *sc,
+ngx_[% subsys %]_lua_script_add_capture_code(ngx_[% subsys %]_lua_script_compile_t *sc,
     ngx_uint_t n)
 {
-    ngx_[% subsystem %]_lua_script_capture_code_t  *code;
+    ngx_[% subsys %]_lua_script_capture_code_t  *code;
 
     code = ngx_[% subsys %]_lua_script_add_code(*sc->lengths,
                                                 sizeof(ngx_[% subsys %]_lua_script_capture_code_t));
@@ -402,8 +402,8 @@ ngx_[% subsystem %]_lua_script_add_capture_code(ngx_[% subsystem %]_lua_script_c
         return NGX_ERROR;
     }
 
-    code->code = (ngx_[% subsystem %]_lua_script_code_pt)
-                 ngx_[% subsystem %]_lua_script_copy_capture_len_code;
+    code->code = (ngx_[% subsys %]_lua_script_code_pt)
+                 ngx_[% subsys %]_lua_script_copy_capture_len_code;
     code->n = 2 * n;
 
     code = ngx_[% subsys %]_lua_script_add_code(*sc->values,
@@ -412,7 +412,7 @@ ngx_[% subsystem %]_lua_script_add_capture_code(ngx_[% subsystem %]_lua_script_c
         return NGX_ERROR;
     }
 
-    code->code = ngx_[% subsystem %]_lua_script_copy_capture_code;
+    code->code = ngx_[% subsys %]_lua_script_copy_capture_code;
     code->n = 2 * n;
 
     return NGX_OK;
@@ -473,13 +473,13 @@ ngx_[% subsys %]_lua_script_copy_capture_code(ngx_[% subsys %]_lua_script_engine
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_script_init_arrays(ngx_[% subsystem %]_lua_script_compile_t *sc)
+ngx_[% subsys %]_lua_script_init_arrays(ngx_[% subsys %]_lua_script_compile_t *sc)
 {
     ngx_uint_t   n;
 
     if (*sc->lengths == NULL) {
-        n = sc->variables * (2 * sizeof(ngx_[% subsystem %]_lua_script_copy_code_t)
-                             + sizeof(ngx_[% subsystem %]_lua_script_capture_code_t))
+        n = sc->variables * (2 * sizeof(ngx_[% subsys %]_lua_script_copy_code_t)
+                             + sizeof(ngx_[% subsys %]_lua_script_capture_code_t))
             + sizeof(uintptr_t);
 
         *sc->lengths = ngx_array_create(sc->pool, n, 1);
@@ -489,8 +489,8 @@ ngx_[% subsystem %]_lua_script_init_arrays(ngx_[% subsystem %]_lua_script_compil
     }
 
     if (*sc->values == NULL) {
-        n = (sc->variables * (2 * sizeof(ngx_[% subsystem %]_lua_script_copy_code_t)
-                              + sizeof(ngx_[% subsystem %]_lua_script_capture_code_t))
+        n = (sc->variables * (2 * sizeof(ngx_[% subsys %]_lua_script_copy_code_t)
+                              + sizeof(ngx_[% subsys %]_lua_script_capture_code_t))
                 + sizeof(uintptr_t)
                 + sizeof(uintptr_t) - 1)
             & ~(sizeof(uintptr_t) - 1);
@@ -508,12 +508,12 @@ ngx_[% subsystem %]_lua_script_init_arrays(ngx_[% subsystem %]_lua_script_compil
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_script_done(ngx_[% subsystem %]_lua_script_compile_t *sc)
+ngx_[% subsys %]_lua_script_done(ngx_[% subsys %]_lua_script_compile_t *sc)
 {
     uintptr_t   *code;
 
     if (sc->complete_lengths) {
-        code = ngx_[% subsystem %]_lua_script_add_code(*sc->lengths, sizeof(uintptr_t));
+        code = ngx_[% subsys %]_lua_script_add_code(*sc->lengths, sizeof(uintptr_t));
         if (code == NULL) {
             return NGX_ERROR;
         }
@@ -522,7 +522,7 @@ ngx_[% subsystem %]_lua_script_done(ngx_[% subsystem %]_lua_script_compile_t *sc
     }
 
     if (sc->complete_values) {
-        code = ngx_[% subsystem %]_lua_script_add_code(*sc->values, sizeof(uintptr_t));
+        code = ngx_[% subsys %]_lua_script_add_code(*sc->values, sizeof(uintptr_t));
         if (code == NULL) {
             return NGX_ERROR;
         }
@@ -535,7 +535,7 @@ ngx_[% subsystem %]_lua_script_done(ngx_[% subsystem %]_lua_script_compile_t *sc
 
 
 static void *
-ngx_[% subsystem %]_lua_script_add_code(ngx_array_t *codes, size_t size)
+ngx_[% subsys %]_lua_script_add_code(ngx_array_t *codes, size_t size)
 {
     return ngx_array_push_n(codes, size);
 }

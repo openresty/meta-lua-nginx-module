@@ -10,9 +10,9 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_string.h"
-#include "ngx_[% subsystem %]_lua_util.h"
-#include "ngx_[% subsystem %]_lua_args.h"
+#include "ngx_[% subsys %]_lua_string.h"
+#include "ngx_[% subsys %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_args.h"
 #include "ngx_crc32.h"
 
 #if (NGX_HAVE_SHA1)
@@ -32,80 +32,80 @@
 #endif
 
 
-static uintptr_t ngx_[% subsystem %]_lua_ngx_escape_sql_str(u_char *dst, u_char *src,
+static uintptr_t ngx_[% subsys %]_lua_ngx_escape_sql_str(u_char *dst, u_char *src,
         size_t size);
-static int ngx_[% subsystem %]_lua_ngx_escape_uri(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_unescape_uri(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_quote_sql_str(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_md5(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_md5_bin(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_escape_uri(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_unescape_uri(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_quote_sql_str(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_md5(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_md5_bin(lua_State *L);
 
 #if (NGX_HAVE_SHA1)
-static int ngx_[% subsystem %]_lua_ngx_sha1_bin(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_sha1_bin(lua_State *L);
 #endif
 
-static int ngx_[% subsystem %]_lua_ngx_decode_base64(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_encode_base64(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_crc32_short(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_crc32_long(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_encode_args(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_decode_args(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_decode_base64(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_encode_base64(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_crc32_short(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_crc32_long(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_encode_args(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_decode_args(lua_State *L);
 
 #if (NGX_OPENSSL)
-static int ngx_[% subsystem %]_lua_ngx_hmac_sha1(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_hmac_sha1(lua_State *L);
 #endif
 
 
 void
-ngx_[% subsystem %]_lua_inject_string_api(lua_State *L)
+ngx_[% subsys %]_lua_inject_string_api(lua_State *L)
 {
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_escape_uri);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_escape_uri);
     lua_setfield(L, -2, "escape_uri");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_unescape_uri);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_unescape_uri);
     lua_setfield(L, -2, "unescape_uri");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_encode_args);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_encode_args);
     lua_setfield(L, -2, "encode_args");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_decode_args);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_decode_args);
     lua_setfield(L, -2, "decode_args");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_quote_sql_str);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_quote_sql_str);
     lua_setfield(L, -2, "quote_sql_str");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_decode_base64);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_decode_base64);
     lua_setfield(L, -2, "decode_base64");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_encode_base64);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_encode_base64);
     lua_setfield(L, -2, "encode_base64");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_md5_bin);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_md5_bin);
     lua_setfield(L, -2, "md5_bin");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_md5);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_md5);
     lua_setfield(L, -2, "md5");
 
 #if (NGX_HAVE_SHA1)
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_sha1_bin);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_sha1_bin);
     lua_setfield(L, -2, "sha1_bin");
 #endif
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_crc32_short);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_crc32_short);
     lua_setfield(L, -2, "crc32_short");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_crc32_long);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_crc32_long);
     lua_setfield(L, -2, "crc32_long");
 
 #if (NGX_OPENSSL)
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_hmac_sha1);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_hmac_sha1);
     lua_setfield(L, -2, "hmac_sha1");
 #endif
 }
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_escape_uri(lua_State *L)
+ngx_[% subsys %]_lua_ngx_escape_uri(lua_State *L)
 {
     size_t                   len, dlen;
     uintptr_t                escape;
@@ -132,7 +132,7 @@ ngx_[% subsystem %]_lua_ngx_escape_uri(lua_State *L)
     if (escape) {
         dlen = escape + len;
         dst = lua_newuserdata(L, dlen);
-        ngx_[% subsystem %]_lua_escape_uri(dst, src, len, NGX_ESCAPE_URI_COMPONENT);
+        ngx_[% subsys %]_lua_escape_uri(dst, src, len, NGX_ESCAPE_URI_COMPONENT);
         lua_pushlstring(L, (char *) dst, dlen);
     }
 
@@ -141,7 +141,7 @@ ngx_[% subsystem %]_lua_ngx_escape_uri(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_unescape_uri(lua_State *L)
+ngx_[% subsys %]_lua_ngx_unescape_uri(lua_State *L)
 {
     size_t                   len, dlen;
     u_char                  *p;
@@ -165,7 +165,7 @@ ngx_[% subsystem %]_lua_ngx_unescape_uri(lua_State *L)
 
     dst = p;
 
-    ngx_[% subsystem %]_lua_unescape_uri(&dst, &src, len, NGX_UNESCAPE_URI_COMPONENT);
+    ngx_[% subsys %]_lua_unescape_uri(&dst, &src, len, NGX_UNESCAPE_URI_COMPONENT);
 
     lua_pushlstring(L, (char *) p, dst - p);
 
@@ -174,7 +174,7 @@ ngx_[% subsystem %]_lua_ngx_unescape_uri(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_quote_sql_str(lua_State *L)
+ngx_[% subsys %]_lua_ngx_quote_sql_str(lua_State *L)
 {
     size_t                   len, dlen, escape;
     u_char                  *p;
@@ -193,7 +193,7 @@ ngx_[% subsystem %]_lua_ngx_quote_sql_str(lua_State *L)
         return 1;
     }
 
-    escape = ngx_[% subsystem %]_lua_ngx_escape_sql_str(NULL, src, len);
+    escape = ngx_[% subsys %]_lua_ngx_escape_sql_str(NULL, src, len);
 
     dlen = sizeof("''") - 1 + len + escape;
 
@@ -207,7 +207,7 @@ ngx_[% subsystem %]_lua_ngx_quote_sql_str(lua_State *L)
         p = ngx_copy(p, src, len);
 
     } else {
-        p = (u_char *) ngx_[% subsystem %]_lua_ngx_escape_sql_str(p, src, len);
+        p = (u_char *) ngx_[% subsys %]_lua_ngx_escape_sql_str(p, src, len);
     }
 
     *p++ = '\'';
@@ -223,7 +223,7 @@ ngx_[% subsystem %]_lua_ngx_quote_sql_str(lua_State *L)
 
 
 static uintptr_t
-ngx_[% subsystem %]_lua_ngx_escape_sql_str(u_char *dst, u_char *src, size_t size)
+ngx_[% subsys %]_lua_ngx_escape_sql_str(u_char *dst, u_char *src, size_t size)
 {
     ngx_uint_t               n;
 
@@ -321,7 +321,7 @@ ngx_[% subsystem %]_lua_ngx_escape_sql_str(u_char *dst, u_char *src, size_t size
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_md5(lua_State *L)
+ngx_[% subsys %]_lua_ngx_md5(lua_State *L)
 {
     u_char                  *src;
     size_t                   slen;
@@ -355,7 +355,7 @@ ngx_[% subsystem %]_lua_ngx_md5(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_md5_bin(lua_State *L)
+ngx_[% subsys %]_lua_ngx_md5_bin(lua_State *L)
 {
     u_char                  *src;
     size_t                   slen;
@@ -389,7 +389,7 @@ ngx_[% subsystem %]_lua_ngx_md5_bin(lua_State *L)
 
 #if (NGX_HAVE_SHA1)
 static int
-ngx_[% subsystem %]_lua_ngx_sha1_bin(lua_State *L)
+ngx_[% subsys %]_lua_ngx_sha1_bin(lua_State *L)
 {
     u_char                  *src;
     size_t                   slen;
@@ -423,7 +423,7 @@ ngx_[% subsystem %]_lua_ngx_sha1_bin(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_decode_base64(lua_State *L)
+ngx_[% subsys %]_lua_ngx_decode_base64(lua_State *L)
 {
     ngx_str_t                p, src;
 
@@ -453,7 +453,7 @@ ngx_[% subsystem %]_lua_ngx_decode_base64(lua_State *L)
 
 
 static void
-ngx_[% subsystem %]_lua_encode_base64(ngx_str_t *dst, ngx_str_t *src, int no_padding)
+ngx_[% subsys %]_lua_encode_base64(ngx_str_t *dst, ngx_str_t *src, int no_padding)
 {
     u_char         *d, *s;
     size_t          len;
@@ -498,14 +498,14 @@ ngx_[% subsystem %]_lua_encode_base64(ngx_str_t *dst, ngx_str_t *src, int no_pad
 
 
 static size_t
-ngx_[% subsystem %]_lua_base64_encoded_length(size_t n, int no_padding)
+ngx_[% subsys %]_lua_base64_encoded_length(size_t n, int no_padding)
 {
     return no_padding ? (n * 8 + 5) / 6 : ngx_base64_encoded_length(n);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_encode_base64(lua_State *L)
+ngx_[% subsys %]_lua_ngx_encode_base64(lua_State *L)
 {
     int                      n;
     int                      no_padding = 0;
@@ -530,11 +530,11 @@ ngx_[% subsystem %]_lua_ngx_encode_base64(lua_State *L)
         no_padding = lua_toboolean(L, 2);
     }
 
-    p.len = ngx_[% subsystem %]_lua_base64_encoded_length(src.len, no_padding);
+    p.len = ngx_[% subsys %]_lua_base64_encoded_length(src.len, no_padding);
 
     p.data = lua_newuserdata(L, p.len);
 
-    ngx_[% subsystem %]_lua_encode_base64(&p, &src, no_padding);
+    ngx_[% subsys %]_lua_encode_base64(&p, &src, no_padding);
 
     lua_pushlstring(L, (char *) p.data, p.len);
 
@@ -543,7 +543,7 @@ ngx_[% subsystem %]_lua_ngx_encode_base64(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_crc32_short(lua_State *L)
+ngx_[% subsys %]_lua_ngx_crc32_short(lua_State *L)
 {
     u_char                  *p;
     size_t                   len;
@@ -561,7 +561,7 @@ ngx_[% subsystem %]_lua_ngx_crc32_short(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_crc32_long(lua_State *L)
+ngx_[% subsys %]_lua_ngx_crc32_long(lua_State *L)
 {
     u_char                  *p;
     size_t                   len;
@@ -579,7 +579,7 @@ ngx_[% subsystem %]_lua_ngx_crc32_long(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_encode_args(lua_State *L)
+ngx_[% subsys %]_lua_ngx_encode_args(lua_State *L)
 {
     ngx_str_t                    args;
 
@@ -589,14 +589,14 @@ ngx_[% subsystem %]_lua_ngx_encode_args(lua_State *L)
     }
 
     luaL_checktype(L, 1, LUA_TTABLE);
-    ngx_[% subsystem %]_lua_process_args_option(NULL, L, 1, &args);
+    ngx_[% subsys %]_lua_process_args_option(NULL, L, 1, &args);
     lua_pushlstring(L, (char *) args.data, args.len);
     return 1;
 }
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_decode_args(lua_State *L)
+ngx_[% subsys %]_lua_ngx_decode_args(lua_State *L)
 {
     u_char                      *buf;
     u_char                      *tmp;
@@ -625,13 +625,13 @@ ngx_[% subsystem %]_lua_ngx_decode_args(lua_State *L)
 
     lua_createtable(L, 0, 4);
 
-    return ngx_[% subsystem %]_lua_parse_args(L, tmp, tmp + len, max);
+    return ngx_[% subsys %]_lua_parse_args(L, tmp, tmp + len, max);
 }
 
 
 #if (NGX_OPENSSL)
 static int
-ngx_[% subsystem %]_lua_ngx_hmac_sha1(lua_State *L)
+ngx_[% subsys %]_lua_ngx_hmac_sha1(lua_State *L)
 {
     u_char                  *sec, *sts;
     size_t                   lsec, lsts;
@@ -660,7 +660,7 @@ ngx_[% subsystem %]_lua_ngx_hmac_sha1(lua_State *L)
 
 #ifndef NGX_LUA_NO_FFI_API
 void
-ngx_[% subsystem %]_lua_ffi_md5_bin(const u_char *src, size_t len, u_char *dst)
+ngx_[% subsys %]_lua_ffi_md5_bin(const u_char *src, size_t len, u_char *dst)
 {
     ngx_md5_t     md5;
 
@@ -671,7 +671,7 @@ ngx_[% subsystem %]_lua_ffi_md5_bin(const u_char *src, size_t len, u_char *dst)
 
 
 void
-ngx_[% subsystem %]_lua_ffi_md5(const u_char *src, size_t len, u_char *dst)
+ngx_[% subsys %]_lua_ffi_md5(const u_char *src, size_t len, u_char *dst)
 {
     ngx_md5_t           md5;
     u_char              md5_buf[MD5_DIGEST_LENGTH];
@@ -685,7 +685,7 @@ ngx_[% subsystem %]_lua_ffi_md5(const u_char *src, size_t len, u_char *dst)
 
 
 int
-ngx_[% subsystem %]_lua_ffi_sha1_bin(const u_char *src, size_t len, u_char *dst)
+ngx_[% subsys %]_lua_ffi_sha1_bin(const u_char *src, size_t len, u_char *dst)
 {
 #if (NGX_HAVE_SHA1)
     ngx_sha1_t               sha;
@@ -702,7 +702,7 @@ ngx_[% subsystem %]_lua_ffi_sha1_bin(const u_char *src, size_t len, u_char *dst)
 
 
 size_t
-ngx_[% subsystem %]_lua_ffi_encode_base64(const u_char *src, size_t slen, u_char *dst,
+ngx_[% subsys %]_lua_ffi_encode_base64(const u_char *src, size_t slen, u_char *dst,
     int no_padding)
 {
     ngx_str_t      in, out;
@@ -712,14 +712,14 @@ ngx_[% subsystem %]_lua_ffi_encode_base64(const u_char *src, size_t slen, u_char
 
     out.data = dst;
 
-    ngx_[% subsystem %]_lua_encode_base64(&out, &in, no_padding);
+    ngx_[% subsys %]_lua_encode_base64(&out, &in, no_padding);
 
     return out.len;
 }
 
 
 int
-ngx_[% subsystem %]_lua_ffi_decode_base64(const u_char *src, size_t slen, u_char *dst,
+ngx_[% subsys %]_lua_ffi_decode_base64(const u_char *src, size_t slen, u_char *dst,
     size_t *dlen)
 {
     ngx_int_t      rc;
@@ -739,7 +739,7 @@ ngx_[% subsystem %]_lua_ffi_decode_base64(const u_char *src, size_t slen, u_char
 
 
 size_t
-ngx_[% subsystem %]_lua_ffi_unescape_uri(const u_char *src, size_t len, u_char *dst)
+ngx_[% subsys %]_lua_ffi_unescape_uri(const u_char *src, size_t len, u_char *dst)
 {
     u_char      *p = dst;
 
@@ -750,7 +750,7 @@ ngx_[% subsystem %]_lua_ffi_unescape_uri(const u_char *src, size_t len, u_char *
 
 
 size_t
-ngx_[% subsystem %]_lua_ffi_uri_escaped_length(const u_char *src, size_t len)
+ngx_[% subsys %]_lua_ffi_uri_escaped_length(const u_char *src, size_t len)
 {
     return len + 2 * ngx_[% subsys %]_lua_escape_uri(NULL, (u_char *) src, len,
                                                      NGX_ESCAPE_URI_COMPONENT);
@@ -758,9 +758,9 @@ ngx_[% subsystem %]_lua_ffi_uri_escaped_length(const u_char *src, size_t len)
 
 
 void
-ngx_[% subsystem %]_lua_ffi_escape_uri(const u_char *src, size_t len, u_char *dst)
+ngx_[% subsys %]_lua_ffi_escape_uri(const u_char *src, size_t len, u_char *dst)
 {
-    ngx_[% subsystem %]_lua_escape_uri(dst, (u_char *) src, len, NGX_ESCAPE_URI_COMPONENT);
+    ngx_[% subsys %]_lua_escape_uri(dst, (u_char *) src, len, NGX_ESCAPE_URI_COMPONENT);
 }
 
 #endif

@@ -9,7 +9,7 @@
 #define _NGX_[% SUBSYS %]_LUA_UTIL_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
 #ifndef NGX_UNESCAPE_URI_COMPONENT
@@ -22,41 +22,41 @@ typedef struct {
     int          len;
     /* this padding hole on 64-bit systems is expected */
     u_char      *data;
-} ngx_[% subsystem %]_lua_ffi_str_t;
+} ngx_[% subsys %]_lua_ffi_str_t;
 
 
 typedef struct {
-    ngx_[% subsystem %]_lua_ffi_str_t   key;
-    ngx_[% subsystem %]_lua_ffi_str_t   value;
-} ngx_[% subsystem %]_lua_ffi_table_elt_t;
+    ngx_[% subsys %]_lua_ffi_str_t   key;
+    ngx_[% subsys %]_lua_ffi_str_t   value;
+} ngx_[% subsys %]_lua_ffi_table_elt_t;
 #endif /* NGX_LUA_NO_FFI_API */
 
 
 /* char whose address we use as the key in Lua vm registry for
  * user code cache table */
-extern char ngx_[% subsystem %]_lua_code_cache_key;
+extern char ngx_[% subsys %]_lua_code_cache_key;
 
 
 /* key in Lua vm registry for all the "ngx.ctx" tables */
-#define ngx_[% subsystem %]_lua_ctx_tables_key  "ngx_lua_ctx_tables"
+#define ngx_[% subsys %]_lua_ctx_tables_key  "ngx_lua_ctx_tables"
 
 
 /* char whose address we use as the key in Lua vm registry for
  * regex cache table  */
-extern char ngx_[% subsystem %]_lua_regex_cache_key;
+extern char ngx_[% subsys %]_lua_regex_cache_key;
 
 /* char whose address we use as the key in Lua vm registry for
  * socket connection pool table */
-extern char ngx_[% subsystem %]_lua_socket_pool_key;
+extern char ngx_[% subsys %]_lua_socket_pool_key;
 
 /* char whose address we use as the key for the coroutine parent relationship */
-extern char ngx_[% subsystem %]_lua_coroutine_parents_key;
+extern char ngx_[% subsys %]_lua_coroutine_parents_key;
 
 /* coroutine anchoring table key in Lua VM registry */
-extern char ngx_[% subsystem %]_lua_coroutines_key;
+extern char ngx_[% subsys %]_lua_coroutines_key;
 
 /* key to the metatable for ngx.req.get_headers() and ngx.resp.get_headers() */
-extern char ngx_[% subsystem %]_lua_headers_metatable_key;
+extern char ngx_[% subsys %]_lua_headers_metatable_key;
 
 
 #ifndef ngx_str_set
@@ -107,23 +107,23 @@ extern char ngx_[% subsystem %]_lua_headers_metatable_key;
 [% END %]
 
 
-#define ngx_[% subsystem %]_lua_check_context(L, ctx, flags)                   \
+#define ngx_[% subsys %]_lua_check_context(L, ctx, flags)                   \
     if (!((ctx)->context & (flags))) {                                         \
         return luaL_error(L, "API disabled in the context of %s",              \
-                          ngx_[% subsystem %]_lua_context_name((ctx)           \
+                          ngx_[% subsys %]_lua_context_name((ctx)           \
                                                                    ->context));\
     }
 
 
 #ifndef NGX_LUA_NO_FFI_API
 static ngx_inline ngx_int_t
-ngx_[% subsystem %]_lua_ffi_check_context(ngx_[% subsystem %]_lua_ctx_t *ctx,
+ngx_[% subsys %]_lua_ffi_check_context(ngx_[% subsys %]_lua_ctx_t *ctx,
     unsigned flags, u_char *err, size_t *errlen)
 {
     if (!(ctx->context & flags)) {
         *errlen = ngx_snprintf(err, *errlen,
                                "API disabled in the context of %s",
-                               ngx_[% subsystem %]_lua_context_name((ctx)->context))
+                               ngx_[% subsys %]_lua_context_name((ctx)->context))
                   - err;
 
         return NGX_DECLINED;
@@ -134,137 +134,137 @@ ngx_[% subsystem %]_lua_ffi_check_context(ngx_[% subsystem %]_lua_ctx_t *ctx,
 #endif
 
 
-#define ngx_[% subsystem %]_lua_check_fake_request(L, r)                                \
+#define ngx_[% subsys %]_lua_check_fake_request(L, r)                                \
     if ((r)->connection->fd == (ngx_socket_t) -1) {                          \
         return luaL_error(L, "API disabled in the current context");         \
     }
 
 
-#define ngx_[% subsystem %]_lua_check_fake_request2(L, r, ctx)                          \
+#define ngx_[% subsys %]_lua_check_fake_request2(L, r, ctx)                          \
     if ((r)->connection->fd == (ngx_socket_t) -1) {                          \
         return luaL_error(L, "API disabled in the context of %s",            \
-                          ngx_[% subsystem %]_lua_context_name((ctx)->context));        \
+                          ngx_[% subsys %]_lua_context_name((ctx)->context));        \
     }
 
 
-#define ngx_[% subsystem %]_lua_ssl_get_ctx(ssl_conn)                                   \
-    SSL_get_ex_data(ssl_conn, ngx_[% subsystem %]_lua_ssl_ctx_index)
+#define ngx_[% subsys %]_lua_ssl_get_ctx(ssl_conn)                                   \
+    SSL_get_ex_data(ssl_conn, ngx_[% subsys %]_lua_ssl_ctx_index)
 
 
-lua_State *ngx_[% subsystem %]_lua_init_vm(lua_State *parent_vm, ngx_cycle_t *cycle,
-    ngx_pool_t *pool, ngx_[% subsystem %]_lua_main_conf_t *lmcf, ngx_log_t *log,
+lua_State *ngx_[% subsys %]_lua_init_vm(lua_State *parent_vm, ngx_cycle_t *cycle,
+    ngx_pool_t *pool, ngx_[% subsys %]_lua_main_conf_t *lmcf, ngx_log_t *log,
     ngx_pool_cleanup_t **pcln);
 
-lua_State *ngx_[% subsystem %]_lua_new_thread([% req_type %] *r, lua_State *l,
+lua_State *ngx_[% subsys %]_lua_new_thread([% req_type %] *r, lua_State *l,
     int *ref);
 
-u_char *ngx_[% subsystem %]_lua_rebase_path(ngx_pool_t *pool, u_char *src, size_t len);
+u_char *ngx_[% subsys %]_lua_rebase_path(ngx_pool_t *pool, u_char *src, size_t len);
 
-ngx_int_t ngx_[% subsystem %]_lua_send_header_if_needed([% req_type %] *r,
-    ngx_[% subsystem %]_lua_ctx_t *ctx);
+ngx_int_t ngx_[% subsys %]_lua_send_header_if_needed([% req_type %] *r,
+    ngx_[% subsys %]_lua_ctx_t *ctx);
 
-ngx_int_t ngx_[% subsystem %]_lua_send_chain_link([% req_type %] *r,
-    ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_chain_t *cl);
+ngx_int_t ngx_[% subsys %]_lua_send_chain_link([% req_type %] *r,
+    ngx_[% subsys %]_lua_ctx_t *ctx, ngx_chain_t *cl);
 
-void ngx_[% subsystem %]_lua_discard_bufs(ngx_pool_t *pool, ngx_chain_t *in);
+void ngx_[% subsys %]_lua_discard_bufs(ngx_pool_t *pool, ngx_chain_t *in);
 
-ngx_int_t ngx_[% subsystem %]_lua_add_copy_chain([% req_type %] *r,
-    ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_chain_t ***plast, ngx_chain_t *in,
+ngx_int_t ngx_[% subsys %]_lua_add_copy_chain([% req_type %] *r,
+    ngx_[% subsys %]_lua_ctx_t *ctx, ngx_chain_t ***plast, ngx_chain_t *in,
     ngx_int_t *eof);
 
-void ngx_[% subsystem %]_lua_reset_ctx([% req_type %] *r, lua_State *L,
-    ngx_[% subsystem %]_lua_ctx_t *ctx);
+void ngx_[% subsys %]_lua_reset_ctx([% req_type %] *r, lua_State *L,
+    ngx_[% subsys %]_lua_ctx_t *ctx);
 
-void ngx_[% subsystem %]_lua_generic_phase_post_read([% req_type %] *r);
+void ngx_[% subsys %]_lua_generic_phase_post_read([% req_type %] *r);
 
-void ngx_[% subsystem %]_lua_request_cleanup(ngx_[% subsystem %]_lua_ctx_t *ctx, int foricible);
+void ngx_[% subsys %]_lua_request_cleanup(ngx_[% subsys %]_lua_ctx_t *ctx, int foricible);
 
-void ngx_[% subsystem %]_lua_request_cleanup_handler(void *data);
+void ngx_[% subsys %]_lua_request_cleanup_handler(void *data);
 
-ngx_int_t ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
-    ngx_[% subsystem %]_lua_ctx_t *ctx, volatile int nret);
+ngx_int_t ngx_[% subsys %]_lua_run_thread(lua_State *L, [% req_type %] *r,
+    ngx_[% subsys %]_lua_ctx_t *ctx, volatile int nret);
 
-ngx_int_t ngx_[% subsystem %]_lua_wev_handler([% req_type %] *r);
+ngx_int_t ngx_[% subsys %]_lua_wev_handler([% req_type %] *r);
 
-u_char *ngx_[% subsystem %]_lua_digest_hex(u_char *dest, const u_char *buf,
+u_char *ngx_[% subsys %]_lua_digest_hex(u_char *dest, const u_char *buf,
     int buf_len);
 
-void ngx_[% subsystem %]_lua_set_multi_value_table(lua_State *L, int index);
+void ngx_[% subsys %]_lua_set_multi_value_table(lua_State *L, int index);
 
-void ngx_[% subsystem %]_lua_unescape_uri(u_char **dst, u_char **src, size_t size,
+void ngx_[% subsys %]_lua_unescape_uri(u_char **dst, u_char **src, size_t size,
     ngx_uint_t type);
 
-uintptr_t ngx_[% subsystem %]_lua_escape_uri(u_char *dst, u_char *src,
+uintptr_t ngx_[% subsys %]_lua_escape_uri(u_char *dst, u_char *src,
     size_t size, ngx_uint_t type);
 
-void ngx_[% subsystem %]_lua_inject_req_api(ngx_log_t *log, lua_State *L);
+void ngx_[% subsys %]_lua_inject_req_api(ngx_log_t *log, lua_State *L);
 
-void ngx_[% subsystem %]_lua_process_args_option([% req_type %] *r,
+void ngx_[% subsys %]_lua_process_args_option([% req_type %] *r,
     lua_State *L, int table, ngx_str_t *args);
 
-ngx_int_t ngx_[% subsystem %]_lua_open_and_stat_file(u_char *name,
+ngx_int_t ngx_[% subsys %]_lua_open_and_stat_file(u_char *name,
     ngx_open_file_info_t *of, ngx_log_t *log);
 
-ngx_chain_t *ngx_[% subsystem %]_lua_chain_get_free_buf(ngx_log_t *log, ngx_pool_t *p,
+ngx_chain_t *ngx_[% subsys %]_lua_chain_get_free_buf(ngx_log_t *log, ngx_pool_t *p,
     ngx_chain_t **free, size_t len);
 
-void ngx_[% subsystem %]_lua_create_new_globals_table(lua_State *L, int narr, int nrec);
+void ngx_[% subsys %]_lua_create_new_globals_table(lua_State *L, int narr, int nrec);
 
-int ngx_[% subsystem %]_lua_traceback(lua_State *L);
+int ngx_[% subsys %]_lua_traceback(lua_State *L);
 
-ngx_[% subsystem %]_lua_co_ctx_t *ngx_[% subsystem %]_lua_get_co_ctx(lua_State *L,
-    ngx_[% subsystem %]_lua_ctx_t *ctx);
+ngx_[% subsys %]_lua_co_ctx_t *ngx_[% subsys %]_lua_get_co_ctx(lua_State *L,
+    ngx_[% subsys %]_lua_ctx_t *ctx);
 
-ngx_[% subsystem %]_lua_co_ctx_t *ngx_[% subsystem %]_lua_create_co_ctx([% req_type %] *r,
-    ngx_[% subsystem %]_lua_ctx_t *ctx);
+ngx_[% subsys %]_lua_co_ctx_t *ngx_[% subsys %]_lua_create_co_ctx([% req_type %] *r,
+    ngx_[% subsys %]_lua_ctx_t *ctx);
 
-ngx_int_t ngx_[% subsystem %]_lua_run_posted_threads(ngx_connection_t *c, lua_State *L,
-    [% req_type %] *r, ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_uint_t nreqs);
+ngx_int_t ngx_[% subsys %]_lua_run_posted_threads(ngx_connection_t *c, lua_State *L,
+    [% req_type %] *r, ngx_[% subsys %]_lua_ctx_t *ctx, ngx_uint_t nreqs);
 
-ngx_int_t ngx_[% subsystem %]_lua_post_thread([% req_type %] *r,
-    ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_[% subsystem %]_lua_co_ctx_t *coctx);
+ngx_int_t ngx_[% subsys %]_lua_post_thread([% req_type %] *r,
+    ngx_[% subsys %]_lua_ctx_t *ctx, ngx_[% subsys %]_lua_co_ctx_t *coctx);
 
-void ngx_[% subsystem %]_lua_del_thread([% req_type %] *r, lua_State *L,
-    ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_[% subsystem %]_lua_co_ctx_t *coctx);
+void ngx_[% subsys %]_lua_del_thread([% req_type %] *r, lua_State *L,
+    ngx_[% subsys %]_lua_ctx_t *ctx, ngx_[% subsys %]_lua_co_ctx_t *coctx);
 
-void ngx_[% subsystem %]_lua_rd_check_broken_connection([% req_type %] *r);
+void ngx_[% subsys %]_lua_rd_check_broken_connection([% req_type %] *r);
 
-ngx_int_t ngx_[% subsystem %]_lua_test_expect([% req_type %] *r);
+ngx_int_t ngx_[% subsys %]_lua_test_expect([% req_type %] *r);
 
-ngx_int_t ngx_[% subsystem %]_lua_check_broken_connection([% req_type %] *r,
+ngx_int_t ngx_[% subsys %]_lua_check_broken_connection([% req_type %] *r,
     ngx_event_t *ev);
 
-void ngx_[% subsystem %]_lua_finalize_request([% req_type %] *r, ngx_int_t rc);
+void ngx_[% subsys %]_lua_finalize_request([% req_type %] *r, ngx_int_t rc);
 
-void ngx_[% subsystem %]_lua_finalize_fake_request([% req_type %] *r,
+void ngx_[% subsys %]_lua_finalize_fake_request([% req_type %] *r,
     ngx_int_t rc);
 
-void ngx_[% subsystem %]_lua_close_fake_connection(ngx_connection_t *c);
+void ngx_[% subsys %]_lua_close_fake_connection(ngx_connection_t *c);
 
-void ngx_[% subsystem %]_lua_free_fake_request([% req_type %] *r);
+void ngx_[% subsys %]_lua_free_fake_request([% req_type %] *r);
 
-void ngx_[% subsystem %]_lua_release_ngx_ctx_table(ngx_log_t *log, lua_State *L,
-    ngx_[% subsystem %]_lua_ctx_t *ctx);
+void ngx_[% subsys %]_lua_release_ngx_ctx_table(ngx_log_t *log, lua_State *L,
+    ngx_[% subsys %]_lua_ctx_t *ctx);
 
-void ngx_[% subsystem %]_lua_cleanup_vm(void *data);
+void ngx_[% subsys %]_lua_cleanup_vm(void *data);
 
-ngx_connection_t *ngx_[% subsystem %]_lua_create_fake_connection(ngx_pool_t *pool);
+ngx_connection_t *ngx_[% subsys %]_lua_create_fake_connection(ngx_pool_t *pool);
 
 [% IF http_subsys %]
-ngx_http_request_t *ngx_[% subsystem %]_lua_create_fake_request(ngx_connection_t *c);
+ngx_http_request_t *ngx_[% subsys %]_lua_create_fake_request(ngx_connection_t *c);
 [% ELSIF stream_subsys %]
 ngx_stream_lua_request_t *
-    ngx_[% subsystem %]_lua_create_fake_request(ngx_stream_session_t *s);
+    ngx_[% subsys %]_lua_create_fake_request(ngx_stream_session_t *s);
 [% END %]
 
 [% IF stream_subsys %]
 ngx_stream_session_t *ngx_stream_lua_create_fake_session(ngx_connection_t *c);
 [% END %]
 
-ngx_int_t ngx_[% subsystem %]_lua_report(ngx_log_t *log, lua_State *L, int status,
+ngx_int_t ngx_[% subsys %]_lua_report(ngx_log_t *log, lua_State *L, int status,
     const char *prefix);
 
-int ngx_[% subsystem %]_lua_do_call(ngx_log_t *log, lua_State *L);
+int ngx_[% subsys %]_lua_do_call(ngx_log_t *log, lua_State *L);
 
 [% IF http_subsys %]
 [% cleanup = 'ngx_http_cleanup' %]
@@ -274,43 +274,43 @@ int ngx_[% subsystem %]_lua_do_call(ngx_log_t *log, lua_State *L);
 [% END %]
 
 [% IF http_subsys %]
-[% cleanup %]_t *ngx_[% subsystem %]_lua_cleanup_add([% req_type %] *r,
+[% cleanup %]_t *ngx_[% subsys %]_lua_cleanup_add([% req_type %] *r,
     size_t size);
 [% END %]
 
-void ngx_[% subsystem %]_lua_cleanup_free([% req_type %] *r,
+void ngx_[% subsys %]_lua_cleanup_free([% req_type %] *r,
     [% cleanup %]_pt *cleanup);
 
 
-#define ngx_[% subsystem %]_lua_check_if_abortable(L, ctx)                             \
+#define ngx_[% subsys %]_lua_check_if_abortable(L, ctx)                             \
     if ((ctx)->no_abort) {                                                  \
         return luaL_error(L, "attempt to abort with pending subrequests");  \
     }
 
 
 static ngx_inline void
-ngx_[% subsystem %]_lua_init_ctx([% req_type %] *r, ngx_[% subsystem %]_lua_ctx_t *ctx)
+ngx_[% subsys %]_lua_init_ctx([% req_type %] *r, ngx_[% subsys %]_lua_ctx_t *ctx)
 {
-    ngx_memzero(ctx, sizeof(ngx_[% subsystem %]_lua_ctx_t));
+    ngx_memzero(ctx, sizeof(ngx_[% subsys %]_lua_ctx_t));
     ctx->ctx_ref = LUA_NOREF;
     ctx->entry_co_ctx.co_ref = LUA_NOREF;
-    ctx->resume_handler = ngx_[% subsystem %]_lua_wev_handler;
+    ctx->resume_handler = ngx_[% subsys %]_lua_wev_handler;
     ctx->request = r;
 }
 
 
-static ngx_inline ngx_[% subsystem %]_lua_ctx_t *
+static ngx_inline ngx_[% subsys %]_lua_ctx_t *
 [% IF http_subsys %]
 ngx_http_lua_create_ctx(ngx_http_request_t *r)
 [% ELSIF stream_subsys %]
 ngx_stream_lua_create_ctx(ngx_stream_session_t *r)
 [% END %]
 {
-    lua_State                              *L;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
-    ngx_pool_cleanup_t                     *cln;
-    ngx_[% subsystem %]_lua_loc_conf_t     *llcf;
-    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
+    lua_State                           *L;
+    ngx_[% subsys %]_lua_ctx_t          *ctx;
+    ngx_pool_cleanup_t                  *cln;
+    ngx_[% subsys %]_lua_loc_conf_t     *llcf;
+    ngx_[% subsys %]_lua_main_conf_t    *lmcf;
 
 [% IF stream_subsys %]
     ngx_stream_lua_request_t               *sreq;
@@ -342,7 +342,7 @@ ngx_stream_lua_create_ctx(ngx_stream_session_t *r)
     ngx_stream_lua_init_ctx(sreq, ctx);
 [% END %]
 
-    ngx_[% subsystem %]_set_ctx(r, ctx, ngx_[% subsystem %]_lua_module);
+    ngx_[% subsys %]_set_ctx(r, ctx, ngx_[% subsys %]_lua_module);
 
 [% IF http_subsys %]
     llcf = ngx_http_get_module_loc_conf(r, ngx_http_lua_module);
@@ -351,7 +351,7 @@ ngx_stream_lua_create_ctx(ngx_stream_session_t *r)
 [% END %]
 
     if (!llcf->enable_code_cache && r->connection->fd != (ngx_socket_t) -1) {
-        lmcf = ngx_[% subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+        lmcf = ngx_[% subsys %]_get_module_main_conf(r, ngx_[% subsys %]_lua_module);
 
         dd("lmcf: %p", lmcf);
 
@@ -405,33 +405,33 @@ ngx_stream_lua_create_ctx(ngx_stream_session_t *r)
 
 
 static ngx_inline lua_State *
-ngx_[% subsystem %]_lua_get_lua_vm([% req_type %] *r, ngx_[% subsystem %]_lua_ctx_t *ctx)
+ngx_[% subsys %]_lua_get_lua_vm([% req_type %] *r, ngx_[% subsys %]_lua_ctx_t *ctx)
 {
-    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
+    ngx_[% subsys %]_lua_main_conf_t    *lmcf;
 
     if (ctx == NULL) {
-        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     }
 
     if (ctx && ctx->vm_state) {
         return ctx->vm_state->vm;
     }
 
-    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsys %]_lua_module);
     dd("lmcf->lua: %p", lmcf->lua);
     return lmcf->lua;
 }
 
 
-#define ngx_[% subsystem %]_lua_req_key  "__ngx_req"
+#define ngx_[% subsys %]_lua_req_key  "__ngx_req"
 
 
 static ngx_inline [% req_type %] *
-ngx_[% subsystem %]_lua_get_req(lua_State *L)
+ngx_[% subsys %]_lua_get_req(lua_State *L)
 {
     [% req_type %]              *r;
 
-    lua_getglobal(L, ngx_[% subsystem %]_lua_req_key);
+    lua_getglobal(L, ngx_[% subsys %]_lua_req_key);
     r = lua_touserdata(L, -1);
     lua_pop(L, 1);
 
@@ -440,33 +440,33 @@ ngx_[% subsystem %]_lua_get_req(lua_State *L)
 
 
 static ngx_inline void
-ngx_[% subsystem %]_lua_set_req(lua_State *L, [% req_type %] *r)
+ngx_[% subsys %]_lua_set_req(lua_State *L, [% req_type %] *r)
 {
     lua_pushlightuserdata(L, r);
-    lua_setglobal(L, ngx_[% subsystem %]_lua_req_key);
+    lua_setglobal(L, ngx_[% subsys %]_lua_req_key);
 }
 
 
 static ngx_inline void
-ngx_[% subsystem %]_lua_get_globals_table(lua_State *L)
+ngx_[% subsys %]_lua_get_globals_table(lua_State *L)
 {
     lua_pushvalue(L, LUA_GLOBALSINDEX);
 }
 
 
 static ngx_inline void
-ngx_[% subsystem %]_lua_set_globals_table(lua_State *L)
+ngx_[% subsys %]_lua_set_globals_table(lua_State *L)
 {
     lua_replace(L, LUA_GLOBALSINDEX);
 }
 
 
-#define ngx_[% subsystem %]_lua_hash_literal(s)                                        \
-    ngx_[% subsystem %]_lua_hash_str((u_char *) s, sizeof(s) - 1)
+#define ngx_[% subsys %]_lua_hash_literal(s)                                        \
+    ngx_[% subsys %]_lua_hash_str((u_char *) s, sizeof(s) - 1)
 
 
 static ngx_inline ngx_uint_t
-ngx_[% subsystem %]_lua_hash_str(u_char *src, size_t n)
+ngx_[% subsys %]_lua_hash_str(u_char *src, size_t n)
 {
     ngx_uint_t  key;
 
@@ -483,11 +483,11 @@ ngx_[% subsystem %]_lua_hash_str(u_char *src, size_t n)
 
 [% IF http_subsys %]
 static ngx_inline ngx_int_t
-ngx_[% subsystem %]_lua_set_content_type([% req_type %] *r)
+ngx_[% subsys %]_lua_set_content_type([% req_type %] *r)
 {
-    ngx_[% subsystem %]_lua_loc_conf_t     *llcf;
+    ngx_[% subsys %]_lua_loc_conf_t     *llcf;
 
-    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
     if (llcf->use_default_type
         && r->headers_out.status != NGX_HTTP_NOT_MODIFIED)
     {
@@ -500,7 +500,7 @@ ngx_[% subsystem %]_lua_set_content_type([% req_type %] *r)
 
 
 static ngx_inline void
-ngx_[% subsystem %]_lua_cleanup_pending_operation(ngx_[% subsystem %]_lua_co_ctx_t *coctx)
+ngx_[% subsys %]_lua_cleanup_pending_operation(ngx_[% subsys %]_lua_co_ctx_t *coctx)
 {
     if (coctx->cleanup) {
         coctx->cleanup(coctx);
@@ -510,7 +510,7 @@ ngx_[% subsystem %]_lua_cleanup_pending_operation(ngx_[% subsystem %]_lua_co_ctx
 
 
 static ngx_inline ngx_chain_t *
-ngx_[% subsystem %]_lua_get_flush_chain([% req_type %] *r, ngx_[% subsystem %]_lua_ctx_t *ctx)
+ngx_[% subsys %]_lua_get_flush_chain([% req_type %] *r, ngx_[% subsys %]_lua_ctx_t *ctx)
 {
     ngx_chain_t  *cl;
 
@@ -556,8 +556,8 @@ ngx_inet_get_port(struct sockaddr *sa)
 #endif
 
 
-extern ngx_uint_t  ngx_[% subsystem %]_lua_location_hash;
-extern ngx_uint_t  ngx_[% subsystem %]_lua_content_length_hash;
+extern ngx_uint_t  ngx_[% subsys %]_lua_location_hash;
+extern ngx_uint_t  ngx_[% subsys %]_lua_content_length_hash;
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_UTIL_H_INCLUDED_ */

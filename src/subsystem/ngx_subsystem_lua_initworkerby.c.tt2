@@ -10,20 +10,20 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_initworkerby.h"
-#include "ngx_[% subsystem %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_initworkerby.h"
+#include "ngx_[% subsys %]_lua_util.h"
 
 [% IF stream_subsys %]
 #include "ngx_stream_lua_contentby.h"
 [% END %]
 
 
-static u_char *ngx_[% subsystem %]_lua_log_init_worker_error(ngx_log_t *log,
+static u_char *ngx_[% subsys %]_lua_log_init_worker_error(ngx_log_t *log,
     u_char *buf, size_t len);
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
+ngx_[% subsys %]_lua_init_worker(ngx_cycle_t *cycle)
 {
     char                               *rv;
     void                               *cur, *prev;
@@ -35,12 +35,12 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
     ngx_list_part_t                    *part;
     ngx_connection_t                   *c = NULL;
     ngx_conf_file_t                    *conf_file;
-    ngx_[% subsystem %]_module_t       *module;
+    ngx_[% subsys %]_module_t       *module;
     [% req_type %]                     *r = NULL;
-    ngx_[% subsystem %]_lua_ctx_t      *ctx;
-    ngx_[% subsystem %]_conf_ctx_t     *conf_ctx, [% subsystem %]_ctx;
+    ngx_[% subsys %]_lua_ctx_t      *ctx;
+    ngx_[% subsys %]_conf_ctx_t     *conf_ctx, [% subsys %]_ctx;
 
-    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
+    ngx_[% subsys %]_lua_main_conf_t    *lmcf;
 
 [% IF stream_subsys %]
     ngx_stream_session_t    *s;
@@ -55,7 +55,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
     ngx_stream_lua_srv_conf_t     *llcf, *top_llcf;
 [% END %]
 
-    lmcf = ngx_[% subsystem %]_cycle_get_module_main_conf(cycle, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% subsys %]_cycle_get_module_main_conf(cycle, ngx_[% subsys %]_lua_module);
 
     if (lmcf == NULL || lmcf->lua == NULL) {
         return NGX_OK;
@@ -84,9 +84,9 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
          return NGX_OK;
     }
 
-    conf_ctx = (ngx_[% subsystem %]_conf_ctx_t *)
-               cycle->conf_ctx[ngx_[% subsystem %]_module.index];
-    [% subsystem %]_ctx.main_conf = conf_ctx->main_conf;
+    conf_ctx = (ngx_[% subsys %]_conf_ctx_t *)
+               cycle->conf_ctx[ngx_[% subsys %]_module.index];
+    [% subsys %]_ctx.main_conf = conf_ctx->main_conf;
 
 [% IF http_subsys %]
     top_clcf = conf_ctx->loc_conf[ngx_http_core_module.ctx_index];
@@ -110,7 +110,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
      * modules' merge conf handler may produce side effects in
      * cf->cycle (like ngx_proxy vs cf->cycle->paths).
      * also, we cannot allocate our temp cycle on the stack
-     * because some modules like ngx_[% subsystem %]_core_module reference
+     * because some modules like ngx_[% subsys %]_core_module reference
      * addresses within cf->cycle (i.e., via "&cf->cycle->new_log")
      */
 
@@ -192,7 +192,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
     conf_file->file.name.len = sizeof("dummy") - 1;
     conf_file->line = 1;
 
-    conf.ctx = &[% subsystem %]_ctx;
+    conf.ctx = &[% subsys %]_ctx;
     conf.cycle = fake_cycle;
     conf.pool = fake_cycle->pool;
     conf.log = cycle->log;
@@ -206,9 +206,9 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
     }
 [% END %]
 
-    [% subsystem %]_ctx.srv_conf = ngx_pcalloc(conf.pool,
-                                               sizeof(void *) * ngx_[% subsystem %]_max_module);
-    if ([% subsystem %]_ctx.srv_conf == NULL) {
+    [% subsys %]_ctx.srv_conf = ngx_pcalloc(conf.pool,
+                                               sizeof(void *) * ngx_[% subsys %]_max_module);
+    if ([% subsys %]_ctx.srv_conf == NULL) {
         return NGX_ERROR;
     }
 
@@ -231,7 +231,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
                 return NGX_ERROR;
             }
 
-            [% subsystem %]_ctx.srv_conf[modules[i]->ctx_index] = cur;
+            [% subsys %]_ctx.srv_conf[modules[i]->ctx_index] = cur;
 
 [% IF stream_subsys %]
             if (modules[i]->ctx_index == ngx_stream_core_module.ctx_index)
@@ -266,7 +266,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
             http_ctx.loc_conf[modules[i]->ctx_index] = cur;
 
             if (module->merge_loc_conf) {
-                if (modules[i] == &ngx_[% subsystem %]_lua_module) {
+                if (modules[i] == &ngx_[% subsys %]_lua_module) {
                     prev = top_llcf;
 
                 } else if (modules[i] == &ngx_http_core_module) {
@@ -291,12 +291,12 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
     ngx_destroy_pool(conf.temp_pool);
     conf.temp_pool = NULL;
 
-    c = ngx_[% subsystem %]_lua_create_fake_connection(NULL);
+    c = ngx_[% subsys %]_lua_create_fake_connection(NULL);
     if (c == NULL) {
         goto failed;
     }
 
-    c->log->handler = ngx_[% subsystem %]_lua_log_init_worker_error;
+    c->log->handler = ngx_[% subsys %]_lua_log_init_worker_error;
 
 [% IF http_subsys %]
     r = ngx_http_lua_create_fake_request(c);
@@ -381,7 +381,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
     ctx->cur_co_ctx = NULL;
     r->read_event_handler = ngx_[% req_subsys %]_block_reading;
 
-    ngx_[% subsystem %]_lua_set_req(lmcf->lua, r);
+    ngx_[% subsys %]_lua_set_req(lmcf->lua, r);
 
     (void) lmcf->init_worker_handler(cycle->log, lmcf, lmcf->lua);
 
@@ -395,7 +395,7 @@ failed:
     }
 
     if (c) {
-        ngx_[% subsystem %]_lua_close_fake_connection(c);
+        ngx_[% subsys %]_lua_close_fake_connection(c);
     }
 
     return NGX_ERROR;
@@ -403,34 +403,34 @@ failed:
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_init_worker_by_inline(ngx_log_t *log,
-    ngx_[% subsystem %]_lua_main_conf_t *lmcf, lua_State *L)
+ngx_[% subsys %]_lua_init_worker_by_inline(ngx_log_t *log,
+    ngx_[% subsys %]_lua_main_conf_t *lmcf, lua_State *L)
 {
     int         status;
 
     status = luaL_loadbuffer(L, (char *) lmcf->init_worker_src.data,
                              lmcf->init_worker_src.len, "=init_worker_by_lua")
-             || ngx_[% subsystem %]_lua_do_call(log, L);
+             || ngx_[% subsys %]_lua_do_call(log, L);
 
-    return ngx_[% subsystem %]_lua_report(log, L, status, "init_worker_by_lua");
+    return ngx_[% subsys %]_lua_report(log, L, status, "init_worker_by_lua");
 }
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_init_worker_by_file(ngx_log_t *log, ngx_[% subsystem %]_lua_main_conf_t *lmcf,
+ngx_[% subsys %]_lua_init_worker_by_file(ngx_log_t *log, ngx_[% subsys %]_lua_main_conf_t *lmcf,
     lua_State *L)
 {
     int         status;
 
     status = luaL_loadfile(L, (char *) lmcf->init_worker_src.data)
-             || ngx_[% subsystem %]_lua_do_call(log, L);
+             || ngx_[% subsys %]_lua_do_call(log, L);
 
-    return ngx_[% subsystem %]_lua_report(log, L, status, "init_worker_by_lua_file");
+    return ngx_[% subsys %]_lua_report(log, L, status, "init_worker_by_lua_file");
 }
 
 
 static u_char *
-ngx_[% subsystem %]_lua_log_init_worker_error(ngx_log_t *log, u_char *buf, size_t len)
+ngx_[% subsys %]_lua_log_init_worker_error(ngx_log_t *log, u_char *buf, size_t len)
 {
     u_char              *p;
 

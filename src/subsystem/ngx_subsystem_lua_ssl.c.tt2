@@ -13,19 +13,19 @@
 #if (NGX_[% SUBSYS %]_SSL)
 
 
-int ngx_[% subsystem %]_lua_ssl_ctx_index = -1;
+int ngx_[% subsys %]_lua_ssl_ctx_index = -1;
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_ssl_init(ngx_log_t *log)
+ngx_[% subsys %]_lua_ssl_init(ngx_log_t *log)
 {
-    if (ngx_[% subsystem %]_lua_ssl_ctx_index == -1) {
-        ngx_[% subsystem %]_lua_ssl_ctx_index = SSL_get_ex_new_index(0, NULL,
+    if (ngx_[% subsys %]_lua_ssl_ctx_index == -1) {
+        ngx_[% subsys %]_lua_ssl_ctx_index = SSL_get_ex_new_index(0, NULL,
                                                                      NULL,
                                                                      NULL,
                                                                      NULL);
 
-        if (ngx_[% subsystem %]_lua_ssl_ctx_index == -1) {
+        if (ngx_[% subsys %]_lua_ssl_ctx_index == -1) {
             ngx_ssl_error(NGX_LOG_ALERT, log, 0,
                           "lua: SSL_get_ex_new_index() for ctx failed");
             return NGX_ERROR;

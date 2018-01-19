@@ -9,13 +9,13 @@
 #define _NGX_[% SUBSYS %]_LUA_MISC_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
-void ngx_[% subsystem %]_lua_inject_misc_api(lua_State *L);
+void ngx_[% subsys %]_lua_inject_misc_api(lua_State *L);
 
 [% IF http_subsys %]
-void ngx_[% subsystem %]_lua_inject_req_misc_api(lua_State *L);
+void ngx_[% subsys %]_lua_inject_req_misc_api(lua_State *L);
 [% END %]
 
 

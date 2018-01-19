@@ -10,133 +10,133 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_socket_tcp.h"
-#include "ngx_[% subsystem %]_lua_util.h"
-#include "ngx_[% subsystem %]_lua_uthread.h"
-#include "ngx_[% subsystem %]_lua_output.h"
-#include "ngx_[% subsystem %]_lua_contentby.h"
-#include "ngx_[% subsystem %]_lua_probe.h"
+#include "ngx_[% subsys %]_lua_socket_tcp.h"
+#include "ngx_[% subsys %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_uthread.h"
+#include "ngx_[% subsys %]_lua_output.h"
+#include "ngx_[% subsys %]_lua_contentby.h"
+#include "ngx_[% subsys %]_lua_probe.h"
 
 
-static int ngx_[% subsystem %]_lua_socket_tcp(lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L);
+static int ngx_[% subsys %]_lua_socket_tcp(lua_State *L);
+static int ngx_[% subsys %]_lua_socket_tcp_connect(lua_State *L);
 #if (NGX_[% SUBSYS %]_SSL)
-static int ngx_[% subsystem %]_lua_socket_tcp_sslhandshake(lua_State *L);
+static int ngx_[% subsys %]_lua_socket_tcp_sslhandshake(lua_State *L);
 #endif
-static int ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_tcp_close(lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_tcp_shutdown(lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_tcp_setoption(lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_tcp_settimeout(lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_tcp_settimeouts(lua_State *L);
-static void ngx_[% subsystem %]_lua_socket_tcp_handler(ngx_event_t *ev);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_tcp_get_peer(ngx_peer_connection_t *pc,
+static int ngx_[% subsys %]_lua_socket_tcp_receive(lua_State *L);
+static int ngx_[% subsys %]_lua_socket_tcp_send(lua_State *L);
+static int ngx_[% subsys %]_lua_socket_tcp_close(lua_State *L);
+static int ngx_[% subsys %]_lua_socket_tcp_shutdown(lua_State *L);
+static int ngx_[% subsys %]_lua_socket_tcp_setoption(lua_State *L);
+static int ngx_[% subsys %]_lua_socket_tcp_settimeout(lua_State *L);
+static int ngx_[% subsys %]_lua_socket_tcp_settimeouts(lua_State *L);
+static void ngx_[% subsys %]_lua_socket_tcp_handler(ngx_event_t *ev);
+static ngx_int_t ngx_[% subsys %]_lua_socket_tcp_get_peer(ngx_peer_connection_t *pc,
     void *data);
-static void ngx_[% subsystem %]_lua_socket_init_peer_connection_addr_text(
+static void ngx_[% subsys %]_lua_socket_init_peer_connection_addr_text(
     ngx_peer_connection_t *pc);
-static void ngx_[% subsystem %]_lua_socket_read_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static void ngx_[% subsystem %]_lua_socket_send_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static void ngx_[% subsystem %]_lua_socket_connected_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static void ngx_[% subsystem %]_lua_socket_tcp_cleanup(void *data);
-static void ngx_[% subsystem %]_lua_socket_tcp_finalize([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static void ngx_[% subsystem %]_lua_socket_tcp_finalize_read_part([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static void ngx_[% subsystem %]_lua_socket_tcp_finalize_write_part([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, int do_shutdown);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_send([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_test_connect([% req_type %] *r,
+static void ngx_[% subsys %]_lua_socket_read_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static void ngx_[% subsys %]_lua_socket_send_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static void ngx_[% subsys %]_lua_socket_connected_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static void ngx_[% subsys %]_lua_socket_tcp_cleanup(void *data);
+static void ngx_[% subsys %]_lua_socket_tcp_finalize([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static void ngx_[% subsys %]_lua_socket_tcp_finalize_read_part([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static void ngx_[% subsys %]_lua_socket_tcp_finalize_write_part([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, int do_shutdown);
+static ngx_int_t ngx_[% subsys %]_lua_socket_send([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static ngx_int_t ngx_[% subsys %]_lua_socket_test_connect([% req_type %] *r,
     ngx_connection_t *c);
-static void ngx_[% subsystem %]_lua_socket_handle_conn_error([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, ngx_uint_t ft_type);
-static void ngx_[% subsystem %]_lua_socket_handle_read_error([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, ngx_uint_t ft_type);
-static void ngx_[% subsystem %]_lua_socket_handle_write_error([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, ngx_uint_t ft_type);
-static void ngx_[% subsystem %]_lua_socket_handle_conn_success([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static void ngx_[% subsystem %]_lua_socket_handle_read_success([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static void ngx_[% subsystem %]_lua_socket_handle_write_success([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static int ngx_[% subsystem %]_lua_socket_tcp_send_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_tcp_conn_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L);
-static void ngx_[% subsystem %]_lua_socket_dummy_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_tcp_read([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static int ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_read_line(void *data, ssize_t bytes);
-static void ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx);
-static int ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_conn_error_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_read_error_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_write_error_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_read_all(void *data, ssize_t bytes);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_read_until(void *data, ssize_t bytes);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_read_chunk(void *data, ssize_t bytes);
-static int ngx_[% subsystem %]_lua_socket_tcp_receiveuntil(lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_receiveuntil_iterator(lua_State *L);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_compile_pattern(u_char *data, size_t len,
-    ngx_[% subsystem %]_lua_socket_compiled_pattern_t *cp, ngx_log_t *log);
-static int ngx_[% subsystem %]_lua_socket_cleanup_compiled_pattern(lua_State *L);
-static int ngx_[% subsystem %]_lua_req_socket(lua_State *L);
-static void ngx_[% subsystem %]_lua_req_socket_rev_handler([% req_type %] *r);
-static int ngx_[% subsystem %]_lua_socket_tcp_getreusedtimes(lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_tcp_setkeepalive(lua_State *L);
-static ngx_int_t ngx_[% subsystem %]_lua_get_keepalive_peer([% req_type %] *r,
+static void ngx_[% subsys %]_lua_socket_handle_conn_error([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, ngx_uint_t ft_type);
+static void ngx_[% subsys %]_lua_socket_handle_read_error([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, ngx_uint_t ft_type);
+static void ngx_[% subsys %]_lua_socket_handle_write_error([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, ngx_uint_t ft_type);
+static void ngx_[% subsys %]_lua_socket_handle_conn_success([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static void ngx_[% subsys %]_lua_socket_handle_read_success([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static void ngx_[% subsys %]_lua_socket_handle_write_success([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static int ngx_[% subsys %]_lua_socket_tcp_send_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L);
+static int ngx_[% subsys %]_lua_socket_tcp_conn_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L);
+static void ngx_[% subsys %]_lua_socket_dummy_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static ngx_int_t ngx_[% subsys %]_lua_socket_tcp_read([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static int ngx_[% subsys %]_lua_socket_tcp_receive_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L);
+static ngx_int_t ngx_[% subsys %]_lua_socket_read_line(void *data, ssize_t bytes);
+static void ngx_[% subsys %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx);
+static int ngx_[% subsys %]_lua_socket_resolve_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L);
+static int ngx_[% subsys %]_lua_socket_conn_error_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L);
+static int ngx_[% subsys %]_lua_socket_read_error_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L);
+static int ngx_[% subsys %]_lua_socket_write_error_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L);
+static ngx_int_t ngx_[% subsys %]_lua_socket_read_all(void *data, ssize_t bytes);
+static ngx_int_t ngx_[% subsys %]_lua_socket_read_until(void *data, ssize_t bytes);
+static ngx_int_t ngx_[% subsys %]_lua_socket_read_chunk(void *data, ssize_t bytes);
+static int ngx_[% subsys %]_lua_socket_tcp_receiveuntil(lua_State *L);
+static int ngx_[% subsys %]_lua_socket_receiveuntil_iterator(lua_State *L);
+static ngx_int_t ngx_[% subsys %]_lua_socket_compile_pattern(u_char *data, size_t len,
+    ngx_[% subsys %]_lua_socket_compiled_pattern_t *cp, ngx_log_t *log);
+static int ngx_[% subsys %]_lua_socket_cleanup_compiled_pattern(lua_State *L);
+static int ngx_[% subsys %]_lua_req_socket(lua_State *L);
+static void ngx_[% subsys %]_lua_req_socket_rev_handler([% req_type %] *r);
+static int ngx_[% subsys %]_lua_socket_tcp_getreusedtimes(lua_State *L);
+static int ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L);
+static ngx_int_t ngx_[% subsys %]_lua_get_keepalive_peer([% req_type %] *r,
     lua_State *L, int key_index,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static void ngx_[% subsystem %]_lua_socket_keepalive_dummy_handler(ngx_event_t *ev);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_keepalive_close_handler(ngx_event_t *ev);
-static void ngx_[% subsystem %]_lua_socket_keepalive_rev_handler(ngx_event_t *ev);
-static int ngx_[% subsystem %]_lua_socket_tcp_upstream_destroy(lua_State *L);
-static int ngx_[% subsystem %]_lua_socket_downstream_destroy(lua_State *L);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_push_input_data([% req_type %] *r,
-    ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static void ngx_[% subsys %]_lua_socket_keepalive_dummy_handler(ngx_event_t *ev);
+static ngx_int_t ngx_[% subsys %]_lua_socket_keepalive_close_handler(ngx_event_t *ev);
+static void ngx_[% subsys %]_lua_socket_keepalive_rev_handler(ngx_event_t *ev);
+static int ngx_[% subsys %]_lua_socket_tcp_upstream_destroy(lua_State *L);
+static int ngx_[% subsys %]_lua_socket_downstream_destroy(lua_State *L);
+static ngx_int_t ngx_[% subsys %]_lua_socket_push_input_data([% req_type %] *r,
+    ngx_[% subsys %]_lua_ctx_t *ctx, ngx_[% subsys %]_lua_socket_tcp_upstream_t *u,
     lua_State *L);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_add_pending_data([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, u_char *pos, size_t len, u_char *pat,
+static ngx_int_t ngx_[% subsys %]_lua_socket_add_pending_data([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, u_char *pos, size_t len, u_char *pat,
     int prefix, int old_state);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_add_input_buffer([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_insert_buffer([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, u_char *pat, size_t prefix);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_tcp_conn_resume([% req_type %] *r);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_tcp_read_resume([% req_type %] *r);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_tcp_write_resume([% req_type %] *r);
-static ngx_int_t ngx_[% subsystem %]_lua_socket_tcp_resume_helper([% req_type %] *r,
+static ngx_int_t ngx_[% subsys %]_lua_socket_add_input_buffer([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
+static ngx_int_t ngx_[% subsys %]_lua_socket_insert_buffer([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, u_char *pat, size_t prefix);
+static ngx_int_t ngx_[% subsys %]_lua_socket_tcp_conn_resume([% req_type %] *r);
+static ngx_int_t ngx_[% subsys %]_lua_socket_tcp_read_resume([% req_type %] *r);
+static ngx_int_t ngx_[% subsys %]_lua_socket_tcp_write_resume([% req_type %] *r);
+static ngx_int_t ngx_[% subsys %]_lua_socket_tcp_resume_helper([% req_type %] *r,
     int socket_op);
-static void ngx_[% subsystem %]_lua_tcp_resolve_cleanup(void *data);
-static void ngx_[% subsystem %]_lua_coctx_cleanup(void *data);
-static void ngx_[% subsystem %]_lua_socket_free_pool(ngx_log_t *log,
-    ngx_[% subsystem %]_lua_socket_pool_t *spool);
-static int ngx_[% subsystem %]_lua_socket_shutdown_pool(lua_State *L);
-static void ngx_[% subsystem %]_lua_socket_shutdown_pool_helper(
-    ngx_[% subsystem %]_lua_socket_pool_t *spool);
+static void ngx_[% subsys %]_lua_tcp_resolve_cleanup(void *data);
+static void ngx_[% subsys %]_lua_coctx_cleanup(void *data);
+static void ngx_[% subsys %]_lua_socket_free_pool(ngx_log_t *log,
+    ngx_[% subsys %]_lua_socket_pool_t *spool);
+static int ngx_[% subsys %]_lua_socket_shutdown_pool(lua_State *L);
+static void ngx_[% subsys %]_lua_socket_shutdown_pool_helper(
+    ngx_[% subsys %]_lua_socket_pool_t *spool);
 static void
-    ngx_[% subsystem %]_lua_socket_empty_resolve_handler(ngx_resolver_ctx_t *ctx);
-static int ngx_[% subsystem %]_lua_socket_prepare_error_retvals([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L, ngx_uint_t ft_type);
+    ngx_[% subsys %]_lua_socket_empty_resolve_handler(ngx_resolver_ctx_t *ctx);
+static int ngx_[% subsys %]_lua_socket_prepare_error_retvals([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L, ngx_uint_t ft_type);
 #if (NGX_[% SUBSYS %]_SSL)
-static int ngx_[% subsystem %]_lua_ssl_handshake_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L);
-static void ngx_[% subsystem %]_lua_ssl_handshake_handler(ngx_connection_t *c);
-static int ngx_[% subsystem %]_lua_ssl_free_session(lua_State *L);
+static int ngx_[% subsys %]_lua_ssl_handshake_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L);
+static void ngx_[% subsys %]_lua_ssl_handshake_handler(ngx_connection_t *c);
+static int ngx_[% subsys %]_lua_ssl_free_session(lua_State *L);
 #endif
-static void ngx_[% subsystem %]_lua_socket_tcp_close_connection(ngx_connection_t *c);
+static void ngx_[% subsys %]_lua_socket_tcp_close_connection(ngx_connection_t *c);
 
 
 enum {
@@ -155,7 +155,7 @@ enum {
 };
 
 
-#define ngx_[% subsystem %]_lua_socket_check_busy_connecting(r, u, L)                   \
+#define ngx_[% subsys %]_lua_socket_check_busy_connecting(r, u, L)                   \
     if ((u)->conn_waiting) {                                                 \
         lua_pushnil(L);                                                      \
         lua_pushliteral(L, "socket busy connecting");                        \
@@ -163,7 +163,7 @@ enum {
     }
 
 
-#define ngx_[% subsystem %]_lua_socket_check_busy_reading(r, u, L)                      \
+#define ngx_[% subsys %]_lua_socket_check_busy_reading(r, u, L)                      \
     if ((u)->read_waiting) {                                                 \
         lua_pushnil(L);                                                      \
         lua_pushliteral(L, "socket busy reading");                           \
@@ -172,7 +172,7 @@ enum {
 
 
 [% IF http_subsys %]
-#define ngx_[% subsystem %]_lua_socket_check_busy_writing(r, u, L)                      \
+#define ngx_[% subsys %]_lua_socket_check_busy_writing(r, u, L)                      \
     if ((u)->write_waiting) {                                                \
         lua_pushnil(L);                                                      \
         lua_pushliteral(L, "socket busy writing");                           \
@@ -187,7 +187,7 @@ enum {
     }
 
 [% ELSIF stream_subsys %]
-#define ngx_[% subsystem %]_lua_socket_check_busy_writing(r, u, L)                      \
+#define ngx_[% subsys %]_lua_socket_check_busy_writing(r, u, L)                      \
     if ((u)->write_waiting) {                                                \
         lua_pushnil(L);                                                      \
         lua_pushliteral(L, "socket busy writing");                           \
@@ -204,28 +204,28 @@ enum {
 
 
 [% IF http_subsys %]
-static char ngx_[% subsystem %]_lua_req_socket_metatable_key;
+static char ngx_[% subsys %]_lua_req_socket_metatable_key;
 [% END %]
 
-static char ngx_[% subsystem %]_lua_raw_req_socket_metatable_key;
-static char ngx_[% subsystem %]_lua_tcp_socket_metatable_key;
-static char ngx_[% subsystem %]_lua_upstream_udata_metatable_key;
-static char ngx_[% subsystem %]_lua_downstream_udata_metatable_key;
-static char ngx_[% subsystem %]_lua_pool_udata_metatable_key;
-static char ngx_[% subsystem %]_lua_pattern_udata_metatable_key;
+static char ngx_[% subsys %]_lua_raw_req_socket_metatable_key;
+static char ngx_[% subsys %]_lua_tcp_socket_metatable_key;
+static char ngx_[% subsys %]_lua_upstream_udata_metatable_key;
+static char ngx_[% subsys %]_lua_downstream_udata_metatable_key;
+static char ngx_[% subsys %]_lua_pool_udata_metatable_key;
+static char ngx_[% subsys %]_lua_pattern_udata_metatable_key;
 #if (NGX_[% SUBSYS %]_SSL)
-static char ngx_[% subsystem %]_lua_ssl_session_metatable_key;
+static char ngx_[% subsys %]_lua_ssl_session_metatable_key;
 #endif
 
 
 void
-ngx_[% subsystem %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
+ngx_[% subsys %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
 {
     ngx_int_t         rc;
 
     lua_createtable(L, 0, 4 /* nrec */);    /* ngx.socket */
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp);
     lua_pushvalue(L, -1);
     lua_setfield(L, -3, "tcp");
     lua_setfield(L, -2, "stream");
@@ -251,19 +251,19 @@ ngx_[% subsystem %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
 
 [% IF http_subsys %]
     /* {{{req socket object metatable */
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_req_socket_metatable_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_req_socket_metatable_key);
     lua_createtable(L, 0 /* narr */, 5 /* nrec */);
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_receive);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_receive);
     lua_setfield(L, -2, "receive");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_receiveuntil);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_receiveuntil);
     lua_setfield(L, -2, "receiveuntil");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_settimeout);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_settimeout);
     lua_setfield(L, -2, "settimeout"); /* ngx socket mt */
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_settimeouts);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_settimeouts);
     lua_setfield(L, -2, "settimeouts"); /* ngx socket mt */
 
     lua_pushvalue(L, -1);
@@ -274,26 +274,26 @@ ngx_[% subsystem %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
 [% END %]
 
     /* {{{raw req socket object metatable */
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_raw_req_socket_metatable_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_raw_req_socket_metatable_key);
     lua_createtable(L, 0 /* narr */, 6 /* nrec */);
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_receive);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_receive);
     lua_setfield(L, -2, "receive");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_receiveuntil);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_receiveuntil);
     lua_setfield(L, -2, "receiveuntil");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_send);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_send);
     lua_setfield(L, -2, "send");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_settimeout);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_settimeout);
     lua_setfield(L, -2, "settimeout"); /* ngx socket mt */
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_settimeouts);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_settimeouts);
     lua_setfield(L, -2, "settimeouts"); /* ngx socket mt */
 
 [% IF stream_subsys -%]
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_shutdown);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_shutdown);
     lua_setfield(L, -2, "shutdown");
 [% END -%]
 
@@ -304,47 +304,47 @@ ngx_[% subsystem %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
     /* }}} */
 
     /* {{{tcp object metatable */
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_tcp_socket_metatable_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_tcp_socket_metatable_key);
     lua_createtable(L, 0 /* narr */, 12 /* nrec */);
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_connect);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_connect);
     lua_setfield(L, -2, "connect");
 
 #if (NGX_[% SUBSYS %]_SSL)
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_sslhandshake);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_sslhandshake);
     lua_setfield(L, -2, "sslhandshake");
 
 #endif
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_receive);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_receive);
     lua_setfield(L, -2, "receive");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_receiveuntil);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_receiveuntil);
     lua_setfield(L, -2, "receiveuntil");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_send);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_send);
     lua_setfield(L, -2, "send");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_close);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_close);
     lua_setfield(L, -2, "close");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_shutdown);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_shutdown);
     lua_setfield(L, -2, "shutdown");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_setoption);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_setoption);
     lua_setfield(L, -2, "setoption");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_settimeout);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_settimeout);
     lua_setfield(L, -2, "settimeout"); /* ngx socket mt */
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_settimeouts);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_settimeouts);
     lua_setfield(L, -2, "settimeouts"); /* ngx socket mt */
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_getreusedtimes);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_getreusedtimes);
     lua_setfield(L, -2, "getreusedtimes");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_setkeepalive);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_setkeepalive);
     lua_setfield(L, -2, "setkeepalive");
 
     lua_pushvalue(L, -1);
@@ -353,33 +353,33 @@ ngx_[% subsystem %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
     /* }}} */
 
     /* {{{upstream userdata metatable */
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_upstream_udata_metatable_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_upstream_udata_metatable_key);
     lua_createtable(L, 0 /* narr */, 1 /* nrec */); /* metatable */
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_tcp_upstream_destroy);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_upstream_destroy);
     lua_setfield(L, -2, "__gc");
     lua_rawset(L, LUA_REGISTRYINDEX);
     /* }}} */
 
     /* {{{downstream userdata metatable */
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_downstream_udata_metatable_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_downstream_udata_metatable_key);
     lua_createtable(L, 0 /* narr */, 1 /* nrec */); /* metatable */
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_downstream_destroy);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_downstream_destroy);
     lua_setfield(L, -2, "__gc");
     lua_rawset(L, LUA_REGISTRYINDEX);
     /* }}} */
 
     /* {{{socket pool userdata metatable */
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_pool_udata_metatable_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_pool_udata_metatable_key);
     lua_createtable(L, 0, 1); /* metatable */
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_shutdown_pool);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_shutdown_pool);
     lua_setfield(L, -2, "__gc");
     lua_rawset(L, LUA_REGISTRYINDEX);
     /* }}} */
 
     /* {{{socket compiled pattern userdata metatable */
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_pattern_udata_metatable_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_pattern_udata_metatable_key);
     lua_createtable(L, 0 /* narr */, 1 /* nrec */); /* metatable */
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_socket_cleanup_compiled_pattern);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_cleanup_compiled_pattern);
     lua_setfield(L, -2, "__gc");
     lua_rawset(L, LUA_REGISTRYINDEX);
     /* }}} */
@@ -387,9 +387,9 @@ ngx_[% subsystem %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
 #if (NGX_[% SUBSYS %]_SSL)
 
     /* {{{ssl session userdata metatable */
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_ssl_session_metatable_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_ssl_session_metatable_key);
     lua_createtable(L, 0 /* narr */, 1 /* nrec */); /* metatable */
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ssl_free_session);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ssl_free_session);
     lua_setfield(L, -2, "__gc");
     lua_rawset(L, LUA_REGISTRYINDEX);
     /* }}} */
@@ -399,15 +399,15 @@ ngx_[% subsystem %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
 
 
 void
-ngx_[% subsystem %]_lua_inject_req_socket_api(lua_State *L)
+ngx_[% subsys %]_lua_inject_req_socket_api(lua_State *L)
 {
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_req_socket);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_req_socket);
     lua_setfield(L, -2, "socket");
 }
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp(lua_State *L)
 {
     [% req_type %]                  *r;
     ngx_[% subsys %]_lua_ctx_t      *ctx;
@@ -439,7 +439,7 @@ ngx_[% subsystem %]_lua_socket_tcp(lua_State *L)
         | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER);
 
     lua_createtable(L, 5 /* narr */, 1 /* nrec */);
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_tcp_socket_metatable_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_tcp_socket_metatable_key);
     lua_rawget(L, LUA_REGISTRYINDEX);
     lua_setmetatable(L, -2);
 
@@ -450,7 +450,7 @@ ngx_[% subsystem %]_lua_socket_tcp(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_connect(lua_State *L)
 {
     [% req_type %]              *r;
     ngx_[% subsys %]_lua_ctx_t  *ctx;
@@ -487,17 +487,17 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
                           "arguments (including the object), but seen %d", n);
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
+    ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
 
 [% IF http_subsys %]
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
@@ -596,9 +596,9 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
             return luaL_error(L, "bad request");
         }
 
-        ngx_[% subsystem %]_lua_socket_check_busy_connecting(r, u, L);
-        ngx_[% subsystem %]_lua_socket_check_busy_reading(r, u, L);
-        ngx_[% subsystem %]_lua_socket_check_busy_writing(r, u, L);
+        ngx_[% subsys %]_lua_socket_check_busy_connecting(r, u, L);
+        ngx_[% subsys %]_lua_socket_check_busy_reading(r, u, L);
+        ngx_[% subsys %]_lua_socket_check_busy_writing(r, u, L);
 
         if (u->body_downstream || u->raw_downstream) {
             return luaL_error(L, "attempt to re-connect a request socket");
@@ -608,20 +608,20 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
             ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                            "[% log_prefix %]lua tcp socket reconnect without shutting down");
 
-            ngx_[% subsystem %]_lua_socket_tcp_finalize(r, u);
+            ngx_[% subsys %]_lua_socket_tcp_finalize(r, u);
         }
 
         ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                        "lua reuse socket upstream ctx");
 
     } else {
-        u = lua_newuserdata(L, sizeof(ngx_[% subsystem %]_lua_socket_tcp_upstream_t));
+        u = lua_newuserdata(L, sizeof(ngx_[% subsys %]_lua_socket_tcp_upstream_t));
         if (u == NULL) {
             return luaL_error(L, "no memory");
         }
 
 #if 1
-        lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_upstream_udata_metatable_key);
+        lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_upstream_udata_metatable_key);
         lua_rawget(L, LUA_REGISTRYINDEX);
         lua_setmetatable(L, -2);
 #endif
@@ -629,13 +629,13 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
         lua_rawseti(L, 1, SOCKET_CTX_INDEX);
     }
 
-    ngx_memzero(u, sizeof(ngx_[% subsystem %]_lua_socket_tcp_upstream_t));
+    ngx_memzero(u, sizeof(ngx_[% subsys %]_lua_socket_tcp_upstream_t));
 
     coctx = ctx->cur_co_ctx;
 
     u->request = r; /* set the controlling request */
 
-    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
     u->conf = llcf;
 
@@ -677,7 +677,7 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
         u->read_timeout = u->conf->read_timeout;
     }
 
-    rc = ngx_[% subsystem %]_lua_get_keepalive_peer(r, L, key_index, u);
+    rc = ngx_[% subsys %]_lua_get_keepalive_peer(r, L, key_index, u);
 
     if (rc == NGX_OK) {
         lua_pushinteger(L, 1);
@@ -728,7 +728,7 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
     ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "[% log_prefix %]lua tcp socket connect timeout: %M", u->connect_timeout);
 
-    u->resolved = ngx_pcalloc(r->pool, sizeof(ngx_[% subsystem %]_upstream_resolved_t));
+    u->resolved = ngx_pcalloc(r->pool, sizeof(ngx_[% subsys %]_upstream_resolved_t));
     if (u->resolved == NULL) {
         return luaL_error(L, "no memory");
     }
@@ -748,7 +748,7 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
     }
 
     if (u->resolved->sockaddr) {
-        rc = ngx_[% subsystem %]_lua_socket_resolve_retval_handler(r, u, L);
+        rc = ngx_[% subsys %]_lua_socket_resolve_retval_handler(r, u, L);
         if (rc == NGX_AGAIN) {
             return lua_yield(L, 0);
         }
@@ -756,7 +756,7 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
         return rc;
     }
 
-    clcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_core_module);
+    clcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_core_module);
 
     temp.name = host;
     rctx = ngx_resolve_start(clcf->resolver, &temp);
@@ -778,15 +778,15 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
 #if !defined(nginx_version) || nginx_version < 1005008
     rctx->type = NGX_RESOLVE_A;
 #endif
-    rctx->handler = ngx_[% subsystem %]_lua_socket_resolve_handler;
+    rctx->handler = ngx_[% subsys %]_lua_socket_resolve_handler;
     rctx->data = u;
     rctx->timeout = clcf->resolver_timeout;
 
     u->resolved->ctx = rctx;
     u->write_co_ctx = ctx->cur_co_ctx;
 
-    ngx_[% subsystem %]_lua_cleanup_pending_operation(coctx);
-    coctx->cleanup = ngx_[% subsystem %]_lua_tcp_resolve_cleanup;
+    ngx_[% subsys %]_lua_cleanup_pending_operation(coctx);
+    coctx->cleanup = ngx_[% subsys %]_lua_tcp_resolve_cleanup;
     coctx->data = u;
 
     saved_top = lua_gettop(L);
@@ -822,12 +822,12 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
     /* still resolving */
 
     u->conn_waiting = 1;
-    u->write_prepare_retvals = ngx_[% subsystem %]_lua_socket_resolve_retval_handler;
+    u->write_prepare_retvals = ngx_[% subsys %]_lua_socket_resolve_retval_handler;
 
     dd("setting data to %p", u);
 
     if (ctx->entered_content_phase) {
-        r->write_event_handler = ngx_[% subsystem %]_lua_content_wev_handler;
+        r->write_event_handler = ngx_[% subsys %]_lua_content_wev_handler;
 
     } else {
         r->write_event_handler = ngx_[% req_subsys %]_core_run_phases;
@@ -838,14 +838,14 @@ ngx_[% subsystem %]_lua_socket_tcp_connect(lua_State *L)
 
 
 static void
-ngx_[% subsystem %]_lua_socket_empty_resolve_handler(ngx_resolver_ctx_t *ctx)
+ngx_[% subsys %]_lua_socket_empty_resolve_handler(ngx_resolver_ctx_t *ctx)
 {
     /* do nothing */
 }
 
 
 static void
-ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
+ngx_[% subsys %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
 {
     [% req_type %]                      *r;
 [% IF stream_subsys %]
@@ -889,7 +889,7 @@ ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
     ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], c->log, 0,
                    "[% log_prefix %]lua tcp socket resolve handler");
 
-    lctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    lctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (lctx == NULL) {
         return;
     }
@@ -916,8 +916,8 @@ ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
         lua_concat(L, 2);
 
         u->write_prepare_retvals =
-                                ngx_[% subsystem %]_lua_socket_conn_error_retval_handler;
-        ngx_[% subsystem %]_lua_socket_handle_conn_error(r, u,
+                                ngx_[% subsys %]_lua_socket_conn_error_retval_handler;
+        ngx_[% subsys %]_lua_socket_handle_conn_error(r, u,
                                                          NGX_[% SUBSYS %]_LUA_SOCKET_FT_RESOLVER);
 
 [% IF http_subsys %]
@@ -967,7 +967,7 @@ ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
     }
 #endif
 
-    ngx_[% subsystem %]_lua_assert(ur->naddrs > 0);
+    ngx_[% subsys %]_lua_assert(ur->naddrs > 0);
 
     if (ur->naddrs == 1) {
         i = 0;
@@ -1042,7 +1042,7 @@ ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
     u->write_co_ctx = NULL;
 
     if (waiting) {
-        lctx->resume_handler = ngx_[% subsystem %]_lua_socket_tcp_conn_resume;
+        lctx->resume_handler = ngx_[% subsys %]_lua_socket_tcp_conn_resume;
         r->write_event_handler(r);
 
 [% IF http_subsys %]
@@ -1050,7 +1050,7 @@ ngx_[% subsystem %]_lua_socket_resolve_handler(ngx_resolver_ctx_t *ctx)
 [% END %]
 
     } else {
-        (void) ngx_[% subsystem %]_lua_socket_resolve_retval_handler(r, u, L);
+        (void) ngx_[% subsys %]_lua_socket_resolve_retval_handler(r, u, L);
     }
 
     return;
@@ -1062,8 +1062,8 @@ nomem:
         ur->ctx = NULL;
     }
 
-    u->write_prepare_retvals = ngx_[% subsystem %]_lua_socket_conn_error_retval_handler;
-    ngx_[% subsystem %]_lua_socket_handle_conn_error(r, u,
+    u->write_prepare_retvals = ngx_[% subsys %]_lua_socket_conn_error_retval_handler;
+    ngx_[% subsys %]_lua_socket_handle_conn_error(r, u,
                                                      NGX_[% SUBSYS %]_LUA_SOCKET_FT_NOMEM);
 
     if (waiting) {
@@ -1081,7 +1081,7 @@ nomem:
 
 
 static void
-ngx_[% subsystem %]_lua_socket_init_peer_connection_addr_text(ngx_peer_connection_t *pc)
+ngx_[% subsys %]_lua_socket_init_peer_connection_addr_text(ngx_peer_connection_t *pc)
 {
     ngx_connection_t            *c;
     size_t                       addr_text_max_len;
@@ -1125,8 +1125,8 @@ ngx_[% subsystem %]_lua_socket_init_peer_connection_addr_text(ngx_peer_connectio
 
 
 static int
-ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L)
+ngx_[% subsys %]_lua_socket_resolve_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L)
 {
     ngx_[% subsys %]_lua_ctx_t              *ctx;
     ngx_peer_connection_t                   *pc;
@@ -1158,7 +1158,7 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
         return 2;
     }
 
-    pc->get = ngx_[% subsystem %]_lua_socket_tcp_get_peer;
+    pc->get = ngx_[% subsys %]_lua_socket_tcp_get_peer;
 
     rc = ngx_event_connect_peer(pc);
 
@@ -1167,7 +1167,7 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
     }
 
     if (u->cleanup == NULL) {
-        cln = ngx_[% subsystem %]_lua_cleanup_add(r, 0);
+        cln = ngx_[% subsys %]_lua_cleanup_add(r, 0);
         if (cln == NULL) {
             u->ft_type |= NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR;
             lua_pushnil(L);
@@ -1175,7 +1175,7 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
             return 2;
         }
 
-        cln->handler = ngx_[% subsystem %]_lua_socket_tcp_cleanup;
+        cln->handler = ngx_[% subsys %]_lua_socket_tcp_cleanup;
         cln->data = u;
         u->cleanup = &cln->handler;
     }
@@ -1184,7 +1184,7 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
                    "[% log_prefix %]lua tcp socket connect: %i", rc);
 
     if (rc == NGX_ERROR) {
-        return ngx_[% subsystem %]_lua_socket_conn_error_retval_handler(r, u, L);
+        return ngx_[% subsys %]_lua_socket_conn_error_retval_handler(r, u, L);
     }
 
     if (rc == NGX_BUSY) {
@@ -1198,7 +1198,7 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
         dd("socket errno: %d", (int) ngx_socket_errno);
         u->ft_type |= NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR;
         u->socket_errno = ngx_socket_errno;
-        return ngx_[% subsystem %]_lua_socket_conn_error_retval_handler(r, u, L);
+        return ngx_[% subsys %]_lua_socket_conn_error_retval_handler(r, u, L);
     }
 
     /* rc == NGX_OK || rc == NGX_AGAIN */
@@ -1207,11 +1207,11 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
 
     c->data = u;
 
-    c->write->handler = ngx_[% subsystem %]_lua_socket_tcp_handler;
-    c->read->handler = ngx_[% subsystem %]_lua_socket_tcp_handler;
+    c->write->handler = ngx_[% subsys %]_lua_socket_tcp_handler;
+    c->read->handler = ngx_[% subsys %]_lua_socket_tcp_handler;
 
-    u->write_event_handler = ngx_[% subsystem %]_lua_socket_connected_handler;
-    u->read_event_handler = ngx_[% subsystem %]_lua_socket_connected_handler;
+    u->write_event_handler = ngx_[% subsys %]_lua_socket_connected_handler;
+    u->read_event_handler = ngx_[% subsys %]_lua_socket_connected_handler;
 
     c->sendfile &= r->connection->sendfile;
 
@@ -1221,7 +1221,7 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
 
         c->pool = ngx_create_pool(128, r->connection->log);
         if (c->pool == NULL) {
-            return ngx_[% subsystem %]_lua_socket_prepare_error_retvals(r, u, L,
+            return ngx_[% subsys %]_lua_socket_prepare_error_retvals(r, u, L,
                                                                         NGX_[% SUBSYS %]_LUA_SOCKET_FT_NOMEM);
         }
     }
@@ -1238,7 +1238,7 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
     u->writer.last = &u->writer.out;
 #endif
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
 
     coctx = ctx->cur_co_ctx;
 
@@ -1254,7 +1254,7 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
          * event poll and wasting CPU cycles. */
 
         if (ngx_handle_write_event(c->write, 0) != NGX_OK) {
-            ngx_[% subsystem %]_lua_socket_handle_conn_error(r, u,
+            ngx_[% subsys %]_lua_socket_handle_conn_error(r, u,
                                                              NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR);
             lua_pushnil(L);
             lua_pushliteral(L, "failed to handle write event");
@@ -1262,15 +1262,15 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
         }
 
         if (ngx_handle_read_event(c->read, 0) != NGX_OK) {
-            ngx_[% subsystem %]_lua_socket_handle_conn_error(r, u,
+            ngx_[% subsys %]_lua_socket_handle_conn_error(r, u,
                                                              NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR);
             lua_pushnil(L);
             lua_pushliteral(L, "failed to handle read event");
             return 2;
         }
 
-        u->read_event_handler = ngx_[% subsystem %]_lua_socket_dummy_handler;
-        u->write_event_handler = ngx_[% subsystem %]_lua_socket_dummy_handler;
+        u->read_event_handler = ngx_[% subsys %]_lua_socket_dummy_handler;
+        u->write_event_handler = ngx_[% subsys %]_lua_socket_dummy_handler;
 
         lua_pushinteger(L, 1);
         return 1;
@@ -1278,20 +1278,20 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
 
     /* rc == NGX_AGAIN */
 
-    ngx_[% subsystem %]_lua_cleanup_pending_operation(coctx);
-    coctx->cleanup = ngx_[% subsystem %]_lua_coctx_cleanup;
+    ngx_[% subsys %]_lua_cleanup_pending_operation(coctx);
+    coctx->cleanup = ngx_[% subsys %]_lua_coctx_cleanup;
     coctx->data = u;
 
     ngx_add_timer(c->write, u->connect_timeout);
 
     u->write_co_ctx = ctx->cur_co_ctx;
     u->conn_waiting = 1;
-    u->write_prepare_retvals = ngx_[% subsystem %]_lua_socket_tcp_conn_retval_handler;
+    u->write_prepare_retvals = ngx_[% subsys %]_lua_socket_tcp_conn_retval_handler;
 
     dd("setting data to %p", u);
 
     if (ctx->entered_content_phase) {
-        r->write_event_handler = ngx_[% subsystem %]_lua_content_wev_handler;
+        r->write_event_handler = ngx_[% subsys %]_lua_content_wev_handler;
 
     } else {
         r->write_event_handler = ngx_[% req_subsys %]_core_run_phases;
@@ -1302,8 +1302,8 @@ ngx_[% subsystem %]_lua_socket_resolve_retval_handler([% req_type %] *r,
 
 
 static int
-ngx_[% subsystem %]_lua_socket_conn_error_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L)
+ngx_[% subsys %]_lua_socket_conn_error_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L)
 {
     ngx_uint_t      ft_type;
 
@@ -1314,18 +1314,18 @@ ngx_[% subsystem %]_lua_socket_conn_error_retval_handler([% req_type %] *r,
         u->write_co_ctx->cleanup = NULL;
     }
 
-    ngx_[% subsystem %]_lua_socket_tcp_finalize(r, u);
+    ngx_[% subsys %]_lua_socket_tcp_finalize(r, u);
 
     ft_type = u->ft_type;
     u->ft_type = 0;
-    return ngx_[% subsystem %]_lua_socket_prepare_error_retvals(r, u, L, ft_type);
+    return ngx_[% subsys %]_lua_socket_prepare_error_retvals(r, u, L, ft_type);
 }
 
 
 #if (NGX_[% SUBSYS %]_SSL)
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_sslhandshake(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_sslhandshake(lua_State *L)
 {
     int                      n, top;
     ngx_int_t                rc;
@@ -1347,7 +1347,7 @@ ngx_[% subsystem %]_lua_socket_tcp_sslhandshake(lua_State *L)
                           "arguments (including the object), but seen %d", n);
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
@@ -1374,9 +1374,9 @@ ngx_[% subsystem %]_lua_socket_tcp_sslhandshake(lua_State *L)
         return luaL_error(L, "bad request");
     }
 
-    ngx_[% subsystem %]_lua_socket_check_busy_connecting(r, u, L);
-    ngx_[% subsystem %]_lua_socket_check_busy_reading(r, u, L);
-    ngx_[% subsystem %]_lua_socket_check_busy_writing(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_connecting(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_reading(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_writing(r, u, L);
 
     if (u->raw_downstream || u->body_downstream) {
         lua_pushnil(L);
@@ -1403,7 +1403,7 @@ ngx_[% subsystem %]_lua_socket_tcp_sslhandshake(lua_State *L)
             /* fall through */
 
         default:
-            ngx_[% subsystem %]_lua_ssl_handshake_retval_handler(r, u, L);
+            ngx_[% subsys %]_lua_ssl_handshake_retval_handler(r, u, L);
             break;
         }
 
@@ -1419,7 +1419,7 @@ ngx_[% subsystem %]_lua_socket_tcp_sslhandshake(lua_State *L)
         return 2;
     }
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
@@ -1549,16 +1549,16 @@ new_ssl_name:
         ngx_add_timer(c->read, u->connect_timeout);
 
         u->conn_waiting = 1;
-        u->write_prepare_retvals = ngx_[% subsystem %]_lua_ssl_handshake_retval_handler;
+        u->write_prepare_retvals = ngx_[% subsys %]_lua_ssl_handshake_retval_handler;
 
-        ngx_[% subsystem %]_lua_cleanup_pending_operation(coctx);
-        coctx->cleanup = ngx_[% subsystem %]_lua_coctx_cleanup;
+        ngx_[% subsys %]_lua_cleanup_pending_operation(coctx);
+        coctx->cleanup = ngx_[% subsys %]_lua_coctx_cleanup;
         coctx->data = u;
 
-        c->ssl->handler = ngx_[% subsystem %]_lua_ssl_handshake_handler;
+        c->ssl->handler = ngx_[% subsys %]_lua_ssl_handshake_handler;
 
     if (ctx->entered_content_phase) {
-        r->write_event_handler = ngx_[% subsystem %]_lua_content_wev_handler;
+        r->write_event_handler = ngx_[% subsys %]_lua_content_wev_handler;
 
     } else {
         r->write_event_handler = ngx_[% req_subsys %]_core_run_phases;
@@ -1568,13 +1568,13 @@ new_ssl_name:
     }
 
     top = lua_gettop(L);
-    ngx_[% subsystem %]_lua_ssl_handshake_handler(c);
+    ngx_[% subsys %]_lua_ssl_handshake_handler(c);
     return lua_gettop(L) - top;
 }
 
 
 static void
-ngx_[% subsystem %]_lua_ssl_handshake_handler(ngx_connection_t *c)
+ngx_[% subsys %]_lua_ssl_handshake_handler(ngx_connection_t *c)
 {
     const char                  *err;
     int                          waiting;
@@ -1590,13 +1590,13 @@ ngx_[% subsystem %]_lua_ssl_handshake_handler(ngx_connection_t *c)
     u = c->data;
     r = u->request;
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return;
     }
 
-    c->write->handler = ngx_[% subsystem %]_lua_socket_tcp_handler;
-    c->read->handler = ngx_[% subsystem %]_lua_socket_tcp_handler;
+    c->write->handler = ngx_[% subsys %]_lua_socket_tcp_handler;
+    c->read->handler = ngx_[% subsys %]_lua_socket_tcp_handler;
 
     waiting = u->conn_waiting;
 
@@ -1623,7 +1623,7 @@ ngx_[% subsystem %]_lua_ssl_handshake_handler(ngx_connection_t *c)
                 err = lua_pushfstring(L, "%d: %s", (int) rc,
                                       X509_verify_cert_error_string(rc));
 
-                llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+                llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
                 if (llcf->log_socket_errors) {
                     ngx_log_error(NGX_LOG_ERR, dc->log, 0, "[% log_prefix %]lua ssl "
                                   "certificate verify error: (%s)", err);
@@ -1640,7 +1640,7 @@ ngx_[% subsystem %]_lua_ssl_handshake_handler(ngx_connection_t *c)
                 lua_pushnil(L);
                 lua_pushliteral(L, "certificate host mismatch");
 
-                llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+                llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
                 if (llcf->log_socket_errors) {
                     ngx_log_error(NGX_LOG_ERR, dc->log, 0, "[% log_prefix %]lua ssl "
                                   "certificate does not match host \"%V\"",
@@ -1654,10 +1654,10 @@ ngx_[% subsystem %]_lua_ssl_handshake_handler(ngx_connection_t *c)
         }
 
         if (waiting) {
-            ngx_[% subsystem %]_lua_socket_handle_conn_success(r, u);
+            ngx_[% subsys %]_lua_socket_handle_conn_success(r, u);
 
         } else {
-            (void) ngx_[% subsystem %]_lua_ssl_handshake_retval_handler(r, u, L);
+            (void) ngx_[% subsys %]_lua_ssl_handshake_retval_handler(r, u, L);
         }
 
 [% IF http_subsys %]
@@ -1676,8 +1676,8 @@ failed:
 
     if (waiting) {
         u->write_prepare_retvals =
-                                ngx_[% subsystem %]_lua_socket_conn_error_retval_handler;
-        ngx_[% subsystem %]_lua_socket_handle_conn_error(r, u,
+                                ngx_[% subsys %]_lua_socket_conn_error_retval_handler;
+        ngx_[% subsys %]_lua_socket_handle_conn_error(r, u,
                                                          NGX_[% SUBSYS %]_LUA_SOCKET_FT_SSL);
 
 [% IF http_subsys %]
@@ -1685,14 +1685,14 @@ failed:
 [% END %]
 
     } else {
-        (void) ngx_[% subsystem %]_lua_socket_conn_error_retval_handler(r, u, L);
+        (void) ngx_[% subsys %]_lua_socket_conn_error_retval_handler(r, u, L);
     }
 }
 
 
 static int
-ngx_[% subsystem %]_lua_ssl_handshake_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L)
+ngx_[% subsys %]_lua_ssl_handshake_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L)
 {
     ngx_connection_t            *c;
     ngx_ssl_session_t           *ssl_session, **ud;
@@ -1717,7 +1717,7 @@ ngx_[% subsystem %]_lua_ssl_handshake_retval_handler([% req_type %] *r,
                       "[% log_prefix %]lua ssl save session: %p", ssl_session);
 
         /* set up the __gc metamethod */
-        lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_ssl_session_metatable_key);
+        lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_ssl_session_metatable_key);
         lua_rawget(L, LUA_REGISTRYINDEX);
         lua_setmetatable(L, -2);
     }
@@ -1729,8 +1729,8 @@ ngx_[% subsystem %]_lua_ssl_handshake_retval_handler([% req_type %] *r,
 
 
 static int
-ngx_[% subsystem %]_lua_socket_read_error_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L)
+ngx_[% subsys %]_lua_socket_read_error_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L)
 {
     ngx_uint_t          ft_type;
 
@@ -1745,16 +1745,16 @@ ngx_[% subsystem %]_lua_socket_read_error_retval_handler([% req_type %] *r,
         u->no_close = 0;
 
     } else {
-        ngx_[% subsystem %]_lua_socket_tcp_finalize_read_part(r, u);
+        ngx_[% subsys %]_lua_socket_tcp_finalize_read_part(r, u);
     }
 
-    return ngx_[% subsystem %]_lua_socket_prepare_error_retvals(r, u, L, ft_type);
+    return ngx_[% subsys %]_lua_socket_prepare_error_retvals(r, u, L, ft_type);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_socket_write_error_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L)
+ngx_[% subsys %]_lua_socket_write_error_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L)
 {
     ngx_uint_t          ft_type;
 
@@ -1762,17 +1762,17 @@ ngx_[% subsystem %]_lua_socket_write_error_retval_handler([% req_type %] *r,
         u->write_co_ctx->cleanup = NULL;
     }
 
-    ngx_[% subsystem %]_lua_socket_tcp_finalize_write_part(r, u, 0);
+    ngx_[% subsys %]_lua_socket_tcp_finalize_write_part(r, u, 0);
 
     ft_type = u->ft_type;
     u->ft_type = 0;
-    return ngx_[% subsystem %]_lua_socket_prepare_error_retvals(r, u, L, ft_type);
+    return ngx_[% subsys %]_lua_socket_prepare_error_retvals(r, u, L, ft_type);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_socket_prepare_error_retvals([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L, ngx_uint_t ft_type)
+ngx_[% subsys %]_lua_socket_prepare_error_retvals([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L, ngx_uint_t ft_type)
 {
     u_char           errstr[NGX_MAX_ERROR_STR];
     u_char          *p;
@@ -1822,11 +1822,11 @@ ngx_[% subsystem %]_lua_socket_prepare_error_retvals([% req_type %] *r,
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_conn_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_conn_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L)
 {
     if (u->ft_type) {
-        return ngx_[% subsystem %]_lua_socket_conn_error_retval_handler(r, u, L);
+        return ngx_[% subsys %]_lua_socket_conn_error_retval_handler(r, u, L);
     }
 
     lua_pushinteger(L, 1);
@@ -1835,7 +1835,7 @@ ngx_[% subsystem %]_lua_socket_tcp_conn_retval_handler([% req_type %] *r,
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_receive(lua_State *L)
 {
     [% req_type %]                      *r;
     ngx_int_t                            rc;
@@ -1856,7 +1856,7 @@ ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
                           "(including the object), but got %d", n);
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
@@ -1871,7 +1871,7 @@ ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
 
     if (u == NULL || u->peer.connection == NULL || u->read_closed) {
 
-        llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
@@ -1890,8 +1890,8 @@ ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
         return luaL_error(L, "bad request");
     }
 
-    ngx_[% subsystem %]_lua_socket_check_busy_connecting(r, u, L);
-    ngx_[% subsystem %]_lua_socket_check_busy_reading(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_connecting(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_reading(r, u, L);
 
     ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "[% log_prefix %]lua tcp socket read timeout: %M", u->read_timeout);
@@ -1916,11 +1916,11 @@ ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
 
             switch (pat.data[1]) {
             case 'l':
-                u->input_filter = ngx_[% subsystem %]_lua_socket_read_line;
+                u->input_filter = ngx_[% subsys %]_lua_socket_read_line;
                 break;
 
             case 'a':
-                u->input_filter = ngx_[% subsystem %]_lua_socket_read_all;
+                u->input_filter = ngx_[% subsys %]_lua_socket_read_all;
                 break;
 
             default:
@@ -1946,7 +1946,7 @@ ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
             }
 #endif
 
-            u->input_filter = ngx_[% subsystem %]_lua_socket_read_chunk;
+            u->input_filter = ngx_[% subsys %]_lua_socket_read_chunk;
             u->length = (size_t) bytes;
             u->rest = u->length;
 
@@ -1958,18 +1958,18 @@ ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
         }
 
     } else {
-        u->input_filter = ngx_[% subsystem %]_lua_socket_read_line;
+        u->input_filter = ngx_[% subsys %]_lua_socket_read_line;
         u->length = 0;
         u->rest = 0;
     }
 
     u->input_filter_ctx = u;
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
 
     if (u->bufs_in == NULL) {
         u->bufs_in =
-            ngx_[% subsystem %]_lua_chain_get_free_buf(r->connection->log, r->pool,
+            ngx_[% subsys %]_lua_chain_get_free_buf(r->connection->log, r->pool,
                                                        &ctx->free_recv_bufs,
                                                        u->conf->buffer_size);
 
@@ -1984,17 +1984,17 @@ ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
     dd("tcp receive: buf_in: %p, bufs_in: %p", u->buf_in, u->bufs_in);
 
     if (u->raw_downstream || u->body_downstream) {
-        r->read_event_handler = ngx_[% subsystem %]_lua_req_socket_rev_handler;
+        r->read_event_handler = ngx_[% subsys %]_lua_req_socket_rev_handler;
     }
 
     u->read_waiting = 0;
     u->read_co_ctx = NULL;
 
-    rc = ngx_[% subsystem %]_lua_socket_tcp_read(r, u);
+    rc = ngx_[% subsys %]_lua_socket_tcp_read(r, u);
 
     if (rc == NGX_ERROR) {
         dd("read failed: %d", (int) u->ft_type);
-        rc = ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler(r, u, L);
+        rc = ngx_[% subsys %]_lua_socket_tcp_receive_retval_handler(r, u, L);
         dd("tcp receive retval returned: %d", (int) rc);
         return rc;
     }
@@ -2004,21 +2004,21 @@ ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
         ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                        "[% log_prefix %]lua tcp socket receive done in a single run");
 
-        return ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler(r, u, L);
+        return ngx_[% subsys %]_lua_socket_tcp_receive_retval_handler(r, u, L);
     }
 
     /* rc == NGX_AGAIN */
 
-    u->read_event_handler = ngx_[% subsystem %]_lua_socket_read_handler;
+    u->read_event_handler = ngx_[% subsys %]_lua_socket_read_handler;
 
     coctx = ctx->cur_co_ctx;
 
-    ngx_[% subsystem %]_lua_cleanup_pending_operation(coctx);
-    coctx->cleanup = ngx_[% subsystem %]_lua_coctx_cleanup;
+    ngx_[% subsys %]_lua_cleanup_pending_operation(coctx);
+    coctx->cleanup = ngx_[% subsys %]_lua_coctx_cleanup;
     coctx->data = u;
 
     if (ctx->entered_content_phase) {
-        r->write_event_handler = ngx_[% subsystem %]_lua_content_wev_handler;
+        r->write_event_handler = ngx_[% subsys %]_lua_content_wev_handler;
 
     } else {
         r->write_event_handler = ngx_[% req_subsys %]_core_run_phases;
@@ -2026,7 +2026,7 @@ ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
 
     u->read_co_ctx = coctx;
     u->read_waiting = 1;
-    u->read_prepare_retvals = ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler;
+    u->read_prepare_retvals = ngx_[% subsys %]_lua_socket_tcp_receive_retval_handler;
 
     dd("setting data to %p, coctx:%p", u, coctx);
 
@@ -2039,9 +2039,9 @@ ngx_[% subsystem %]_lua_socket_tcp_receive(lua_State *L)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_read_chunk(void *data, ssize_t bytes)
+ngx_[% subsys %]_lua_socket_read_chunk(void *data, ssize_t bytes)
 {
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t      *u = data;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t      *u = data;
 
     ngx_buf_t                   *b;
 #if (NGX_DEBUG)
@@ -2080,9 +2080,9 @@ ngx_[% subsystem %]_lua_socket_read_chunk(void *data, ssize_t bytes)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_read_all(void *data, ssize_t bytes)
+ngx_[% subsys %]_lua_socket_read_all(void *data, ssize_t bytes)
 {
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t      *u = data;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t      *u = data;
 
     ngx_buf_t                   *b;
 #if (NGX_DEBUG)
@@ -2108,9 +2108,9 @@ ngx_[% subsystem %]_lua_socket_read_all(void *data, ssize_t bytes)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_read_line(void *data, ssize_t bytes)
+ngx_[% subsys %]_lua_socket_read_line(void *data, ssize_t bytes)
 {
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t      *u = data;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t      *u = data;
 
     ngx_buf_t                   *b;
     u_char                      *dst;
@@ -2182,8 +2182,8 @@ ngx_[% subsystem %]_lua_socket_read_line(void *data, ssize_t bytes)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_tcp_read([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u)
+ngx_[% subsys %]_lua_socket_tcp_read([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u)
 {
     ngx_int_t                    rc;
     ngx_connection_t            *c;
@@ -2194,7 +2194,7 @@ ngx_[% subsystem %]_lua_socket_tcp_read([% req_type %] *r,
     unsigned                     read;
     off_t                        preread = 0;
 
-    ngx_[% subsystem %]_lua_loc_conf_t     *llcf;
+    ngx_[% subsys %]_lua_loc_conf_t     *llcf;
 
     c = u->peer.connection;
     rev = c->read;
@@ -2234,21 +2234,21 @@ ngx_[% subsystem %]_lua_socket_tcp_read([% req_type %] *r,
                     && r->request_body->rest == 0)
                 {
 
-                    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+                    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
                     if (llcf->check_client_abort) {
-                        rc = ngx_[% subsystem %]_lua_check_broken_connection(r, rev);
+                        rc = ngx_[% subsys %]_lua_check_broken_connection(r, rev);
 
                         if (rc == NGX_OK) {
                             goto success;
                         }
 
                         if (rc == NGX_HTTP_CLIENT_CLOSED_REQUEST) {
-                            ngx_[% subsystem %]_lua_socket_handle_read_error(r, u,
+                            ngx_[% subsys %]_lua_socket_handle_read_error(r, u,
                                                                              NGX_[% SUBSYS %]_LUA_SOCKET_FT_CLIENTABORT);
 
                         } else {
-                            ngx_[% subsystem %]_lua_socket_handle_read_error(r, u,
+                            ngx_[% subsys %]_lua_socket_handle_read_error(r, u,
                                                                              NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR);
                         }
 
@@ -2259,7 +2259,7 @@ ngx_[% subsystem %]_lua_socket_tcp_read([% req_type %] *r,
 
 #if 1
                 if (ngx_handle_read_event(rev, 0) != NGX_OK) {
-                    ngx_[% subsystem %]_lua_socket_handle_read_error(r, u,
+                    ngx_[% subsys %]_lua_socket_handle_read_error(r, u,
                                                                      NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR);
                     return NGX_ERROR;
                 }
@@ -2269,7 +2269,7 @@ ngx_[% subsystem %]_lua_socket_tcp_read([% req_type %] *r,
 success:
 [% END -%]
 
-                ngx_[% subsystem %]_lua_socket_handle_read_success(r, u);
+                ngx_[% subsys %]_lua_socket_handle_read_success(r, u);
                 return NGX_OK;
             }
 
@@ -2277,7 +2277,7 @@ success:
                 dd("input filter error: ft_type:%d wait:%d",
                    (int) u->ft_type, (int) u->read_waiting);
 
-                ngx_[% subsystem %]_lua_socket_handle_read_error(r, u,
+                ngx_[% subsys %]_lua_socket_handle_read_error(r, u,
                                                                  NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR);
                 return NGX_ERROR;
             }
@@ -2303,9 +2303,9 @@ success:
         size = b->end - b->last;
 
         if (size == 0) {
-            rc = ngx_[% subsystem %]_lua_socket_add_input_buffer(r, u);
+            rc = ngx_[% subsys %]_lua_socket_add_input_buffer(r, u);
             if (rc == NGX_ERROR) {
-                ngx_[% subsystem %]_lua_socket_handle_read_error(r, u,
+                ngx_[% subsys %]_lua_socket_handle_read_error(r, u,
                                                                  NGX_[% SUBSYS %]_LUA_SOCKET_FT_NOMEM);
 
                 return NGX_ERROR;
@@ -2515,7 +2515,7 @@ success:
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_send(lua_State *L)
 {
     ngx_int_t                            rc;
     [% req_type %]                      *r;
@@ -2539,7 +2539,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
     ngx_stream_core_srv_conf_t  *clcf;
 [% END %]
 
-    ngx_[% subsystem %]_lua_co_ctx_t               *coctx;
+    ngx_[% subsys %]_lua_co_ctx_t               *coctx;
 
     /* TODO: add support for the optional "i" and "j" arguments */
 
@@ -2548,7 +2548,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
                           "but got %d", lua_gettop(L));
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
@@ -2562,7 +2562,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
     dd("tcp send: u=%p, u->write_closed=%d", u, (unsigned) u->write_closed);
 
     if (u == NULL || u->peer.connection == NULL || u->write_closed) {
-        llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
@@ -2581,8 +2581,8 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
         return luaL_error(L, "bad request");
     }
 
-    ngx_[% subsystem %]_lua_socket_check_busy_connecting(r, u, L);
-    ngx_[% subsystem %]_lua_socket_check_busy_writing(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_connecting(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_writing(r, u, L);
 
     if (u->body_downstream) {
         return luaL_error(L, "attempt to write to request sockets");
@@ -2599,7 +2599,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
             break;
 
         case LUA_TTABLE:
-            len = ngx_[% subsystem %]_lua_calc_strlen_in_table(L, 2, 2, 1 /* strict */);
+            len = ngx_[% subsys %]_lua_calc_strlen_in_table(L, 2, 2, 1 /* strict */);
             break;
 
         default:
@@ -2615,9 +2615,9 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
         return 1;
     }
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
 
-    cl = ngx_[% subsystem %]_lua_chain_get_free_buf(r->connection->log, r->pool,
+    cl = ngx_[% subsys %]_lua_chain_get_free_buf(r->connection->log, r->pool,
                                                     &ctx->free_bufs, len);
 
     if (cl == NULL) {
@@ -2634,7 +2634,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
             break;
 
         case LUA_TTABLE:
-            b->last = ngx_[% subsystem %]_lua_copy_str_in_table(L, -1, b->last);
+            b->last = ngx_[% subsys %]_lua_copy_str_in_table(L, -1, b->last);
             break;
 
         default:
@@ -2647,7 +2647,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
 
     /* mimic ngx_http_upstream_init_request here */
 
-    clcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_core_module);
+    clcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_core_module);
     c = u->peer.connection;
 
     if (clcf->tcp_nodelay && c->tcp_nodelay == NGX_TCP_NODELAY_UNSET) {
@@ -2665,7 +2665,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
                        (const void *) &tcp_nodelay, sizeof(int))
             == -1)
         {
-            llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+            llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
             if (llcf->log_socket_errors) {
                 ngx_connection_error(c, ngx_socket_errno,
                                      "setsockopt(TCP_NODELAY) "
@@ -2685,14 +2685,14 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
     u->write_co_ctx = NULL;
 #endif
 
-    ngx_[% subsystem %]_lua_probe_socket_tcp_send_start(r, u, b->pos, len);
+    ngx_[% subsys %]_lua_probe_socket_tcp_send_start(r, u, b->pos, len);
 
-    rc = ngx_[% subsystem %]_lua_socket_send(r, u);
+    rc = ngx_[% subsys %]_lua_socket_send(r, u);
 
     dd("socket send returned %d", (int) rc);
 
     if (rc == NGX_ERROR) {
-        return ngx_[% subsystem %]_lua_socket_write_error_retval_handler(r, u, L);
+        return ngx_[% subsys %]_lua_socket_write_error_retval_handler(r, u, L);
     }
 
     if (rc == NGX_OK) {
@@ -2704,8 +2704,8 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
 
     coctx = ctx->cur_co_ctx;
 
-    ngx_[% subsystem %]_lua_cleanup_pending_operation(coctx);
-    coctx->cleanup = ngx_[% subsystem %]_lua_coctx_cleanup;
+    ngx_[% subsys %]_lua_cleanup_pending_operation(coctx);
+    coctx->cleanup = ngx_[% subsys %]_lua_coctx_cleanup;
     coctx->data = u;
 
     if (u->raw_downstream) {
@@ -2713,7 +2713,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
     }
 
     if (ctx->entered_content_phase) {
-        r->write_event_handler = ngx_[% subsystem %]_lua_content_wev_handler;
+        r->write_event_handler = ngx_[% subsys %]_lua_content_wev_handler;
 
     } else {
         r->write_event_handler = ngx_[% req_subsys %]_core_run_phases;
@@ -2721,7 +2721,7 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
 
     u->write_co_ctx = coctx;
     u->write_waiting = 1;
-    u->write_prepare_retvals = ngx_[% subsystem %]_lua_socket_tcp_send_retval_handler;
+    u->write_prepare_retvals = ngx_[% subsys %]_lua_socket_tcp_send_retval_handler;
 
     dd("setting data to %p", u);
 
@@ -2730,14 +2730,14 @@ ngx_[% subsystem %]_lua_socket_tcp_send(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_send_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_send_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L)
 {
     ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "[% log_prefix %]lua tcp socket send return value handler");
 
     if (u->ft_type) {
-        return ngx_[% subsystem %]_lua_socket_write_error_retval_handler(r, u, L);
+        return ngx_[% subsys %]_lua_socket_write_error_retval_handler(r, u, L);
     }
 
     lua_pushinteger(L, u->request_len);
@@ -2746,8 +2746,8 @@ ngx_[% subsystem %]_lua_socket_tcp_send_retval_handler([% req_type %] *r,
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_receive_retval_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L)
 {
     int                          n;
     ngx_int_t                    rc;
@@ -2759,15 +2759,15 @@ ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler([% req_type %] *r,
     ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "[% log_prefix %]lua tcp socket receive return value handler");
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
 
 #if 1
     if (u->raw_downstream || u->body_downstream) {
-        llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
         if (llcf->check_client_abort) {
 
-            r->read_event_handler = ngx_[% subsystem %]_lua_rd_check_broken_connection;
+            r->read_event_handler = ngx_[% subsys %]_lua_rd_check_broken_connection;
 
             ev = r->connection->read;
 
@@ -2797,26 +2797,26 @@ ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler([% req_type %] *r,
         dd("u->bufs_in: %p", u->bufs_in);
 
         if (u->bufs_in) {
-            rc = ngx_[% subsystem %]_lua_socket_push_input_data(r, ctx, u, L);
+            rc = ngx_[% subsys %]_lua_socket_push_input_data(r, ctx, u, L);
             if (rc == NGX_ERROR) {
                 lua_pushnil(L);
                 lua_pushliteral(L, "no memory");
                 return 2;
             }
 
-            (void) ngx_[% subsystem %]_lua_socket_read_error_retval_handler(r, u, L);
+            (void) ngx_[% subsys %]_lua_socket_read_error_retval_handler(r, u, L);
 
             lua_pushvalue(L, -3);
             lua_remove(L, -4);
             return 3;
         }
 
-        n = ngx_[% subsystem %]_lua_socket_read_error_retval_handler(r, u, L);
+        n = ngx_[% subsys %]_lua_socket_read_error_retval_handler(r, u, L);
         lua_pushliteral(L, "");
         return n + 1;
     }
 
-    rc = ngx_[% subsystem %]_lua_socket_push_input_data(r, ctx, u, L);
+    rc = ngx_[% subsys %]_lua_socket_push_input_data(r, ctx, u, L);
     if (rc == NGX_ERROR) {
         lua_pushnil(L);
         lua_pushliteral(L, "no memory");
@@ -2828,7 +2828,7 @@ ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler([% req_type %] *r,
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_close(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_close(lua_State *L)
 {
     [% req_type %]                  *r;
 
@@ -2839,7 +2839,7 @@ ngx_[% subsystem %]_lua_socket_tcp_close(lua_State *L)
                           "(including the object) but seen %d", lua_gettop(L));
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
@@ -2863,9 +2863,9 @@ ngx_[% subsystem %]_lua_socket_tcp_close(lua_State *L)
         return luaL_error(L, "bad request");
     }
 
-    ngx_[% subsystem %]_lua_socket_check_busy_connecting(r, u, L);
-    ngx_[% subsystem %]_lua_socket_check_busy_reading(r, u, L);
-    ngx_[% subsystem %]_lua_socket_check_busy_writing(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_connecting(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_reading(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_writing(r, u, L);
 
     if (u->raw_downstream || u->body_downstream) {
         lua_pushnil(L);
@@ -2873,7 +2873,7 @@ ngx_[% subsystem %]_lua_socket_tcp_close(lua_State *L)
         return 2;
     }
 
-    ngx_[% subsystem %]_lua_socket_tcp_finalize(r, u);
+    ngx_[% subsys %]_lua_socket_tcp_finalize(r, u);
 
     lua_pushinteger(L, 1);
     return 1;
@@ -2881,15 +2881,15 @@ ngx_[% subsystem %]_lua_socket_tcp_close(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_shutdown(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_shutdown(lua_State *L)
 {
     [% req_type %]                                 *r;
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t  *u;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t  *u;
     ngx_str_t                                       direction;
     char                                           *p;
 
 [%- IF stream_subsys -%]
-    ngx_[% subsystem %]_lua_ctx_t                  *ctx;
+    ngx_[% subsys %]_lua_ctx_t                  *ctx;
 [% END -%]
 
     if (lua_gettop(L) != 2) {
@@ -2903,7 +2903,7 @@ ngx_[% subsystem %]_lua_socket_tcp_shutdown(lua_State *L)
     u = lua_touserdata(L, -1);
     lua_pop(L, 1);
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
@@ -2956,8 +2956,8 @@ ngx_[% subsystem %]_lua_socket_tcp_shutdown(lua_State *L)
         return luaL_error(L, "bad request");
     }
 
-    ngx_[% subsystem %]_lua_socket_check_busy_connecting(r, u, L);
-    ngx_[% subsystem %]_lua_socket_check_busy_writing(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_connecting(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_writing(r, u, L);
 
     /* shutdown */
     direction.data = (u_char *) luaL_checklstring(L, 2, &direction.len);
@@ -2974,7 +2974,7 @@ ngx_[% subsystem %]_lua_socket_tcp_shutdown(lua_State *L)
         return luaL_argerror(L, 2, p);
     }
 
-    ngx_[% subsystem %]_lua_socket_tcp_finalize_write_part(r, u, 1);
+    ngx_[% subsys %]_lua_socket_tcp_finalize_write_part(r, u, 1);
 
     lua_pushinteger(L, 1);
     return 1;
@@ -2982,7 +2982,7 @@ ngx_[% subsystem %]_lua_socket_tcp_shutdown(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_setoption(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_setoption(lua_State *L)
 {
     /* TODO */
     return 0;
@@ -2990,12 +2990,12 @@ ngx_[% subsystem %]_lua_socket_tcp_setoption(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_settimeout(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_settimeout(lua_State *L)
 {
     int                     n;
     ngx_int_t               timeout;
 
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t  *u;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t  *u;
 
     n = lua_gettop(L);
 
@@ -3037,12 +3037,12 @@ ngx_[% subsystem %]_lua_socket_tcp_settimeout(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_settimeouts(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_settimeouts(lua_State *L)
 {
     int                     n;
     ngx_int_t               connect_timeout, send_timeout, read_timeout;
 
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t  *u;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t  *u;
 
     n = lua_gettop(L);
 
@@ -3101,10 +3101,10 @@ ngx_[% subsystem %]_lua_socket_tcp_settimeouts(lua_State *L)
 
 
 static void
-ngx_[% subsystem %]_lua_socket_tcp_handler(ngx_event_t *ev)
+ngx_[% subsys %]_lua_socket_tcp_handler(ngx_event_t *ev)
 {
     [% req_type %]                                 *r;
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t  *u;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t  *u;
     ngx_connection_t                               *c;
 
 [% IF http_subsys -%]
@@ -3145,7 +3145,7 @@ ngx_[% subsystem %]_lua_socket_tcp_handler(ngx_event_t *ev)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_tcp_get_peer(ngx_peer_connection_t *pc, void *data)
+ngx_[% subsys %]_lua_socket_tcp_get_peer(ngx_peer_connection_t *pc, void *data)
 {
     /* empty */
     return NGX_OK;
@@ -3153,8 +3153,8 @@ ngx_[% subsystem %]_lua_socket_tcp_get_peer(ngx_peer_connection_t *pc, void *dat
 
 
 static void
-ngx_[% subsystem %]_lua_socket_read_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u)
+ngx_[% subsys %]_lua_socket_read_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u)
 {
     ngx_connection_t                    *c;
     ngx_[% subsys %]_lua_loc_conf_t     *llcf;
@@ -3167,7 +3167,7 @@ ngx_[% subsystem %]_lua_socket_read_handler([% req_type %] *r,
     if (c->read->timedout) {
         c->read->timedout = 0;
 
-        llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
@@ -3186,14 +3186,14 @@ ngx_[% subsystem %]_lua_socket_read_handler([% req_type %] *r,
 #endif
 
     if (u->buffer.start != NULL) {
-        (void) ngx_[% subsystem %]_lua_socket_tcp_read(r, u);
+        (void) ngx_[% subsys %]_lua_socket_tcp_read(r, u);
     }
 }
 
 
 static void
-ngx_[% subsystem %]_lua_socket_send_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u)
+ngx_[% subsys %]_lua_socket_send_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u)
 {
     ngx_connection_t                    *c;
     ngx_[% subsys %]_lua_loc_conf_t     *llcf;
@@ -3223,8 +3223,8 @@ ngx_[% subsystem %]_lua_socket_send_handler([% req_type %] *r,
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_send([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u)
+ngx_[% subsys %]_lua_socket_send([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u)
 {
     ngx_int_t                    n;
     ngx_connection_t            *c;
@@ -3236,7 +3236,7 @@ ngx_[% subsystem %]_lua_socket_send([% req_type %] *r,
     ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "[% log_prefix %]lua tcp socket send data");
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         ngx_[% subsys %]_lua_socket_handle_write_error(r, u,
                                                        NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR);
@@ -3267,9 +3267,9 @@ ngx_[% subsystem %]_lua_socket_send([% req_type %] *r,
 #endif
                                         &ctx->free_bufs, &ctx->busy_bufs,
                                         &u->request_bufs,
-                                        (ngx_buf_tag_t) &ngx_[% subsystem %]_lua_module);
+                                        (ngx_buf_tag_t) &ngx_[% subsys %]_lua_module);
 
-                u->write_event_handler = ngx_[% subsystem %]_lua_socket_dummy_handler;
+                u->write_event_handler = ngx_[% subsys %]_lua_socket_dummy_handler;
 
                 if (ngx_handle_write_event(c->write, 0) != NGX_OK) {
                     ngx_[% subsys %]_lua_socket_handle_write_error(r, u,
@@ -3318,15 +3318,15 @@ ngx_[% subsystem %]_lua_socket_send([% req_type %] *r,
 
 
 static void
-ngx_[% subsystem %]_lua_socket_handle_conn_success([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u)
+ngx_[% subsys %]_lua_socket_handle_conn_success([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u)
 {
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
-    ngx_[% subsystem %]_lua_co_ctx_t       *coctx;
+    ngx_[% subsys %]_lua_ctx_t          *ctx;
+    ngx_[% subsys %]_lua_co_ctx_t       *coctx;
 
 #if 1
-    u->read_event_handler = ngx_[% subsystem %]_lua_socket_dummy_handler;
-    u->write_event_handler = ngx_[% subsystem %]_lua_socket_dummy_handler;
+    u->read_event_handler = ngx_[% subsys %]_lua_socket_dummy_handler;
+    u->write_event_handler = ngx_[% subsys %]_lua_socket_dummy_handler;
 #endif
 
     if (u->conn_waiting) {
@@ -3336,12 +3336,12 @@ ngx_[% subsystem %]_lua_socket_handle_conn_success([% req_type %] *r,
         coctx->cleanup = NULL;
         u->write_co_ctx = NULL;
 
-        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
         if (ctx == NULL) {
             return;
         }
 
-        ctx->resume_handler = ngx_[% subsystem %]_lua_socket_tcp_conn_resume;
+        ctx->resume_handler = ngx_[% subsys %]_lua_socket_tcp_conn_resume;
         ctx->cur_co_ctx = coctx;
 
         ngx_[% subsys %]_lua_assert(coctx && (!ngx_[% subsys %]_lua_is_thread(ctx)
@@ -3356,14 +3356,14 @@ ngx_[% subsystem %]_lua_socket_handle_conn_success([% req_type %] *r,
 
 
 static void
-ngx_[% subsystem %]_lua_socket_handle_read_success([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u)
+ngx_[% subsys %]_lua_socket_handle_read_success([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u)
 {
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
-    ngx_[% subsystem %]_lua_co_ctx_t       *coctx;
+    ngx_[% subsys %]_lua_ctx_t          *ctx;
+    ngx_[% subsys %]_lua_co_ctx_t       *coctx;
 
 #if 1
-    u->read_event_handler = ngx_[% subsystem %]_lua_socket_dummy_handler;
+    u->read_event_handler = ngx_[% subsys %]_lua_socket_dummy_handler;
 #endif
 
     if (u->read_waiting) {
@@ -3373,15 +3373,15 @@ ngx_[% subsystem %]_lua_socket_handle_read_success([% req_type %] *r,
         coctx->cleanup = NULL;
         u->read_co_ctx = NULL;
 
-        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
         if (ctx == NULL) {
             return;
         }
 
-        ctx->resume_handler = ngx_[% subsystem %]_lua_socket_tcp_read_resume;
+        ctx->resume_handler = ngx_[% subsys %]_lua_socket_tcp_read_resume;
         ctx->cur_co_ctx = coctx;
 
-        ngx_[% subsystem %]_lua_assert(coctx && (!ngx_[% subsystem %]_lua_is_thread(ctx)
+        ngx_[% subsys %]_lua_assert(coctx && (!ngx_[% subsys %]_lua_is_thread(ctx)
                             || coctx->co_ref >= 0));
 
         ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
@@ -3393,14 +3393,14 @@ ngx_[% subsystem %]_lua_socket_handle_read_success([% req_type %] *r,
 
 
 static void
-ngx_[% subsystem %]_lua_socket_handle_write_success([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u)
+ngx_[% subsys %]_lua_socket_handle_write_success([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u)
 {
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
-    ngx_[% subsystem %]_lua_co_ctx_t       *coctx;
+    ngx_[% subsys %]_lua_ctx_t          *ctx;
+    ngx_[% subsys %]_lua_co_ctx_t       *coctx;
 
 #if 1
-    u->write_event_handler = ngx_[% subsystem %]_lua_socket_dummy_handler;
+    u->write_event_handler = ngx_[% subsys %]_lua_socket_dummy_handler;
 #endif
 
     if (u->write_waiting) {
@@ -3410,15 +3410,15 @@ ngx_[% subsystem %]_lua_socket_handle_write_success([% req_type %] *r,
         coctx->cleanup = NULL;
         u->write_co_ctx = NULL;
 
-        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
         if (ctx == NULL) {
             return;
         }
 
-        ctx->resume_handler = ngx_[% subsystem %]_lua_socket_tcp_write_resume;
+        ctx->resume_handler = ngx_[% subsys %]_lua_socket_tcp_write_resume;
         ctx->cur_co_ctx = coctx;
 
-        ngx_[% subsystem %]_lua_assert(coctx && (!ngx_[% subsystem %]_lua_is_thread(ctx)
+        ngx_[% subsys %]_lua_assert(coctx && (!ngx_[% subsys %]_lua_is_thread(ctx)
                             || coctx->co_ref >= 0));
 
         ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
@@ -3458,12 +3458,12 @@ ngx_[% subsys %]_lua_socket_handle_conn_error([% req_type %] *r,
         coctx->cleanup = NULL;
         u->write_co_ctx = NULL;
 
-        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
 
-        ctx->resume_handler = ngx_[% subsystem %]_lua_socket_tcp_conn_resume;
+        ctx->resume_handler = ngx_[% subsys %]_lua_socket_tcp_conn_resume;
         ctx->cur_co_ctx = coctx;
 
-        ngx_[% subsystem %]_lua_assert(coctx && (!ngx_[% subsystem %]_lua_is_thread(ctx)
+        ngx_[% subsys %]_lua_assert(coctx && (!ngx_[% subsys %]_lua_is_thread(ctx)
                             || coctx->co_ref >= 0));
 
         ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
@@ -3487,7 +3487,7 @@ ngx_[% subsys %]_lua_socket_handle_read_error([% req_type %] *r,
     u->ft_type |= ft_type;
 
 #if 0
-    ngx_[% subsystem %]_lua_socket_tcp_finalize(r, u);
+    ngx_[% subsys %]_lua_socket_tcp_finalize(r, u);
 #endif
 
     u->read_event_handler = ngx_[% subsys %]_lua_socket_dummy_handler;
@@ -3499,12 +3499,12 @@ ngx_[% subsys %]_lua_socket_handle_read_error([% req_type %] *r,
         coctx->cleanup = NULL;
         u->read_co_ctx = NULL;
 
-        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
 
-        ctx->resume_handler = ngx_[% subsystem %]_lua_socket_tcp_read_resume;
+        ctx->resume_handler = ngx_[% subsys %]_lua_socket_tcp_read_resume;
         ctx->cur_co_ctx = coctx;
 
-        ngx_[% subsystem %]_lua_assert(coctx && (!ngx_[% subsystem %]_lua_is_thread(ctx)
+        ngx_[% subsys %]_lua_assert(coctx && (!ngx_[% subsys %]_lua_is_thread(ctx)
                             || coctx->co_ref >= 0));
 
         ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
@@ -3528,7 +3528,7 @@ ngx_[% subsys %]_lua_socket_handle_write_error([% req_type %] *r,
     u->ft_type |= ft_type;
 
 #if 0
-    ngx_[% subsystem %]_lua_socket_tcp_finalize(r, u);
+    ngx_[% subsys %]_lua_socket_tcp_finalize(r, u);
 #endif
 
     u->write_event_handler = ngx_[% subsys %]_lua_socket_dummy_handler;
@@ -3540,12 +3540,12 @@ ngx_[% subsys %]_lua_socket_handle_write_error([% req_type %] *r,
         coctx->cleanup = NULL;
         u->write_co_ctx = NULL;
 
-        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+        ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
 
         ctx->resume_handler = ngx_[% subsys %]_lua_socket_tcp_write_resume;
         ctx->cur_co_ctx = coctx;
 
-        ngx_[% subsystem %]_lua_assert(coctx
+        ngx_[% subsys %]_lua_assert(coctx
             && (!ngx_[% subsys %]_lua_is_thread(ctx) || coctx->co_ref >= 0));
 
         ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
@@ -3557,8 +3557,8 @@ ngx_[% subsys %]_lua_socket_handle_write_error([% req_type %] *r,
 
 
 static void
-ngx_[% subsystem %]_lua_socket_connected_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u)
+ngx_[% subsys %]_lua_socket_connected_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u)
 {
     ngx_int_t                    rc;
     ngx_connection_t            *c;
@@ -3569,10 +3569,10 @@ ngx_[% subsystem %]_lua_socket_connected_handler([% req_type %] *r,
 
     if (c->write->timedout) {
 
-        llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+        llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
         if (llcf->log_socket_errors) {
-            ngx_[% subsystem %]_lua_socket_init_peer_connection_addr_text(&u->peer);
+            ngx_[% subsys %]_lua_socket_init_peer_connection_addr_text(&u->peer);
 
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
                           "[% log_prefix %]lua tcp socket connect timed out,"
@@ -3589,7 +3589,7 @@ ngx_[% subsystem %]_lua_socket_connected_handler([% req_type %] *r,
         ngx_del_timer(c->write);
     }
 
-    rc = ngx_[% subsystem %]_lua_socket_test_connect(r, c);
+    rc = ngx_[% subsys %]_lua_socket_test_connect(r, c);
     if (rc != NGX_OK) {
         if (rc > 0) {
             u->socket_errno = (ngx_err_t) rc;
@@ -3620,14 +3620,14 @@ ngx_[% subsystem %]_lua_socket_connected_handler([% req_type %] *r,
         return;
     }
 
-    ngx_[% subsystem %]_lua_socket_handle_conn_success(r, u);
+    ngx_[% subsys %]_lua_socket_handle_conn_success(r, u);
 }
 
 
 static void
-ngx_[% subsystem %]_lua_socket_tcp_cleanup(void *data)
+ngx_[% subsys %]_lua_socket_tcp_cleanup(void *data)
 {
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t  *u = data;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t  *u = data;
 
     [% req_type %]              *r;
 
@@ -3642,13 +3642,13 @@ ngx_[% subsystem %]_lua_socket_tcp_cleanup(void *data)
                    "cleanup lua tcp socket request");
 [% END %]
 
-    ngx_[% subsystem %]_lua_socket_tcp_finalize(r, u);
+    ngx_[% subsys %]_lua_socket_tcp_finalize(r, u);
 }
 
 
 static void
-ngx_[% subsystem %]_lua_socket_tcp_finalize_read_part([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u)
+ngx_[% subsys %]_lua_socket_tcp_finalize_read_part([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u)
 {
     ngx_chain_t                         *cl;
     ngx_chain_t                        **ll;
@@ -3661,7 +3661,7 @@ ngx_[% subsystem %]_lua_socket_tcp_finalize_read_part([% req_type %] *r,
 
     u->read_closed = 1;
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
 
     if (ctx && u->bufs_in) {
 
@@ -3715,11 +3715,11 @@ ngx_[% subsystem %]_lua_socket_tcp_finalize_read_part([% req_type %] *r,
 
 
 static void
-ngx_[% subsystem %]_lua_socket_tcp_finalize_write_part([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, int do_shutdown)
+ngx_[% subsys %]_lua_socket_tcp_finalize_write_part([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, int do_shutdown)
 {
     ngx_connection_t                               *c;
-    ngx_[% subsystem %]_lua_ctx_t                  *ctx;
+    ngx_[% subsys %]_lua_ctx_t                  *ctx;
 
     c = u->peer.connection;
 
@@ -3729,7 +3729,7 @@ ngx_[% subsystem %]_lua_socket_tcp_finalize_write_part([% req_type %] *r,
 
     u->write_closed = 1;
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
 
     if (c && do_shutdown) {
         if (ngx_shutdown_socket(c->fd, NGX_WRITE_SHUTDOWN) == -1) {
@@ -3777,8 +3777,8 @@ ngx_[% subsystem %]_lua_socket_tcp_finalize_write_part([% req_type %] *r,
 
 
 static void
-ngx_[% subsystem %]_lua_socket_tcp_finalize([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u)
+ngx_[% subsys %]_lua_socket_tcp_finalize([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u)
 {
     ngx_connection_t               *c;
 
@@ -3791,12 +3791,12 @@ ngx_[% subsystem %]_lua_socket_tcp_finalize([% req_type %] *r,
 
     if (u->cleanup) {
         *u->cleanup = NULL;
-        ngx_[% subsystem %]_lua_cleanup_free(r, u->cleanup);
+        ngx_[% subsys %]_lua_cleanup_free(r, u->cleanup);
         u->cleanup = NULL;
     }
 
-    ngx_[% subsystem %]_lua_socket_tcp_finalize_read_part(r, u);
-    ngx_[% subsystem %]_lua_socket_tcp_finalize_write_part(r, u, 0);
+    ngx_[% subsys %]_lua_socket_tcp_finalize_read_part(r, u);
+    ngx_[% subsys %]_lua_socket_tcp_finalize_write_part(r, u, 0);
 
     if (u->raw_downstream || u->body_downstream) {
         u->peer.connection = NULL;
@@ -3825,7 +3825,7 @@ ngx_[% subsystem %]_lua_socket_tcp_finalize([% req_type %] *r,
         ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                        "lua close socket connection");
 
-        ngx_[% subsystem %]_lua_socket_tcp_close_connection(c);
+        ngx_[% subsys %]_lua_socket_tcp_close_connection(c);
         u->peer.connection = NULL;
 
         if (!u->reused) {
@@ -3840,14 +3840,14 @@ ngx_[% subsystem %]_lua_socket_tcp_finalize([% req_type %] *r,
         spool->active_connections--;
 
         if (spool->active_connections == 0) {
-            ngx_[% subsystem %]_lua_socket_free_pool(r->connection->log, spool);
+            ngx_[% subsys %]_lua_socket_free_pool(r->connection->log, spool);
         }
     }
 }
 
 
 static void
-ngx_[% subsystem %]_lua_socket_tcp_close_connection(ngx_connection_t *c)
+ngx_[% subsys %]_lua_socket_tcp_close_connection(ngx_connection_t *c)
 {
 #if (NGX_[% SUBSYS %]_SSL)
 
@@ -3870,12 +3870,12 @@ ngx_[% subsystem %]_lua_socket_tcp_close_connection(ngx_connection_t *c)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_test_connect([% req_type %] *r, ngx_connection_t *c)
+ngx_[% subsys %]_lua_socket_test_connect([% req_type %] *r, ngx_connection_t *c)
 {
     int              err;
     socklen_t        len;
 
-    ngx_[% subsystem %]_lua_loc_conf_t     *llcf;
+    ngx_[% subsys %]_lua_loc_conf_t     *llcf;
 
 #if (NGX_HAVE_KQUEUE)
 
@@ -3896,7 +3896,7 @@ ngx_[% subsystem %]_lua_socket_test_connect([% req_type %] *r, ngx_connection_t 
         }
 
         if (ev) {
-            llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+            llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
             if (llcf->log_socket_errors) {
                 (void) ngx_connection_error(c, ev->kq_errno,
                                             "kevent() reported that "
@@ -3923,7 +3923,7 @@ ngx_[% subsystem %]_lua_socket_test_connect([% req_type %] *r, ngx_connection_t 
         }
 
         if (err) {
-            llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+            llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
             if (llcf->log_socket_errors) {
                 (void) ngx_connection_error(c, err, "connect() failed");
             }
@@ -3936,8 +3936,8 @@ ngx_[% subsystem %]_lua_socket_test_connect([% req_type %] *r, ngx_connection_t 
 
 
 static void
-ngx_[% subsystem %]_lua_socket_dummy_handler([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u)
+ngx_[% subsys %]_lua_socket_dummy_handler([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u)
 {
     ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "[% log_prefix %]lua tcp socket dummy handler");
@@ -3945,7 +3945,7 @@ ngx_[% subsystem %]_lua_socket_dummy_handler([% req_type %] *r,
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_receiveuntil(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_receiveuntil(lua_State *L)
 {
     [% req_type %]                      *r;
     int                                  n;
@@ -3989,7 +3989,7 @@ ngx_[% subsystem %]_lua_socket_tcp_receiveuntil(lua_State *L)
         lua_pop(L, 2);
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
@@ -4006,14 +4006,14 @@ ngx_[% subsystem %]_lua_socket_tcp_receiveuntil(lua_State *L)
         return 2;
     }
 
-    size = sizeof(ngx_[% subsystem %]_lua_socket_compiled_pattern_t);
+    size = sizeof(ngx_[% subsys %]_lua_socket_compiled_pattern_t);
 
     cp = lua_newuserdata(L, size);
     if (cp == NULL) {
         return luaL_error(L, "no memory");
     }
 
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_pattern_udata_metatable_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_pattern_udata_metatable_key);
     lua_rawget(L, LUA_REGISTRYINDEX);
     lua_setmetatable(L, -2);
 
@@ -4030,13 +4030,13 @@ ngx_[% subsystem %]_lua_socket_tcp_receiveuntil(lua_State *L)
         return 2;
     }
 
-    lua_pushcclosure(L, ngx_[% subsystem %]_lua_socket_receiveuntil_iterator, 3);
+    lua_pushcclosure(L, ngx_[% subsys %]_lua_socket_receiveuntil_iterator, 3);
     return 1;
 }
 
 
 static int
-ngx_[% subsystem %]_lua_socket_receiveuntil_iterator(lua_State *L)
+ngx_[% subsys %]_lua_socket_receiveuntil_iterator(lua_State *L)
 {
     [% req_type %]                      *r;
     ngx_int_t                            rc;
@@ -4074,7 +4074,7 @@ ngx_[% subsystem %]_lua_socket_receiveuntil_iterator(lua_State *L)
         return 2;
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
@@ -4083,8 +4083,8 @@ ngx_[% subsystem %]_lua_socket_receiveuntil_iterator(lua_State *L)
         return luaL_error(L, "bad request");
     }
 
-    ngx_[% subsystem %]_lua_socket_check_busy_connecting(r, u, L);
-    ngx_[% subsystem %]_lua_socket_check_busy_reading(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_connecting(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_reading(r, u, L);
 
     ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "[% log_prefix %]lua tcp socket receiveuntil iterator");
@@ -4092,7 +4092,7 @@ ngx_[% subsystem %]_lua_socket_receiveuntil_iterator(lua_State *L)
     ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "[% log_prefix %]lua tcp socket read timeout: %M", u->read_timeout);
 
-    u->input_filter = ngx_[% subsystem %]_lua_socket_read_until;
+    u->input_filter = ngx_[% subsys %]_lua_socket_read_until;
 
     cp = lua_touserdata(L, lua_upvalueindex(3));
 
@@ -4115,7 +4115,7 @@ ngx_[% subsystem %]_lua_socket_receiveuntil_iterator(lua_State *L)
 
     u->input_filter_ctx = cp;
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
 
     if (u->bufs_in == NULL) {
         u->bufs_in =
@@ -4135,17 +4135,17 @@ ngx_[% subsystem %]_lua_socket_receiveuntil_iterator(lua_State *L)
     u->rest = u->length;
 
     if (u->raw_downstream || u->body_downstream) {
-        r->read_event_handler = ngx_[% subsystem %]_lua_req_socket_rev_handler;
+        r->read_event_handler = ngx_[% subsys %]_lua_req_socket_rev_handler;
     }
 
     u->read_waiting = 0;
     u->read_co_ctx = NULL;
 
-    rc = ngx_[% subsystem %]_lua_socket_tcp_read(r, u);
+    rc = ngx_[% subsys %]_lua_socket_tcp_read(r, u);
 
     if (rc == NGX_ERROR) {
         dd("read failed: %d", (int) u->ft_type);
-        rc = ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler(r, u, L);
+        rc = ngx_[% subsys %]_lua_socket_tcp_receive_retval_handler(r, u, L);
         dd("tcp receive retval returned: %d", (int) rc);
         return rc;
     }
@@ -4155,21 +4155,21 @@ ngx_[% subsystem %]_lua_socket_receiveuntil_iterator(lua_State *L)
         ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                        "[% log_prefix %]lua tcp socket receive done in a single run");
 
-        return ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler(r, u, L);
+        return ngx_[% subsys %]_lua_socket_tcp_receive_retval_handler(r, u, L);
     }
 
     /* rc == NGX_AGAIN */
 
     coctx = ctx->cur_co_ctx;
 
-    u->read_event_handler = ngx_[% subsystem %]_lua_socket_read_handler;
+    u->read_event_handler = ngx_[% subsys %]_lua_socket_read_handler;
 
-    ngx_[% subsystem %]_lua_cleanup_pending_operation(coctx);
-    coctx->cleanup = ngx_[% subsystem %]_lua_coctx_cleanup;
+    ngx_[% subsys %]_lua_cleanup_pending_operation(coctx);
+    coctx->cleanup = ngx_[% subsys %]_lua_coctx_cleanup;
     coctx->data = u;
 
     if (ctx->entered_content_phase) {
-        r->write_event_handler = ngx_[% subsystem %]_lua_content_wev_handler;
+        r->write_event_handler = ngx_[% subsys %]_lua_content_wev_handler;
 
     } else {
         r->write_event_handler = ngx_[% req_subsys %]_core_run_phases;
@@ -4177,7 +4177,7 @@ ngx_[% subsystem %]_lua_socket_receiveuntil_iterator(lua_State *L)
 
     u->read_co_ctx = coctx;
     u->read_waiting = 1;
-    u->read_prepare_retvals = ngx_[% subsystem %]_lua_socket_tcp_receive_retval_handler;
+    u->read_prepare_retvals = ngx_[% subsys %]_lua_socket_tcp_receive_retval_handler;
 
     dd("setting data to %p", u);
 
@@ -4190,8 +4190,8 @@ ngx_[% subsystem %]_lua_socket_receiveuntil_iterator(lua_State *L)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_compile_pattern(u_char *data, size_t len,
-    ngx_[% subsystem %]_lua_socket_compiled_pattern_t *cp, ngx_log_t *log)
+ngx_[% subsys %]_lua_socket_compile_pattern(u_char *data, size_t len,
+    ngx_[% subsys %]_lua_socket_compiled_pattern_t *cp, ngx_log_t *log)
 {
     size_t              i;
     size_t              prefix_len;
@@ -4199,8 +4199,8 @@ ngx_[% subsystem %]_lua_socket_compile_pattern(u_char *data, size_t len,
     unsigned            found;
     int                 cur_state, new_state;
 
-    ngx_[% subsystem %]_lua_dfa_edge_t         *edge;
-    ngx_[% subsystem %]_lua_dfa_edge_t        **last = NULL;
+    ngx_[% subsys %]_lua_dfa_edge_t         *edge;
+    ngx_[% subsys %]_lua_dfa_edge_t        **last = NULL;
 
     cp->pattern.len = len;
 
@@ -4264,7 +4264,7 @@ ngx_[% subsystem %]_lua_socket_compile_pattern(u_char *data, size_t len,
                                    (size_t) cur_state, data, data[prefix_len],
                                    new_state, (size_t) new_state, data);
 
-                    edge = ngx_alloc(sizeof(ngx_[% subsystem %]_lua_dfa_edge_t), log);
+                    edge = ngx_alloc(sizeof(ngx_[% subsys %]_lua_dfa_edge_t), log);
                     if (edge == NULL) {
                         return NGX_ERROR;
                     }
@@ -4288,7 +4288,7 @@ ngx_[% subsystem %]_lua_socket_compile_pattern(u_char *data, size_t len,
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_read_until(void *data, ssize_t bytes)
+ngx_[% subsys %]_lua_socket_read_until(void *data, ssize_t bytes)
 {
     ngx_[% subsys %]_lua_socket_compiled_pattern_t  *cp = data;
     ngx_[% subsys %]_lua_socket_tcp_upstream_t      *u;
@@ -4548,7 +4548,7 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
     raw = 1;
 [% END -%]
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
 
 [% IF http_subsys %]
     if (r != r->main) {
@@ -4577,7 +4577,7 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
 #endif
 [% END %]
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
@@ -4688,7 +4688,7 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
             return 2;
         }
 
-        if (ngx_[% subsystem %]_lua_test_expect(r) != NGX_OK) {
+        if (ngx_[% subsys %]_lua_test_expect(r) != NGX_OK) {
             lua_pushnil(L);
             lua_pushliteral(L, "test expect failed");
             return 2;
@@ -4710,31 +4710,31 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
     lua_createtable(L, 3 /* narr */, 1 /* nrec */); /* the object */
 
     if (raw) {
-        lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_raw_req_socket_metatable_key);
+        lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_raw_req_socket_metatable_key);
 
     } else {
 [% IF http_subsys %]
-        lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_req_socket_metatable_key);
+        lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_req_socket_metatable_key);
 [% END # http %]
     }
 
     lua_rawget(L, LUA_REGISTRYINDEX);
     lua_setmetatable(L, -2);
 
-    u = lua_newuserdata(L, sizeof(ngx_[% subsystem %]_lua_socket_tcp_upstream_t));
+    u = lua_newuserdata(L, sizeof(ngx_[% subsys %]_lua_socket_tcp_upstream_t));
     if (u == NULL) {
         return luaL_error(L, "no memory");
     }
 
 #if 1
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_downstream_udata_metatable_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_downstream_udata_metatable_key);
     lua_rawget(L, LUA_REGISTRYINDEX);
     lua_setmetatable(L, -2);
 #endif
 
     lua_rawseti(L, 1, SOCKET_CTX_INDEX);
 
-    ngx_memzero(u, sizeof(ngx_[% subsystem %]_lua_socket_tcp_upstream_t));
+    ngx_memzero(u, sizeof(ngx_[% subsys %]_lua_socket_tcp_upstream_t));
 
     if (raw) {
         u->raw_downstream = 1;
@@ -4749,7 +4749,7 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
 
     u->request = r;
 
-    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
     u->conf = llcf;
 
@@ -4757,7 +4757,7 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
     u->connect_timeout = u->conf->connect_timeout;
     u->send_timeout = u->conf->send_timeout;
 
-    cln = ngx_[% subsystem %]_lua_cleanup_add(r, 0);
+    cln = ngx_[% subsys %]_lua_cleanup_add(r, 0);
     if (cln == NULL) {
         u->ft_type |= NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR;
         lua_pushnil(L);
@@ -4765,7 +4765,7 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
         return 2;
     }
 
-    cln->handler = ngx_[% subsystem %]_lua_socket_tcp_cleanup;
+    cln->handler = ngx_[% subsys %]_lua_socket_tcp_cleanup;
     cln->data = u;
     u->cleanup = &cln->handler;
 
@@ -4797,15 +4797,15 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
 
 
 static void
-ngx_[% subsystem %]_lua_req_socket_rev_handler([% req_type %] *r)
+ngx_[% subsys %]_lua_req_socket_rev_handler([% req_type %] *r)
 {
-    ngx_[% subsystem %]_lua_ctx_t                  *ctx;
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t  *u;
+    ngx_[% subsys %]_lua_ctx_t                  *ctx;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t  *u;
 
     ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua request socket read event handler");
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         r->read_event_handler = ngx_[% req_subsys %]_block_reading;
         return;
@@ -4821,9 +4821,9 @@ ngx_[% subsystem %]_lua_req_socket_rev_handler([% req_type %] *r)
 }
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_getreusedtimes(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_getreusedtimes(lua_State *L)
 {
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t    *u;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t    *u;
 
     if (lua_gettop(L) != 1) {
         return luaL_error(L, "expecting 1 argument "
@@ -4880,7 +4880,7 @@ ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L)
 
     luaL_checktype(L, 1, LUA_TTABLE);
 
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_socket_pool_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_socket_pool_key);
     lua_rawget(L, LUA_REGISTRYINDEX);
 
     lua_rawgeti(L, 1, SOCKET_KEY_INDEX);
@@ -4912,7 +4912,7 @@ ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L)
         return 2;
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
@@ -4921,9 +4921,9 @@ ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L)
         return luaL_error(L, "bad request");
     }
 
-    ngx_[% subsystem %]_lua_socket_check_busy_connecting(r, u, L);
-    ngx_[% subsystem %]_lua_socket_check_busy_reading(r, u, L);
-    ngx_[% subsystem %]_lua_socket_check_busy_writing(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_connecting(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_reading(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_writing(r, u, L);
 
     b = &u->buffer;
 
@@ -4965,7 +4965,7 @@ ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L)
 
     /* stack: obj timeout? size? cache key */
 
-    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
     if (spool == NULL) {
         /* create a new socket pool for the current peer key */
@@ -4988,8 +4988,8 @@ ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L)
 
         key_len = ngx_align(key.len + 1, sizeof(void *));
 
-        size = sizeof(ngx_[% subsystem %]_lua_socket_pool_t) + key_len - 1
-               + sizeof(ngx_[% subsystem %]_lua_socket_pool_item_t)
+        size = sizeof(ngx_[% subsys %]_lua_socket_pool_t) + key_len - 1
+               + sizeof(ngx_[% subsys %]_lua_socket_pool_item_t)
                * pool_size;
 
         spool = lua_newuserdata(L, size);
@@ -4997,7 +4997,7 @@ ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L)
             return luaL_error(L, "no memory");
         }
 
-        lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_pool_udata_metatable_key);
+        lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_pool_udata_metatable_key);
         lua_rawget(L, LUA_REGISTRYINDEX);
         lua_setmetatable(L, -2);
 
@@ -5008,7 +5008,7 @@ ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L)
         lua_rawset(L, -3);
 
         spool->active_connections = 0;
-        spool->lua_vm = ngx_[% subsystem %]_lua_get_lua_vm(r, NULL);
+        spool->lua_vm = ngx_[% subsys %]_lua_get_lua_vm(r, NULL);
 
         ngx_queue_init(&spool->cache);
         ngx_queue_init(&spool->free);
@@ -5016,7 +5016,7 @@ ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L)
         p = ngx_copy(spool->key, key.data, key.len);
         *p++ = '\0';
 
-        items = (ngx_[% subsystem %]_lua_socket_pool_item_t *) (spool->key + key_len);
+        items = (ngx_[% subsys %]_lua_socket_pool_item_t *) (spool->key + key_len);
 
         dd("items: %p", items);
 
@@ -5035,15 +5035,15 @@ ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L)
         ngx_queue_remove(q);
         spool->active_connections--;
 
-        item = ngx_queue_data(q, ngx_[% subsystem %]_lua_socket_pool_item_t, queue);
+        item = ngx_queue_data(q, ngx_[% subsys %]_lua_socket_pool_item_t, queue);
 
-        ngx_[% subsystem %]_lua_socket_tcp_close_connection(item->connection);
+        ngx_[% subsys %]_lua_socket_tcp_close_connection(item->connection);
 
     } else {
         q = ngx_queue_head(&spool->free);
         ngx_queue_remove(q);
 
-        item = ngx_queue_data(q, ngx_[% subsystem %]_lua_socket_pool_item_t, queue);
+        item = ngx_queue_data(q, ngx_[% subsys %]_lua_socket_pool_item_t, queue);
     }
 
     item->connection = c;
@@ -5094,8 +5094,8 @@ ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L)
         ngx_add_timer(c->read, timeout);
     }
 
-    c->write->handler = ngx_[% subsystem %]_lua_socket_keepalive_dummy_handler;
-    c->read->handler = ngx_[% subsystem %]_lua_socket_keepalive_rev_handler;
+    c->write->handler = ngx_[% subsys %]_lua_socket_keepalive_dummy_handler;
+    c->read->handler = ngx_[% subsys %]_lua_socket_keepalive_rev_handler;
 
     c->data = item;
     c->idle = 1;
@@ -5109,7 +5109,7 @@ ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L)
     item->reused = u->reused;
 
     if (c->read->ready) {
-        rc = ngx_[% subsystem %]_lua_socket_keepalive_close_handler(c->read);
+        rc = ngx_[% subsys %]_lua_socket_keepalive_close_handler(c->read);
         if (rc != NGX_OK) {
             lua_pushnil(L);
             lua_pushliteral(L, "connection in dubious state");
@@ -5118,7 +5118,7 @@ ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L)
     }
 
 #if 1
-    ngx_[% subsystem %]_lua_socket_tcp_finalize(r, u);
+    ngx_[% subsys %]_lua_socket_tcp_finalize(r, u);
 #endif
 
     lua_pushinteger(L, 1);
@@ -5168,7 +5168,7 @@ ngx_[% subsys %]_lua_get_keepalive_peer([% req_type %] *r, lua_State *L,
     if (!ngx_queue_empty(&spool->cache)) {
         q = ngx_queue_head(&spool->cache);
 
-        item = ngx_queue_data(q, ngx_[% subsystem %]_lua_socket_pool_item_t, queue);
+        item = ngx_queue_data(q, ngx_[% subsys %]_lua_socket_pool_item_t, queue);
         c = item->connection;
 
         ngx_queue_remove(q);
@@ -5186,8 +5186,8 @@ ngx_[% subsys %]_lua_get_keepalive_peer([% req_type %] *r, lua_State *L,
         c->data = u;
 
 #if 1
-        c->write->handler = ngx_[% subsystem %]_lua_socket_tcp_handler;
-        c->read->handler = ngx_[% subsystem %]_lua_socket_tcp_handler;
+        c->write->handler = ngx_[% subsys %]_lua_socket_tcp_handler;
+        c->read->handler = ngx_[% subsys %]_lua_socket_tcp_handler;
 #endif
 
         if (c->read->timer_set) {
@@ -5200,19 +5200,19 @@ ngx_[% subsys %]_lua_get_keepalive_peer([% req_type %] *r, lua_State *L,
         u->reused = item->reused + 1;
 
 #if 1
-        u->write_event_handler = ngx_[% subsystem %]_lua_socket_dummy_handler;
-        u->read_event_handler = ngx_[% subsystem %]_lua_socket_dummy_handler;
+        u->write_event_handler = ngx_[% subsys %]_lua_socket_dummy_handler;
+        u->read_event_handler = ngx_[% subsys %]_lua_socket_dummy_handler;
 #endif
 
         if (u->cleanup == NULL) {
-            cln = ngx_[% subsystem %]_lua_cleanup_add(r, 0);
+            cln = ngx_[% subsys %]_lua_cleanup_add(r, 0);
             if (cln == NULL) {
                 u->ft_type |= NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR;
                 lua_settop(L, top);
                 return NGX_ERROR;
             }
 
-            cln->handler = ngx_[% subsystem %]_lua_socket_tcp_cleanup;
+            cln->handler = ngx_[% subsys %]_lua_socket_tcp_cleanup;
             cln->data = u;
             u->cleanup = &cln->handler;
         }
@@ -5232,7 +5232,7 @@ ngx_[% subsys %]_lua_get_keepalive_peer([% req_type %] *r, lua_State *L,
 
 
 static void
-ngx_[% subsystem %]_lua_socket_keepalive_dummy_handler(ngx_event_t *ev)
+ngx_[% subsys %]_lua_socket_keepalive_dummy_handler(ngx_event_t *ev)
 {
     ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ev->log, 0,
                    "keepalive dummy handler");
@@ -5240,17 +5240,17 @@ ngx_[% subsystem %]_lua_socket_keepalive_dummy_handler(ngx_event_t *ev)
 
 
 static void
-ngx_[% subsystem %]_lua_socket_keepalive_rev_handler(ngx_event_t *ev)
+ngx_[% subsys %]_lua_socket_keepalive_rev_handler(ngx_event_t *ev)
 {
-    (void) ngx_[% subsystem %]_lua_socket_keepalive_close_handler(ev);
+    (void) ngx_[% subsys %]_lua_socket_keepalive_close_handler(ev);
 }
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_keepalive_close_handler(ngx_event_t *ev)
+ngx_[% subsys %]_lua_socket_keepalive_close_handler(ngx_event_t *ev)
 {
-    ngx_[% subsystem %]_lua_socket_pool_item_t     *item;
-    ngx_[% subsystem %]_lua_socket_pool_t          *spool;
+    ngx_[% subsys %]_lua_socket_pool_item_t     *item;
+    ngx_[% subsys %]_lua_socket_pool_t          *spool;
 
     int                n;
     char               buf[1];
@@ -5294,7 +5294,7 @@ close:
     item = c->data;
     spool = item->socket_pool;
 
-    ngx_[% subsystem %]_lua_socket_tcp_close_connection(c);
+    ngx_[% subsys %]_lua_socket_tcp_close_connection(c);
 
     ngx_queue_remove(&item->queue);
     ngx_queue_insert_head(&spool->free, &item->queue);
@@ -5304,7 +5304,7 @@ close:
        (unsigned) spool->active_connections);
 
     if (spool->active_connections == 0) {
-        ngx_[% subsystem %]_lua_socket_free_pool(ev->log, spool);
+        ngx_[% subsys %]_lua_socket_free_pool(ev->log, spool);
     }
 
     return NGX_DECLINED;
@@ -5312,7 +5312,7 @@ close:
 
 
 static void
-ngx_[% subsystem %]_lua_socket_free_pool(ngx_log_t *log, ngx_[% subsystem %]_lua_socket_pool_t *spool)
+ngx_[% subsys %]_lua_socket_free_pool(ngx_log_t *log, ngx_[% subsys %]_lua_socket_pool_t *spool)
 {
     lua_State                           *L;
 
@@ -5322,7 +5322,7 @@ ngx_[% subsystem %]_lua_socket_free_pool(ngx_log_t *log, ngx_[% subsystem %]_lua
 
     L = spool->lua_vm;
 
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_socket_pool_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_socket_pool_key);
     lua_rawget(L, LUA_REGISTRYINDEX);
     lua_pushstring(L, (char *) spool->key);
     lua_pushnil(L);
@@ -5332,19 +5332,19 @@ ngx_[% subsystem %]_lua_socket_free_pool(ngx_log_t *log, ngx_[% subsystem %]_lua
 
 
 static void
-ngx_[% subsystem %]_lua_socket_shutdown_pool_helper(ngx_[% subsystem %]_lua_socket_pool_t *spool)
+ngx_[% subsys %]_lua_socket_shutdown_pool_helper(ngx_[% subsys %]_lua_socket_pool_t *spool)
 {
     ngx_queue_t                                    *q;
     ngx_connection_t                               *c;
-    ngx_[% subsystem %]_lua_socket_pool_item_t     *item;
+    ngx_[% subsys %]_lua_socket_pool_item_t     *item;
 
     while (!ngx_queue_empty(&spool->cache)) {
         q = ngx_queue_head(&spool->cache);
 
-        item = ngx_queue_data(q, ngx_[% subsystem %]_lua_socket_pool_item_t, queue);
+        item = ngx_queue_data(q, ngx_[% subsys %]_lua_socket_pool_item_t, queue);
         c = item->connection;
 
-        ngx_[% subsystem %]_lua_socket_tcp_close_connection(c);
+        ngx_[% subsys %]_lua_socket_tcp_close_connection(c);
 
         ngx_queue_remove(q);
         ngx_queue_insert_head(&spool->free, q);
@@ -5355,14 +5355,14 @@ ngx_[% subsystem %]_lua_socket_shutdown_pool_helper(ngx_[% subsystem %]_lua_sock
 
 
 static int
-ngx_[% subsystem %]_lua_socket_shutdown_pool(lua_State *L)
+ngx_[% subsys %]_lua_socket_shutdown_pool(lua_State *L)
 {
-    ngx_[% subsystem %]_lua_socket_pool_t          *spool;
+    ngx_[% subsys %]_lua_socket_pool_t          *spool;
 
     spool = lua_touserdata(L, 1);
 
     if (spool != NULL) {
-        ngx_[% subsystem %]_lua_socket_shutdown_pool_helper(spool);
+        ngx_[% subsys %]_lua_socket_shutdown_pool_helper(spool);
     }
 
     return 0;
@@ -5370,9 +5370,9 @@ ngx_[% subsystem %]_lua_socket_shutdown_pool(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_socket_tcp_upstream_destroy(lua_State *L)
+ngx_[% subsys %]_lua_socket_tcp_upstream_destroy(lua_State *L)
 {
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t      *u;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t      *u;
 
     dd("upstream destroy triggered by Lua GC");
 
@@ -5382,7 +5382,7 @@ ngx_[% subsystem %]_lua_socket_tcp_upstream_destroy(lua_State *L)
     }
 
     if (u->cleanup) {
-        ngx_[% subsystem %]_lua_socket_tcp_cleanup(u); /* it will clear u->cleanup */
+        ngx_[% subsys %]_lua_socket_tcp_cleanup(u); /* it will clear u->cleanup */
     }
 
     return 0;
@@ -5390,9 +5390,9 @@ ngx_[% subsystem %]_lua_socket_tcp_upstream_destroy(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_socket_downstream_destroy(lua_State *L)
+ngx_[% subsys %]_lua_socket_downstream_destroy(lua_State *L)
 {
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t     *u;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t     *u;
 
     dd("downstream destroy");
 
@@ -5403,7 +5403,7 @@ ngx_[% subsystem %]_lua_socket_downstream_destroy(lua_State *L)
     }
 
     if (u->cleanup) {
-        ngx_[% subsystem %]_lua_socket_tcp_cleanup(u); /* it will clear u->cleanup */
+        ngx_[% subsys %]_lua_socket_tcp_cleanup(u); /* it will clear u->cleanup */
     }
 
     return 0;
@@ -5411,8 +5411,8 @@ ngx_[% subsystem %]_lua_socket_downstream_destroy(lua_State *L)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_push_input_data([% req_type %] *r,
-    ngx_[% subsystem %]_lua_ctx_t *ctx, ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u,
+ngx_[% subsys %]_lua_socket_push_input_data([% req_type %] *r,
+    ngx_[% subsys %]_lua_ctx_t *ctx, ngx_[% subsys %]_lua_socket_tcp_upstream_t *u,
     lua_State *L)
 {
     ngx_chain_t             *cl;
@@ -5513,8 +5513,8 @@ ngx_[% subsys %]_lua_socket_add_input_buffer([% req_type %] *r,
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_add_pending_data([% req_type %] *r,
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, u_char *pos, size_t len, u_char *pat,
+ngx_[% subsys %]_lua_socket_add_pending_data([% req_type %] *r,
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, u_char *pos, size_t len, u_char *pat,
     int prefix, int old_state)
 {
     u_char          *last;
@@ -5534,7 +5534,7 @@ ngx_[% subsystem %]_lua_socket_add_pending_data([% req_type %] *r,
     dd("need more buffers because %d != %d", (int) (last - b->last),
        (int) old_state);
 
-    if (ngx_[% subsystem %]_lua_socket_insert_buffer(r, u, pat, prefix) != NGX_OK) {
+    if (ngx_[% subsys %]_lua_socket_insert_buffer(r, u, pat, prefix) != NGX_OK) {
         return NGX_ERROR;
     }
 
@@ -5606,47 +5606,47 @@ static ngx_int_t ngx_[% subsys %]_lua_socket_insert_buffer([% req_type %] *r,
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_tcp_conn_resume([% req_type %] *r)
+ngx_[% subsys %]_lua_socket_tcp_conn_resume([% req_type %] *r)
 {
-    return ngx_[% subsystem %]_lua_socket_tcp_resume_helper(r, SOCKET_OP_CONNECT);
+    return ngx_[% subsys %]_lua_socket_tcp_resume_helper(r, SOCKET_OP_CONNECT);
 }
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_tcp_read_resume([% req_type %] *r)
+ngx_[% subsys %]_lua_socket_tcp_read_resume([% req_type %] *r)
 {
-    return ngx_[% subsystem %]_lua_socket_tcp_resume_helper(r, SOCKET_OP_READ);
+    return ngx_[% subsys %]_lua_socket_tcp_resume_helper(r, SOCKET_OP_READ);
 }
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_tcp_write_resume([% req_type %] *r)
+ngx_[% subsys %]_lua_socket_tcp_write_resume([% req_type %] *r)
 {
-    return ngx_[% subsystem %]_lua_socket_tcp_resume_helper(r, SOCKET_OP_WRITE);
+    return ngx_[% subsys %]_lua_socket_tcp_resume_helper(r, SOCKET_OP_WRITE);
 }
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_socket_tcp_resume_helper([% req_type %] *r, int socket_op)
+ngx_[% subsys %]_lua_socket_tcp_resume_helper([% req_type %] *r, int socket_op)
 {
     int                                     nret;
     lua_State                              *vm;
     ngx_int_t                               rc;
     ngx_uint_t                              nreqs;
     ngx_connection_t                       *c;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
-    ngx_[% subsystem %]_lua_co_ctx_t       *coctx;
+    ngx_[% subsys %]_lua_ctx_t          *ctx;
+    ngx_[% subsys %]_lua_co_ctx_t       *coctx;
 
-    ngx_[% subsystem %]_lua_socket_tcp_retval_handler  prepare_retvals;
+    ngx_[% subsys %]_lua_socket_tcp_retval_handler  prepare_retvals;
 
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t      *u;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t      *u;
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return NGX_ERROR;
     }
 
-    ctx->resume_handler = ngx_[% subsystem %]_lua_wev_handler;
+    ctx->resume_handler = ngx_[% subsys %]_lua_wev_handler;
 
     ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua tcp operation done, resuming lua thread");
@@ -5682,25 +5682,25 @@ ngx_[% subsystem %]_lua_socket_tcp_resume_helper([% req_type %] *r, int socket_o
     }
 
     c = r->connection;
-    vm = ngx_[% subsystem %]_lua_get_lua_vm(r, ctx);
+    vm = ngx_[% subsys %]_lua_get_lua_vm(r, ctx);
     nreqs = c->requests;
 
-    rc = ngx_[% subsystem %]_lua_run_thread(vm, r, ctx, nret);
+    rc = ngx_[% subsys %]_lua_run_thread(vm, r, ctx, nret);
 
     ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua run thread returned %d", rc);
 
     if (rc == NGX_AGAIN) {
-        return ngx_[% subsystem %]_lua_run_posted_threads(c, vm, r, ctx, nreqs);
+        return ngx_[% subsys %]_lua_run_posted_threads(c, vm, r, ctx, nreqs);
     }
 
     if (rc == NGX_DONE) {
-        ngx_[% subsystem %]_lua_finalize_request(r, NGX_DONE);
-        return ngx_[% subsystem %]_lua_run_posted_threads(c, vm, r, ctx, nreqs);
+        ngx_[% subsys %]_lua_finalize_request(r, NGX_DONE);
+        return ngx_[% subsys %]_lua_run_posted_threads(c, vm, r, ctx, nreqs);
     }
 
     if (ctx->entered_content_phase) {
-        ngx_[% subsystem %]_lua_finalize_request(r, rc);
+        ngx_[% subsys %]_lua_finalize_request(r, rc);
         return NGX_DONE;
     }
 
@@ -5736,10 +5736,10 @@ ngx_[% subsys %]_lua_tcp_resolve_cleanup(void *data)
 
 
 static void
-ngx_[% subsystem %]_lua_coctx_cleanup(void *data)
+ngx_[% subsys %]_lua_coctx_cleanup(void *data)
 {
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t      *u;
-    ngx_[% subsystem %]_lua_co_ctx_t                   *coctx = data;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t      *u;
+    ngx_[% subsys %]_lua_co_ctx_t                   *coctx = data;
 
     dd("running coctx cleanup");
 
@@ -5752,14 +5752,14 @@ ngx_[% subsystem %]_lua_coctx_cleanup(void *data)
         return;
     }
 
-    ngx_[% subsystem %]_lua_socket_tcp_finalize(u->request, u);
+    ngx_[% subsys %]_lua_socket_tcp_finalize(u->request, u);
 }
 
 
 #if (NGX_[% SUBSYS %]_SSL)
 
 static int
-ngx_[% subsystem %]_lua_ssl_free_session(lua_State *L)
+ngx_[% subsys %]_lua_ssl_free_session(lua_State *L)
 {
     ngx_ssl_session_t      **psession;
 
@@ -5778,11 +5778,11 @@ ngx_[% subsystem %]_lua_ssl_free_session(lua_State *L)
 
 
 void
-ngx_[% subsystem %]_lua_cleanup_conn_pools(lua_State *L)
+ngx_[% subsys %]_lua_cleanup_conn_pools(lua_State *L)
 {
-    ngx_[% subsystem %]_lua_socket_pool_t          *spool;
+    ngx_[% subsys %]_lua_socket_pool_t          *spool;
 
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_socket_pool_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_socket_pool_key);
     lua_rawget(L, LUA_REGISTRYINDEX); /* table */
 
     lua_pushnil(L);  /* first key */
@@ -5795,7 +5795,7 @@ ngx_[% subsystem %]_lua_cleanup_conn_pools(lua_State *L)
                            "[% log_prefix %]lua tcp socket keepalive: free connection pool %p "
                            "for \"%s\"", spool, spool->key);
 
-            ngx_[% subsystem %]_lua_socket_shutdown_pool_helper(spool);
+            ngx_[% subsys %]_lua_socket_shutdown_pool_helper(spool);
         }
 
         lua_pop(L, 1);

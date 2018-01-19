@@ -11,24 +11,24 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_time.h"
-#include "ngx_[% subsystem %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_time.h"
+#include "ngx_[% subsys %]_lua_util.h"
 
 
-static int ngx_[% subsystem %]_lua_ngx_today(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_time(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_now(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_localtime(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_utctime(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_cookie_time(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_http_time(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_parse_http_time(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_update_time(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_req_start_time(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_today(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_time(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_now(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_localtime(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_utctime(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_cookie_time(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_http_time(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_parse_http_time(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_update_time(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_req_start_time(lua_State *L);
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_today(lua_State *L)
+ngx_[% subsys %]_lua_ngx_today(lua_State *L)
 {
     time_t                   now;
     ngx_tm_t                 tm;
@@ -47,7 +47,7 @@ ngx_[% subsystem %]_lua_ngx_today(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_localtime(lua_State *L)
+ngx_[% subsys %]_lua_ngx_localtime(lua_State *L)
 {
     ngx_tm_t                 tm;
 
@@ -66,7 +66,7 @@ ngx_[% subsystem %]_lua_ngx_localtime(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_time(lua_State *L)
+ngx_[% subsys %]_lua_ngx_time(lua_State *L)
 {
     lua_pushnumber(L, (lua_Number) ngx_time());
 
@@ -75,7 +75,7 @@ ngx_[% subsystem %]_lua_ngx_time(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_now(lua_State *L)
+ngx_[% subsys %]_lua_ngx_now(lua_State *L)
 {
     ngx_time_t              *tp;
 
@@ -88,7 +88,7 @@ ngx_[% subsystem %]_lua_ngx_now(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_update_time(lua_State *L)
+ngx_[% subsys %]_lua_ngx_update_time(lua_State *L)
 {
     ngx_time_update();
     return 0;
@@ -96,7 +96,7 @@ ngx_[% subsystem %]_lua_ngx_update_time(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_utctime(lua_State *L)
+ngx_[% subsys %]_lua_ngx_utctime(lua_State *L)
 {
     ngx_tm_t       tm;
     u_char         buf[sizeof("2010-11-19 20:56:31") - 1];
@@ -114,7 +114,7 @@ ngx_[% subsystem %]_lua_ngx_utctime(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_cookie_time(lua_State *L)
+ngx_[% subsys %]_lua_ngx_cookie_time(lua_State *L)
 {
     time_t                               t;
     u_char                              *p;
@@ -137,7 +137,7 @@ ngx_[% subsystem %]_lua_ngx_cookie_time(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_http_time(lua_State *L)
+ngx_[% subsys %]_lua_ngx_http_time(lua_State *L)
 {
     time_t                               t;
     u_char                              *p;
@@ -160,7 +160,7 @@ ngx_[% subsystem %]_lua_ngx_http_time(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_parse_http_time(lua_State *L)
+ngx_[% subsys %]_lua_ngx_parse_http_time(lua_State *L)
 {
     u_char                              *p;
     size_t                               len;
@@ -185,11 +185,11 @@ ngx_[% subsystem %]_lua_ngx_parse_http_time(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_req_start_time(lua_State *L)
+ngx_[% subsys %]_lua_ngx_req_start_time(lua_State *L)
 {
     [% req_type %]              *r;
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
@@ -205,57 +205,57 @@ ngx_[% subsystem %]_lua_ngx_req_start_time(lua_State *L)
 
 
 void
-ngx_[% subsystem %]_lua_inject_time_api(lua_State *L)
+ngx_[% subsys %]_lua_inject_time_api(lua_State *L)
 {
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_utctime);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_utctime);
     lua_setfield(L, -2, "utctime");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_time);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_time);
     lua_setfield(L, -2, "get_now_ts"); /* deprecated */
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_localtime);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_localtime);
     lua_setfield(L, -2, "get_now"); /* deprecated */
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_localtime);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_localtime);
     lua_setfield(L, -2, "localtime");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_time);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_time);
     lua_setfield(L, -2, "time");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_now);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_now);
     lua_setfield(L, -2, "now");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_update_time);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_update_time);
     lua_setfield(L, -2, "update_time");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_today);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_today);
     lua_setfield(L, -2, "get_today"); /* deprecated */
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_today);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_today);
     lua_setfield(L, -2, "today");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_cookie_time);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_cookie_time);
     lua_setfield(L, -2, "cookie_time");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_http_time);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_http_time);
     lua_setfield(L, -2, "http_time");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_parse_http_time);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_parse_http_time);
     lua_setfield(L, -2, "parse_http_time");
 }
 
 
 void
-ngx_[% subsystem %]_lua_inject_req_time_api(lua_State *L)
+ngx_[% subsys %]_lua_inject_req_time_api(lua_State *L)
 {
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_req_start_time);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_req_start_time);
     lua_setfield(L, -2, "start_time");
 }
 
 
 #ifndef NGX_LUA_NO_FFI_API
 double
-ngx_[% subsystem %]_lua_ffi_now(void)
+ngx_[% subsys %]_lua_ffi_now(void)
 {
     ngx_time_t              *tp;
 
@@ -266,7 +266,7 @@ ngx_[% subsystem %]_lua_ffi_now(void)
 
 
 double
-ngx_[% subsystem %]_lua_ffi_req_start_time([% req_type %] *r)
+ngx_[% subsys %]_lua_ffi_req_start_time([% req_type %] *r)
 {
 [% IF http_subsys %]
     return r->start_sec + r->start_msec / 1000.0;
@@ -277,7 +277,7 @@ ngx_[% subsystem %]_lua_ffi_req_start_time([% req_type %] *r)
 
 
 long
-ngx_[% subsystem %]_lua_ffi_time(void)
+ngx_[% subsys %]_lua_ffi_time(void)
 {
     return (long) ngx_time();
 }

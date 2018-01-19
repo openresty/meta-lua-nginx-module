@@ -8,7 +8,7 @@
 #define _NGX_[% SUBSYS %]_LUA_CONSTS_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
 [% IF http_subsys %]
@@ -16,7 +16,7 @@ void ngx_http_lua_inject_http_consts(lua_State *L);
 [% END %]
 
 
-void ngx_[% subsystem %]_lua_inject_core_consts(lua_State *L);
+void ngx_[% subsys %]_lua_inject_core_consts(lua_State *L);
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_CONSTS_H_INCLUDED_ */

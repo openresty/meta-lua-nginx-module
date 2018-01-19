@@ -10,33 +10,33 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_util.h"
-#include "ngx_[% subsystem %]_lua_ctx.h"
+#include "ngx_[% subsys %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_ctx.h"
 
 
 typedef struct {
     int              ref;
     lua_State       *vm;
-} ngx_[% subsystem %]_lua_ngx_ctx_cleanup_data_t;
+} ngx_[% subsys %]_lua_ngx_ctx_cleanup_data_t;
 
 
-static ngx_int_t ngx_[% subsystem %]_lua_ngx_ctx_add_cleanup([% req_type %] *r,
+static ngx_int_t ngx_[% subsys %]_lua_ngx_ctx_add_cleanup([% req_type %] *r,
     int ref);
-static void ngx_[% subsystem %]_lua_ngx_ctx_cleanup(void *data);
+static void ngx_[% subsys %]_lua_ngx_ctx_cleanup(void *data);
 
 
 int
-ngx_[% subsystem %]_lua_ngx_get_ctx(lua_State *L)
+ngx_[% subsys %]_lua_ngx_get_ctx(lua_State *L)
 {
     [% req_type %]                  *r;
     ngx_[% subsys %]_lua_ctx_t      *ctx;
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -45,13 +45,13 @@ ngx_[% subsystem %]_lua_ngx_get_ctx(lua_State *L)
         ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                        "lua create ngx.ctx table for the current request");
 
-        lua_pushliteral(L, ngx_[% subsystem %]_lua_ctx_tables_key);
+        lua_pushliteral(L, ngx_[% subsys %]_lua_ctx_tables_key);
         lua_rawget(L, LUA_REGISTRYINDEX);
         lua_createtable(L, 0 /* narr */, 4 /* nrec */);
         lua_pushvalue(L, -1);
         ctx->ctx_ref = luaL_ref(L, -3);
 
-        if (ngx_[% subsystem %]_lua_ngx_ctx_add_cleanup(r, ctx->ctx_ref) != NGX_OK) {
+        if (ngx_[% subsys %]_lua_ngx_ctx_add_cleanup(r, ctx->ctx_ref) != NGX_OK) {
             return luaL_error(L, "no memory");
         }
 
@@ -62,7 +62,7 @@ ngx_[% subsystem %]_lua_ngx_get_ctx(lua_State *L)
                    "lua fetching existing ngx.ctx table for the current "
                    "request");
 
-    lua_pushliteral(L, ngx_[% subsystem %]_lua_ctx_tables_key);
+    lua_pushliteral(L, ngx_[% subsys %]_lua_ctx_tables_key);
     lua_rawget(L, LUA_REGISTRYINDEX);
     lua_rawgeti(L, -1, ctx->ctx_ref);
 
@@ -71,28 +71,28 @@ ngx_[% subsystem %]_lua_ngx_get_ctx(lua_State *L)
 
 
 int
-ngx_[% subsystem %]_lua_ngx_set_ctx(lua_State *L)
+ngx_[% subsys %]_lua_ngx_set_ctx(lua_State *L)
 {
     [% req_type %]                  *r;
     ngx_[% subsys %]_lua_ctx_t      *ctx;
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
 
-    return ngx_[% subsystem %]_lua_ngx_set_ctx_helper(L, r, ctx, 3);
+    return ngx_[% subsys %]_lua_ngx_set_ctx_helper(L, r, ctx, 3);
 }
 
 
 int
-ngx_[% subsystem %]_lua_ngx_set_ctx_helper(lua_State *L, [% req_type %] *r,
-    ngx_[% subsystem %]_lua_ctx_t *ctx, int index)
+ngx_[% subsys %]_lua_ngx_set_ctx_helper(lua_State *L, [% req_type %] *r,
+    ngx_[% subsys %]_lua_ctx_t *ctx, int index)
 {
     if (index < 0) {
         index = lua_gettop(L) + index + 1;
@@ -102,13 +102,13 @@ ngx_[% subsystem %]_lua_ngx_set_ctx_helper(lua_State *L, [% req_type %] *r,
         ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                        "lua create ngx.ctx table for the current request");
 
-        lua_pushliteral(L, ngx_[% subsystem %]_lua_ctx_tables_key);
+        lua_pushliteral(L, ngx_[% subsys %]_lua_ctx_tables_key);
         lua_rawget(L, LUA_REGISTRYINDEX);
         lua_pushvalue(L, index);
         ctx->ctx_ref = luaL_ref(L, -2);
         lua_pop(L, 1);
 
-        if (ngx_[% subsystem %]_lua_ngx_ctx_add_cleanup(r, ctx->ctx_ref) != NGX_OK) {
+        if (ngx_[% subsys %]_lua_ngx_ctx_add_cleanup(r, ctx->ctx_ref) != NGX_OK) {
             return luaL_error(L, "no memory");
         }
 
@@ -119,7 +119,7 @@ ngx_[% subsystem %]_lua_ngx_set_ctx_helper(lua_State *L, [% req_type %] *r,
                    "lua fetching existing ngx.ctx table for the current "
                    "request");
 
-    lua_pushliteral(L, ngx_[% subsystem %]_lua_ctx_tables_key);
+    lua_pushliteral(L, ngx_[% subsys %]_lua_ctx_tables_key);
     lua_rawget(L, LUA_REGISTRYINDEX);
     luaL_unref(L, -1, ctx->ctx_ref);
     lua_pushvalue(L, index);
@@ -132,11 +132,11 @@ ngx_[% subsystem %]_lua_ngx_set_ctx_helper(lua_State *L, [% req_type %] *r,
 
 #ifndef NGX_LUA_NO_FFI_API
 int
-ngx_[% subsystem %]_lua_ffi_get_ctx_ref([% req_type %] *r)
+ngx_[% subsys %]_lua_ffi_get_ctx_ref([% req_type %] *r)
 {
-    ngx_[% subsystem %]_lua_ctx_t  *ctx;
+    ngx_[% subsys %]_lua_ctx_t  *ctx;
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return NGX_[% SUBSYS %]_LUA_FFI_NO_REQ_CTX;
     }
@@ -146,18 +146,18 @@ ngx_[% subsystem %]_lua_ffi_get_ctx_ref([% req_type %] *r)
 
 
 int
-ngx_[% subsystem %]_lua_ffi_set_ctx_ref([% req_type %] *r, int ref)
+ngx_[% subsys %]_lua_ffi_set_ctx_ref([% req_type %] *r, int ref)
 {
-    ngx_[% subsystem %]_lua_ctx_t  *ctx;
+    ngx_[% subsys %]_lua_ctx_t  *ctx;
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return NGX_[% SUBSYS %]_LUA_FFI_NO_REQ_CTX;
     }
 
     ctx->ctx_ref = ref;
 
-    if (ngx_[% subsystem %]_lua_ngx_ctx_add_cleanup(r, ref) != NGX_OK) {
+    if (ngx_[% subsys %]_lua_ngx_ctx_add_cleanup(r, ref) != NGX_OK) {
         return NGX_ERROR;
     }
 
@@ -167,7 +167,7 @@ ngx_[% subsystem %]_lua_ffi_set_ctx_ref([% req_type %] *r, int ref)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_ngx_ctx_add_cleanup([% req_type %] *r, int ref)
+ngx_[% subsys %]_lua_ngx_ctx_add_cleanup([% req_type %] *r, int ref)
 {
     lua_State                   *L;
     ngx_pool_cleanup_t          *cln;
@@ -175,16 +175,16 @@ ngx_[% subsystem %]_lua_ngx_ctx_add_cleanup([% req_type %] *r, int ref)
     ngx_[% subsys %]_lua_ctx_t                     *ctx;
     ngx_[% subsys %]_lua_ngx_ctx_cleanup_data_t    *data;
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
-    L = ngx_[% subsystem %]_lua_get_lua_vm(r, ctx);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
+    L = ngx_[% subsys %]_lua_get_lua_vm(r, ctx);
 
     cln = ngx_pool_cleanup_add(r->pool,
-                               sizeof(ngx_[% subsystem %]_lua_ngx_ctx_cleanup_data_t));
+                               sizeof(ngx_[% subsys %]_lua_ngx_ctx_cleanup_data_t));
     if (cln == NULL) {
         return NGX_ERROR;
     }
 
-    cln->handler = ngx_[% subsystem %]_lua_ngx_ctx_cleanup;
+    cln->handler = ngx_[% subsys %]_lua_ngx_ctx_cleanup;
 
     data = cln->data;
     data->vm = L;
@@ -195,18 +195,18 @@ ngx_[% subsystem %]_lua_ngx_ctx_add_cleanup([% req_type %] *r, int ref)
 
 
 static void
-ngx_[% subsystem %]_lua_ngx_ctx_cleanup(void *data)
+ngx_[% subsys %]_lua_ngx_ctx_cleanup(void *data)
 {
     lua_State       *L;
 
-    ngx_[% subsystem %]_lua_ngx_ctx_cleanup_data_t    *clndata = data;
+    ngx_[% subsys %]_lua_ngx_ctx_cleanup_data_t    *clndata = data;
 
     ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], ngx_cycle->log, 0,
                    "lua release ngx.ctx at ref %d", clndata->ref);
 
     L = clndata->vm;
 
-    lua_pushliteral(L, ngx_[% subsystem %]_lua_ctx_tables_key);
+    lua_pushliteral(L, ngx_[% subsys %]_lua_ctx_tables_key);
     lua_rawget(L, LUA_REGISTRYINDEX);
     luaL_unref(L, -1, clndata->ref);
     lua_pop(L, 1);

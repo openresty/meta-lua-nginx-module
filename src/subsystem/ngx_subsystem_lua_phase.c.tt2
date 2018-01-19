@@ -10,12 +10,12 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_phase.h"
-#include "ngx_[% subsystem %]_lua_util.h"
-#include "ngx_[% subsystem %]_lua_ctx.h"
+#include "ngx_[% subsys %]_lua_phase.h"
+#include "ngx_[% subsys %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_ctx.h"
 
 
-static int ngx_[% subsystem %]_lua_ngx_get_phase(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L);
 
 
 static int
@@ -24,7 +24,7 @@ ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L)
     [% req_type %]                  *r;
     ngx_[% subsys %]_lua_ctx_t      *ctx;
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
 
     /* If we have no request object, assume we are called from the "init"
      * phase. */
@@ -34,7 +34,7 @@ ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L)
         return 1;
     }
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -108,9 +108,9 @@ ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L)
 
 
 void
-ngx_[% subsystem %]_lua_inject_phase_api(lua_State *L)
+ngx_[% subsys %]_lua_inject_phase_api(lua_State *L)
 {
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_get_phase);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_get_phase);
     lua_setfield(L, -2, "get_phase");
 }
 

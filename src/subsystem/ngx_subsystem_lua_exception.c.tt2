@@ -11,12 +11,12 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_exception.h"
-#include "ngx_[% subsystem %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_exception.h"
+#include "ngx_[% subsys %]_lua_util.h"
 
 
 /*  longjmp mark for restoring nginx execution after Lua VM crashing */
-jmp_buf ngx_[% subsystem %]_lua_exception;
+jmp_buf ngx_[% subsys %]_lua_exception;
 
 /**
  * Override default Lua panic handler, output VM crash reason to nginx error
@@ -28,7 +28,7 @@ jmp_buf ngx_[% subsystem %]_lua_exception;
  * in order to make logging working.
  * */
 int
-ngx_[% subsystem %]_lua_atpanic(lua_State *L)
+ngx_[% subsys %]_lua_atpanic(lua_State *L)
 {
 #ifdef NGX_LUA_ABORT_AT_PANIC
     abort();

@@ -14,7 +14,7 @@ sub usage ($);
 sub replace_tt2_var ($$);
 sub is_prev_line ($);
 
-my $var_with_init_pat = qr/(\**) \b [a-z]\w* (?: :\d+ )? \s* (?: = \s* \w+ )?/x;
+my $var_with_init_pat = qr/(\**) \b [_a-zA-Z]\w* (?: :\d+ )? \s* (?: = \s* \w+ )?/x;
 
 my %opts;
 getopts "hs:d:", \%opts or usage(1);
@@ -32,7 +32,7 @@ if ($subsys !~ /^(?:http|stream)$/) {
 
 my %tt2_vars;
 {
-    $tt2_vars{subsys} = $tt2_vars{subsystem} = $subsys;
+    $tt2_vars{subsys} = $subsys;
 
     my $SUBSYS = uc $subsys;
 
@@ -170,7 +170,7 @@ while (<$in>) {
             my $var = $1;
             my $v = $3 // $4;
 
-            if ($var =~ /^subsys(?:tem)?$/ && $v !~ /^(?:http|stream)$/) {
+            if ($var eq 'subsys' && $v !~ /^(?:http|stream)$/) {
                 die "$infile: line $.: bad subsystem value to be compared: ",
                     "$v\n";
             }
@@ -186,7 +186,7 @@ while (<$in>) {
         } elsif ($cond =~ /^ (\w+) $/x) {
             my $var = $1;
 
-            if ($var =~ /^ (?: subsys(?:tem)? | req_type | req_subsys ) $/ix) {
+            if ($var =~ /^ (?: subsys | req_type | req_subsys | SUBSYS ) $/ix) {
                 die "$infile: line $.: variable $var is always true: ",
                     "$tt2_vars{$var}.\n";
             }
@@ -309,7 +309,7 @@ while (<$in>) {
 
     # check local variable declaration and struct member declaration alignment
 
-    if (m{^ (\s+) ([a-z]\w*) \b (\s*) $var_with_init_pat
+    if (m{^ (\s+) ([_a-zA-Z]\w*) \b (\s*) $var_with_init_pat
            (?: \s* , \s* $var_with_init_pat )* \s* ; \s*
            (?: /\* .*? \*/ \s* )? $}x
         && $2 !~ /^(?:goto|return)$/)
@@ -357,6 +357,8 @@ while (<$in>) {
             #warn "HIT a var declaration (col $var_col): $raw_line";
             #warn "line $.: raw var column: $raw_var_col (diff: $var_col_diff)";
         #}
+
+        #warn "HIT: $_";
 
         if (defined $prev_var_decl && is_prev_line $prev_var_decl) {
             # check vertical alignment in the templates
@@ -440,7 +442,7 @@ while (<$in>) {
         }
 
     } elsif (!$passthrough) {
-        if (/^ ( .*? \s ([a-z]\w*) \( ) .*? , \s* $/x) {
+        if (/^ ( .*? \s ([_a-zA-Z]\w*) \( ) .*? , \s* $/x) {
             # found a function call
             my ($prefix);
             ($prefix, $func_name) = ($1, $2);
@@ -494,7 +496,7 @@ sub replace_tt2_var ($$) {
         return $val;
     }
 
-    if ($var =~ /^[A-Za-z]\w*$/) {
+    if ($var =~ /^[_A-Za-z]\w*$/) {
         die "$infile: line $.: undefined tt2 variable: $var\n";
     }
 
