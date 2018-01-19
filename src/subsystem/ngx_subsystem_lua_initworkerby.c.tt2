@@ -25,18 +25,18 @@ static u_char *ngx_[% subsys %]_lua_log_init_worker_error(ngx_log_t *log,
 ngx_int_t
 ngx_[% subsys %]_lua_init_worker(ngx_cycle_t *cycle)
 {
-    char                               *rv;
-    void                               *cur, *prev;
-    ngx_uint_t                          i;
-    ngx_conf_t                          conf;
-    ngx_cycle_t                        *fake_cycle;
-    ngx_module_t                      **modules;
-    ngx_open_file_t                    *file, *ofile;
-    ngx_list_part_t                    *part;
-    ngx_connection_t                   *c = NULL;
-    ngx_conf_file_t                    *conf_file;
+    char                            *rv;
+    void                            *cur, *prev;
+    ngx_uint_t                       i;
+    ngx_conf_t                       conf;
+    ngx_cycle_t                     *fake_cycle;
+    ngx_module_t                   **modules;
+    ngx_open_file_t                 *file, *ofile;
+    ngx_list_part_t                 *part;
+    ngx_connection_t                *c = NULL;
+    ngx_conf_file_t                 *conf_file;
     ngx_[% subsys %]_module_t       *module;
-    [% req_type %]                     *r = NULL;
+    [% req_type %]                  *r = NULL;
     ngx_[% subsys %]_lua_ctx_t      *ctx;
     ngx_[% subsys %]_conf_ctx_t     *conf_ctx, [% subsys %]_ctx;
 
@@ -207,7 +207,7 @@ ngx_[% subsys %]_lua_init_worker(ngx_cycle_t *cycle)
 [% END %]
 
     [% subsys %]_ctx.srv_conf = ngx_pcalloc(conf.pool,
-                                               sizeof(void *) * ngx_[% subsys %]_max_module);
+                                            sizeof(void *) * ngx_[% subsys %]_max_module);
     if ([% subsys %]_ctx.srv_conf == NULL) {
         return NGX_ERROR;
     }

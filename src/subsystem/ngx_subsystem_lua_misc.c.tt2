@@ -65,10 +65,10 @@ ngx_[% subsys %]_lua_ngx_req_is_internal(lua_State *L)
 static int
 ngx_[% subsys %]_lua_ngx_get(lua_State *L)
 {
-    int                             status;
-    [% req_type %]                 *r;
-    u_char                         *p;
-    size_t                          len;
+    int                          status;
+    [% req_type %]              *r;
+    u_char                      *p;
+    size_t                       len;
     ngx_[% subsys %]_lua_ctx_t  *ctx;
 
     r = ngx_[% subsys %]_lua_get_req(L);

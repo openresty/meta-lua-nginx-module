@@ -216,10 +216,10 @@ ngx_[% subsys %]_lua_sleep_cleanup(void *data)
 static ngx_int_t
 ngx_[% subsys %]_lua_sleep_resume([% req_type %] *r)
 {
-    lua_State                              *vm;
-    ngx_connection_t                       *c;
-    ngx_int_t                               rc;
-    ngx_uint_t                              nreqs;
+    lua_State                           *vm;
+    ngx_connection_t                    *c;
+    ngx_int_t                            rc;
+    ngx_uint_t                           nreqs;
     ngx_[% subsys %]_lua_ctx_t          *ctx;
 
     ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
