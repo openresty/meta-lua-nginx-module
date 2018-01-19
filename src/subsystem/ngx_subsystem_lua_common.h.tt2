@@ -341,11 +341,11 @@ struct ngx_stream_lua_srv_conf_s {
     ngx_http_handler_pt     access_handler;
 
 [% ELSIF stream_subsys -%]
-    ngx_[% req_subsystem %]_handler_pt     preread_handler;
+    ngx_[% req_subsys %]_handler_pt     preread_handler;
 [% END -%]
 
-    ngx_[% req_subsystem %]_handler_pt     content_handler;
-    ngx_[% req_subsystem %]_handler_pt     log_handler;
+    ngx_[% req_subsys %]_handler_pt     content_handler;
+    ngx_[% req_subsys %]_handler_pt     log_handler;
 
 [% IF http_subsys %]
     ngx_http_handler_pt     header_filter_handler;

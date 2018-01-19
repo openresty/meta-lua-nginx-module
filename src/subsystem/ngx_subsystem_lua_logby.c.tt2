@@ -75,7 +75,7 @@ ngx_stream_lua_log_handler(ngx_stream_session_t *r)
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
 
 #if (NGX_[% SUBSYS %]_LUA_HAVE_MALLOC_TRIM)
-    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
     trim_cycle = lmcf->malloc_trim_cycle;
 
@@ -155,7 +155,7 @@ ngx_[% subsystem %]_lua_log_handler_inline([% req_type %] *r)
 
     dd("log by lua inline");
 
-    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
     L = ngx_[% subsystem %]_lua_get_lua_vm(r, NULL);
 
@@ -182,7 +182,7 @@ ngx_[% subsystem %]_lua_log_handler_file([% req_type %] *r)
     ngx_[% subsystem %]_lua_loc_conf_t         *llcf;
     ngx_str_t                                   eval_src;
 
-    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
 [% IF http_subsys -%]
     if (ngx_http_complex_value(r, &llcf->log_src, &eval_src) != NGX_OK) {

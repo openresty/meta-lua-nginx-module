@@ -919,7 +919,7 @@ ngx_[% subsystem %]_lua_generic_phase_post_read([% req_type %] *r)
     ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua post read for rewrite/access phases");
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     ctx->read_body_done = 1;
 
@@ -967,7 +967,7 @@ ngx_[% subsystem %]_lua_request_cleanup(ngx_[% subsystem %]_lua_ctx_t *ctx, int 
         ctx->cleanup = NULL;
     }
 
-    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
 #if 1
     if (r->connection->fd == (ngx_socket_t) -1) {
@@ -1594,7 +1594,7 @@ ngx_[% subsystem %]_lua_wev_handler([% req_type %] *r)
     c = r->connection;
     wev = c->write;
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return NGX_ERROR;
     }
@@ -3067,7 +3067,7 @@ ngx_[% subsys %]_lua_param_get(lua_State *L)
         return 0;
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "ctx not found");
     }
@@ -3096,7 +3096,7 @@ ngx_[% subsys %]_lua_param_set(lua_State *L)
         return 0;
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "ctx not found");
     }
@@ -3558,7 +3558,7 @@ ngx_[% subsystem %]_lua_rd_check_broken_connection([% req_type %] *r)
 
     /* rc == NGX_ERROR || rc > NGX_OK */
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return;
     }
@@ -3601,7 +3601,7 @@ ngx_[% subsystem %]_lua_rd_check_broken_connection([% req_type %] *r)
         r->write_event_handler = ngx_[% subsystem %]_lua_content_wev_handler;
 
     } else {
-        r->write_event_handler = ngx_[% req_subsystem %]_core_run_phases;
+        r->write_event_handler = ngx_[% req_subsys %]_core_run_phases;
     }
 
     r->write_event_handler(r);
@@ -3617,7 +3617,7 @@ ngx_[% subsystem %]_lua_on_abort_resume([% req_type %] *r)
     ngx_connection_t                       *c;
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return NGX_ERROR;
     }
@@ -3707,7 +3707,7 @@ ngx_[% subsystem %]_lua_finalize_request([% req_type %] *r, ngx_int_t rc)
 {
     ngx_[% subsystem %]_lua_ctx_t              *ctx;
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx && ctx->cur_co_ctx) {
         ngx_[% subsystem %]_lua_cleanup_pending_operation(ctx->cur_co_ctx);
     }
@@ -4285,7 +4285,7 @@ ngx_[% subsystem %]_lua_get_raw_phase_context(lua_State *L)
         return 0;
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return 0;
     }
@@ -4332,13 +4332,13 @@ ngx_[% subsys %]_lua_cleanup_add([% req_type %] *r, size_t size)
 
 void
 ngx_[% subsystem %]_lua_cleanup_free([% req_type %] *r,
-    ngx_[% req_subsystem %]_cleanup_pt *cleanup)
+    ngx_[% req_subsys %]_cleanup_pt *cleanup)
 {
-    ngx_[% req_subsystem %]_cleanup_t  **last;
-    ngx_[% req_subsystem %]_cleanup_t   *cln;
-    ngx_[% subsystem %]_lua_ctx_t       *ctx;
+    ngx_[% req_subsys %]_cleanup_t  **last;
+    ngx_[% req_subsys %]_cleanup_t   *cln;
+    ngx_[% subsys %]_lua_ctx_t       *ctx;
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return;
     }
@@ -4347,9 +4347,9 @@ ngx_[% subsystem %]_lua_cleanup_free([% req_type %] *r,
     r = r->main;
 [% END %]
 
-    cln = (ngx_[% req_subsystem %]_cleanup_t *)
+    cln = (ngx_[% req_subsys %]_cleanup_t *)
               ((u_char *) cleanup
-              - offsetof(ngx_[% req_subsystem %]_cleanup_t, handler));
+              - offsetof(ngx_[% req_subsys %]_cleanup_t, handler));
 
     dd("cln: %p, cln->handler: %p, &cln->handler: %p",
        cln, cln->handler, &cln->handler);

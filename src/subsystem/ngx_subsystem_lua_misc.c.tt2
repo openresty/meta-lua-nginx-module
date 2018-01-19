@@ -77,7 +77,7 @@ ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
         return 1;
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         lua_pushnil(L);
         return 1;
@@ -292,7 +292,7 @@ ngx_[% subsystem %]_lua_ffi_headers_sent([% req_type %] *r)
 {
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return NGX_[% SUBSYS %]_LUA_FFI_NO_REQ_CTX;
     }

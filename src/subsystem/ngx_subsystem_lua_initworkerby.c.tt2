@@ -379,7 +379,7 @@ ngx_[% subsystem %]_lua_init_worker(ngx_cycle_t *cycle)
 
     ctx->context = NGX_[% SUBSYS %]_LUA_CONTEXT_INIT_WORKER;
     ctx->cur_co_ctx = NULL;
-    r->read_event_handler = ngx_[% req_subsystem %]_block_reading;
+    r->read_event_handler = ngx_[% req_subsys %]_block_reading;
 
     ngx_[% subsystem %]_lua_set_req(lmcf->lua, r);
 

@@ -101,7 +101,7 @@ ngx_[% subsys %]_lua_ngx_exec(lua_State *L)
 
     uri.len = len;
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
@@ -237,7 +237,7 @@ ngx_[% subsys %]_lua_ngx_redirect(lua_State *L)
         return luaL_error(L, "no request object found");
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -444,7 +444,7 @@ ngx_[% subsys %]_lua_on_abort(lua_State *L)
         return 2;
     }
 
-    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
     if (!llcf->check_client_abort) {
         lua_pushnil(L);
         lua_pushliteral(L, "lua_check_client_abort is off");
@@ -482,7 +482,7 @@ ngx_[% subsystem %]_lua_ffi_exit([% req_type %] *r, int status, u_char *err,
 {
     ngx_[% subsystem %]_lua_ctx_t       *ctx;
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         *errlen = ngx_snprintf(err, *errlen, "no request ctx found") - err;
         return NGX_ERROR;
