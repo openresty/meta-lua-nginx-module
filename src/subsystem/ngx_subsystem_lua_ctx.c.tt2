@@ -42,7 +42,7 @@ ngx_[% subsystem %]_lua_ngx_get_ctx(lua_State *L)
     }
 
     if (ctx->ctx_ref == LUA_NOREF) {
-        ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+        ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                        "lua create ngx.ctx table for the current request");
 
         lua_pushliteral(L, ngx_[% subsystem %]_lua_ctx_tables_key);
@@ -58,7 +58,7 @@ ngx_[% subsystem %]_lua_ngx_get_ctx(lua_State *L)
         return 1;
     }
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua fetching existing ngx.ctx table for the current "
                    "request");
 
@@ -99,7 +99,7 @@ ngx_[% subsystem %]_lua_ngx_set_ctx_helper(lua_State *L, [% req_type %] *r,
     }
 
     if (ctx->ctx_ref == LUA_NOREF) {
-        ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+        ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                        "lua create ngx.ctx table for the current request");
 
         lua_pushliteral(L, ngx_[% subsystem %]_lua_ctx_tables_key);
@@ -115,7 +115,7 @@ ngx_[% subsystem %]_lua_ngx_set_ctx_helper(lua_State *L, [% req_type %] *r,
         return 0;
     }
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua fetching existing ngx.ctx table for the current "
                    "request");
 
@@ -138,7 +138,7 @@ ngx_[% subsystem %]_lua_ffi_get_ctx_ref([% req_type %] *r)
 
     ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
-        return NGX_[% subsystem FILTER upper %]_LUA_FFI_NO_REQ_CTX;
+        return NGX_[% SUBSYS %]_LUA_FFI_NO_REQ_CTX;
     }
 
     return ctx->ctx_ref;
@@ -152,7 +152,7 @@ ngx_[% subsystem %]_lua_ffi_set_ctx_ref([% req_type %] *r, int ref)
 
     ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
-        return NGX_[% subsystem FILTER upper %]_LUA_FFI_NO_REQ_CTX;
+        return NGX_[% SUBSYS %]_LUA_FFI_NO_REQ_CTX;
     }
 
     ctx->ctx_ref = ref;
@@ -201,7 +201,7 @@ ngx_[% subsystem %]_lua_ngx_ctx_cleanup(void *data)
 
     ngx_[% subsystem %]_lua_ngx_ctx_cleanup_data_t    *clndata = data;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], ngx_cycle->log, 0,
                    "lua release ngx.ctx at ref %d", clndata->ref);
 
     L = clndata->vm;

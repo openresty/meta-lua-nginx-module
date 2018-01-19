@@ -40,44 +40,44 @@ ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L)
     }
 
     switch (ctx->context) {
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_INIT_WORKER:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_INIT_WORKER:
         lua_pushliteral(L, "init_worker");
         break;
 
 [% IF http_subsys -%]
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SET:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_SET:
         lua_pushliteral(L, "set");
         break;
 
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE:
         lua_pushliteral(L, "rewrite");
         break;
 
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS:
         lua_pushliteral(L, "access");
         break;
 
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_LOG:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_LOG:
         lua_pushliteral(L, "log");
         break;
 
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_HEADER_FILTER:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_HEADER_FILTER:
         lua_pushliteral(L, "header_filter");
         break;
 
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BODY_FILTER:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_BODY_FILTER:
         lua_pushliteral(L, "body_filter");
         break;
 
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT:
         lua_pushliteral(L, "ssl_cert");
         break;
 
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_STORE:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE:
         lua_pushliteral(L, "ssl_session_store");
         break;
 
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH:
         lua_pushliteral(L, "ssl_session_fetch");
         break;
 
@@ -87,15 +87,15 @@ ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L)
         break;
 [% END -%]
 
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT:
         lua_pushliteral(L, "content");
         break;
 
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER:
         lua_pushliteral(L, "timer");
         break;
 
-    case NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER:
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_BALANCER:
         lua_pushliteral(L, "balancer");
         break;
 

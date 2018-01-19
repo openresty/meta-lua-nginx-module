@@ -5,8 +5,8 @@
  */
 
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_CONTENT_BY_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_CONTENT_BY_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_CONTENT_BY_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_CONTENT_BY_H_INCLUDED_
 
 
 #include "ngx_[% subsystem %]_lua_common.h"
@@ -27,6 +27,6 @@ ngx_int_t ngx_[% subsystem %]_lua_content_run_posted_threads(lua_State *L,
     [% req_type %] *r, ngx_[% subsystem %]_lua_ctx_t *ctx, int n);
 
 
-#endif /* _NGX_[% subsystem FILTER upper %]_LUA_CONTENT_BY_H_INCLUDED_ */
+#endif /* _NGX_[% SUBSYS %]_LUA_CONTENT_BY_H_INCLUDED_ */
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

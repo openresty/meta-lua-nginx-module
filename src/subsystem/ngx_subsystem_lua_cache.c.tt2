@@ -208,7 +208,7 @@ ngx_[% subsystem %]_lua_cache_loadfile(ngx_log_t *log, lua_State *L,
     int              n;
     ngx_int_t        rc, errcode = NGX_ERROR;
     u_char          *p;
-    u_char           buf[NGX_[% subsystem FILTER upper %]_LUA_FILE_KEY_LEN + 1];
+    u_char           buf[NGX_[% SUBSYS %]_LUA_FILE_KEY_LEN + 1];
     const char      *err = NULL;
 
     n = lua_gettop(L);
@@ -216,7 +216,7 @@ ngx_[% subsystem %]_lua_cache_loadfile(ngx_log_t *log, lua_State *L,
     /*  calculate digest of script file path */
     if (cache_key == NULL) {
         dd("CACHE file key not pre-calculated...calculating");
-        p = ngx_copy(buf, NGX_[% subsystem FILTER upper %]_LUA_FILE_TAG, NGX_[% subsystem FILTER upper %]_LUA_FILE_TAG_LEN);
+        p = ngx_copy(buf, NGX_[% SUBSYS %]_LUA_FILE_TAG, NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
 
         p = ngx_[% subsystem %]_lua_digest_hex(p, script, ngx_strlen(script));
 

@@ -63,13 +63,13 @@
 #endif
 
 
-#ifndef NGX_[% subsystem FILTER upper %]_LUA_BT_DEPTH
-#define NGX_[% subsystem FILTER upper %]_LUA_BT_DEPTH  22
+#ifndef NGX_[% SUBSYS %]_LUA_BT_DEPTH
+#define NGX_[% SUBSYS %]_LUA_BT_DEPTH  22
 #endif
 
 
-#ifndef NGX_[% subsystem FILTER upper %]_LUA_BT_MAX_COROS
-#define NGX_[% subsystem FILTER upper %]_LUA_BT_MAX_COROS  5
+#ifndef NGX_[% SUBSYS %]_LUA_BT_MAX_COROS
+#define NGX_[% SUBSYS %]_LUA_BT_MAX_COROS  5
 #endif
 
 
@@ -165,7 +165,7 @@ ngx_[% subsystem %]_lua_set_path(ngx_cycle_t *cycle, lua_State *L, int tab_idx,
         luaL_gsub(L, tmp_path, AUX_MARK, default_path);
 
 #if (NGX_DEBUG)
-    ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], log, 0,
+    ngx_log_debug2(NGX_LOG_DEBUG_[% SUBSYS %], log, 0,
                    "lua setting lua package.%s to \"%s\"", fieldname, tmp_path);
 #endif
 
@@ -205,7 +205,7 @@ ngx_[% subsystem %]_lua_new_state(lua_State *parent_vm, ngx_cycle_t *cycle,
     const char      *new_cpath;
     size_t           old_cpath_len;
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], log, 0, "lua creating new vm state");
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], log, 0, "lua creating new vm state");
 
     L = luaL_newstate();
     if (L == NULL) {
@@ -241,7 +241,7 @@ ngx_[% subsystem %]_lua_new_state(lua_State *parent_vm, ngx_cycle_t *cycle,
     } else {
 #ifdef LUA_DEFAULT_PATH
 #   define LUA_DEFAULT_PATH_LEN (sizeof(LUA_DEFAULT_PATH) - 1)
-        ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], log, 0,
+        ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], log, 0,
                        "lua prepending default package.path with %s",
                        LUA_DEFAULT_PATH);
 
@@ -254,7 +254,7 @@ ngx_[% subsystem %]_lua_new_state(lua_State *parent_vm, ngx_cycle_t *cycle,
 
 #ifdef LUA_DEFAULT_CPATH
 #   define LUA_DEFAULT_CPATH_LEN (sizeof(LUA_DEFAULT_CPATH) - 1)
-        ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], log, 0,
+        ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], log, 0,
                        "lua prepending default package.cpath with %s",
                        LUA_DEFAULT_CPATH);
 
@@ -314,7 +314,7 @@ ngx_[% subsystem %]_lua_new_thread([% req_type %] *r, lua_State *L, int *ref)
     int              base;
     lua_State       *co;
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua creating new thread");
 
     base = lua_gettop(L);
@@ -359,7 +359,7 @@ ngx_[% subsystem %]_lua_del_thread([% req_type %] *r, lua_State *L,
         return;
     }
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua deleting light thread");
 
     lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_coroutines_key);
@@ -369,7 +369,7 @@ ngx_[% subsystem %]_lua_del_thread([% req_type %] *r, lua_State *L,
 
     luaL_unref(L, -1, coctx->co_ref);
     coctx->co_ref = LUA_NOREF;
-    coctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
+    coctx->co_status = NGX_[% SUBSYS %]_LUA_CO_DEAD;
 
     lua_pop(L, 1);
 }
@@ -654,7 +654,7 @@ ngx_[% subsystem %]_lua_send_http10_headers([% req_type %] *r,
         return NGX_OK;
     }
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua sending HTTP 1.0 response headers");
 
     if (r->header_only) {
@@ -685,7 +685,7 @@ send:
 static void
 ngx_[% subsystem %]_lua_init_registry(lua_State *L, ngx_log_t *log)
 {
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], log, 0,
                    "lua initializing lua registry");
 
     /* {{{ register a table to anchor lua coroutines reliably:
@@ -725,7 +725,7 @@ static void
 ngx_[% subsystem %]_lua_init_globals(lua_State *L, ngx_cycle_t *cycle,
     ngx_[% subsystem %]_lua_main_conf_t *lmcf, ngx_log_t *log)
 {
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], log, 0,
                    "lua initializing lua globals");
 
     lua_pushlightuserdata(L, cycle);
@@ -873,7 +873,7 @@ void
 ngx_[% subsystem %]_lua_reset_ctx([% req_type %] *r, lua_State *L,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua reset ctx");
 
     ngx_[% subsystem %]_lua_finalize_threads(r, ctx, L);
@@ -916,7 +916,7 @@ ngx_[% subsystem %]_lua_generic_phase_post_read([% req_type %] *r)
 {
     ngx_[% subsystem %]_lua_ctx_t  *ctx;
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua post read for rewrite/access phases");
 
     ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
@@ -959,7 +959,7 @@ ngx_[% subsystem %]_lua_request_cleanup(ngx_[% subsystem %]_lua_ctx_t *ctx, int 
 
     r = ctx->request;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua request cleanup: forcible=%d", forcible);
 
     if (ctx->cleanup) {
@@ -973,7 +973,7 @@ ngx_[% subsystem %]_lua_request_cleanup(ngx_[% subsystem %]_lua_ctx_t *ctx, int 
     if (r->connection->fd == (ngx_socket_t) -1) {
         /* being a fake request */
 
-        if (ctx->context == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER) {
+        if (ctx->context == NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER) {
             /* being a timer handler */
             lmcf->running_timers--;
         }
@@ -1085,7 +1085,7 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
             }
 #endif
 
-            ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+            ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                            "lua resume returned %d", rv);
 
             switch (rv) {
@@ -1093,7 +1093,7 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
                 /*  yielded, let event handler do the rest job */
                 /*  FIXME: add io cmd dispatcher here */
 
-                ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+                ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                                "lua thread yielded");
 
 #ifdef NGX_LUA_USE_ASSERT
@@ -1124,7 +1124,7 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
                  * lua_yield()
                  */
                 switch(ctx->co_op) {
-                case NGX_[% subsystem FILTER upper %]_LUA_USER_CORO_NOP:
+                case NGX_[% SUBSYS %]_LUA_USER_CORO_NOP:
                     dd("hit! it is the API yield");
 
                     ngx_[% subsystem %]_lua_assert(lua_gettop(ctx->cur_co_ctx->co) == 0);
@@ -1133,12 +1133,12 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
 
                     return NGX_AGAIN;
 
-                case NGX_[% subsystem FILTER upper %]_LUA_USER_THREAD_RESUME:
+                case NGX_[% SUBSYS %]_LUA_USER_THREAD_RESUME:
 
-                    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+                    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                                    "lua user thread resume");
 
-                    ctx->co_op = NGX_[% subsystem FILTER upper %]_LUA_USER_CORO_NOP;
+                    ctx->co_op = NGX_[% SUBSYS %]_LUA_USER_CORO_NOP;
                     nrets = lua_gettop(ctx->cur_co_ctx->co) - 1;
                     dd("nrets = %d", nrets);
 
@@ -1149,15 +1149,15 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
 
                     break;
 
-                case NGX_[% subsystem FILTER upper %]_LUA_USER_CORO_RESUME:
-                    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+                case NGX_[% SUBSYS %]_LUA_USER_CORO_RESUME:
+                    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                                    "lua coroutine: resume");
 
                     /*
                      * the target coroutine lies at the base of the
                      * parent's stack
                      */
-                    ctx->co_op = NGX_[% subsystem FILTER upper %]_LUA_USER_CORO_NOP;
+                    ctx->co_op = NGX_[% SUBSYS %]_LUA_USER_CORO_NOP;
 
                     old_co = ctx->cur_co_ctx->parent_co_ctx->co;
 
@@ -1174,12 +1174,12 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
                     break;
 
                 default:
-                    /* ctx->co_op == NGX_[% subsystem FILTER upper %]_LUA_USER_CORO_YIELD */
+                    /* ctx->co_op == NGX_[% SUBSYS %]_LUA_USER_CORO_YIELD */
 
-                    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+                    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                                    "lua coroutine: yield");
 
-                    ctx->co_op = NGX_[% subsystem FILTER upper %]_LUA_USER_CORO_NOP;
+                    ctx->co_op = NGX_[% SUBSYS %]_LUA_USER_CORO_NOP;
 
                     if (ngx_[% subsystem %]_lua_is_thread(ctx)) {
                         ngx_[% subsystem %]_lua_probe_thread_yield(r, ctx->cur_co_ctx->co);
@@ -1193,7 +1193,7 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
 #endif
 
                         ngx_[% subsystem %]_lua_probe_info("set co running");
-                        ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_RUNNING;
+                        ctx->cur_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_RUNNING;
 
                         if (ctx->posted_threads) {
                             ngx_[% subsystem %]_lua_post_thread(r, ctx, ctx->cur_co_ctx);
@@ -1245,7 +1245,7 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
 
                 ngx_[% subsystem %]_lua_probe_coroutine_done(r, ctx->cur_co_ctx->co, 1);
 
-                ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
+                ctx->cur_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_DEAD;
 
                 if (ctx->cur_co_ctx->zombie_child_threads) {
                     ngx_[% subsys %]_lua_cleanup_zombie_child_uthreads(r, L, ctx,
@@ -1300,7 +1300,7 @@ ngx_[% subsystem %]_lua_run_thread(lua_State *L, [% req_type %] *r,
                         lua_pushboolean(ctx->cur_co_ctx->co, 1);
                         lua_insert(ctx->cur_co_ctx->co, 1);
 
-                        ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_ZOMBIE;
+                        ctx->cur_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_ZOMBIE;
                         ctx->cur_co_ctx = NULL;
                         return NGX_AGAIN;
                     }
@@ -1360,9 +1360,9 @@ user_co_done:
 
                 ngx_[% subsystem %]_lua_probe_info("set parent running");
 
-                next_coctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_RUNNING;
+                next_coctx->co_status = NGX_[% SUBSYS %]_LUA_CO_RUNNING;
 
-                ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+                ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                                "lua coroutine: lua user thread ended normally");
 
                 continue;
@@ -1438,7 +1438,7 @@ user_co_done:
                     lua_pushboolean(ctx->cur_co_ctx->co, 0);
                     lua_insert(ctx->cur_co_ctx->co, 1);
 
-                    ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_ZOMBIE;
+                    ctx->cur_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_ZOMBIE;
                     ctx->cur_co_ctx = NULL;
                     return NGX_AGAIN;
                 }
@@ -1506,7 +1506,7 @@ user_co_done:
 
             ngx_[% subsystem %]_lua_probe_info("set parent running");
 
-            next_coctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_RUNNING;
+            next_coctx->co_status = NGX_[% SUBSYS %]_LUA_CO_RUNNING;
 
             /*
              * ended with error, coroutine.resume returns false plus
@@ -1535,7 +1535,7 @@ no_parent:
 
     lua_settop(L, 0);
 
-    ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
+    ctx->cur_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_DEAD;
 
 [% IF http_subsys %]
     if (r->filter_finalize) {
@@ -1599,7 +1599,7 @@ ngx_[% subsystem %]_lua_wev_handler([% req_type %] *r)
         return NGX_ERROR;
     }
 
-    ngx_log_debug3(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
+    ngx_log_debug3(NGX_LOG_DEBUG_[% SUBSYS %], c->log, 0,
                    "lua run write event handler: timedout:%ud, ready:%ud, "
                    "writing_raw_req_socket:%ud",
                    wev->timedout, wev->ready, ctx->writing_raw_req_socket);
@@ -1682,7 +1682,7 @@ flush_coros:
 
 useless:
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], c->log, 0,
                    "useless lua write event handler");
 
     if (ctx->entered_content_phase) {
@@ -1790,7 +1790,7 @@ ngx_[% subsystem %]_lua_flush_pending_output([% req_type %] *r,
     c = r->connection;
     wev = c->write;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], c->log, 0,
                    "lua flushing output: buffered 0x%uxd",
                    c->buffered);
 
@@ -1838,7 +1838,7 @@ ngx_[% subsystem %]_lua_flush_pending_output([% req_type %] *r,
         }
 
         if (ctx->flushing_coros) {
-            ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
+            ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], c->log, 0,
                            "lua flush still waiting: buffered 0x%uxd",
                            c->buffered);
 
@@ -2246,7 +2246,7 @@ ngx_[% subsystem %]_lua_handle_exec(lua_State *L, [% req_type %] *r,
 {
     ngx_int_t               rc;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua thread initiated internal redirect to %V",
                    &ctx->exec_uri);
 
@@ -2254,7 +2254,7 @@ ngx_[% subsystem %]_lua_handle_exec(lua_State *L, [% req_type %] *r,
 
     ngx_[% subsystem %]_lua_probe_coroutine_done(r, ctx->cur_co_ctx->co, 1);
 
-    ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
+    ctx->cur_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_DEAD;
 
     if (r->filter_finalize) {
         ngx_http_set_ctx(r, ctx, ngx_[% subsystem %]_lua_module);
@@ -2347,7 +2347,7 @@ ngx_[% subsystem %]_lua_handle_exit(lua_State *L, [% req_type %] *r,
     ngx_int_t           rc;
 [% END %]
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua thread aborting request with status %d",
                    ctx->exit_code);
 
@@ -2355,7 +2355,7 @@ ngx_[% subsystem %]_lua_handle_exit(lua_State *L, [% req_type %] *r,
 
     ngx_[% subsystem %]_lua_probe_coroutine_done(r, ctx->cur_co_ctx->co, 1);
 
-    ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
+    ctx->cur_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_DEAD;
 
 [% IF http_subsys %]
     if (r->filter_finalize) {
@@ -2705,7 +2705,7 @@ static ngx_int_t
 ngx_[% subsystem %]_lua_handle_rewrite_jump(lua_State *L, [% req_type %] *r,
     ngx_[% subsystem %]_lua_ctx_t *ctx)
 {
-    ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug2(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua thread aborting request with URI rewrite jump: "
                    "\"%V?%V\"", &r->uri, &r->args);
 
@@ -2713,7 +2713,7 @@ ngx_[% subsystem %]_lua_handle_rewrite_jump(lua_State *L, [% req_type %] *r,
 
     ngx_[% subsystem %]_lua_probe_coroutine_done(r, ctx->cur_co_ctx->co, 1);
 
-    ctx->cur_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
+    ctx->cur_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_DEAD;
 
     if (r->filter_finalize) {
         ngx_http_set_ctx(r, ctx, ngx_[% subsystem %]_lua_module);
@@ -2857,7 +2857,7 @@ ngx_[% subsystem %]_lua_chain_get_free_buf(ngx_log_t *log, ngx_pool_t *p,
         start = b->start;
         end = b->end;
         if (start && (size_t) (end - start) >= len) {
-            ngx_log_debug4(NGX_LOG_DEBUG_[% subsystem FILTER upper %], log, 0,
+            ngx_log_debug4(NGX_LOG_DEBUG_[% SUBSYS %], log, 0,
                            "lua reuse free buf memory %O >= %uz, cl:%p, p:%p",
                            (off_t) (end - start), len, cl, start);
 
@@ -2876,7 +2876,7 @@ ngx_[% subsystem %]_lua_chain_get_free_buf(ngx_log_t *log, ngx_pool_t *p,
             return cl;
         }
 
-        ngx_log_debug4(NGX_LOG_DEBUG_[% subsystem FILTER upper %], log, 0,
+        ngx_log_debug4(NGX_LOG_DEBUG_[% SUBSYS %], log, 0,
                        "lua reuse free buf chain, but reallocate memory "
                        "because %uz >= %O, cl:%p, p:%p", len,
                        (off_t) (b->end - b->start), cl, b->start);
@@ -2913,7 +2913,7 @@ ngx_[% subsystem %]_lua_chain_get_free_buf(ngx_log_t *log, ngx_pool_t *p,
         return NULL;
     }
 
-    ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], log, 0,
+    ngx_log_debug2(NGX_LOG_DEBUG_[% SUBSYS %], log, 0,
                    "lua allocate new chainlink and new buf of size %uz, cl:%p",
                    len, cl);
 
@@ -2946,7 +2946,7 @@ ngx_[% subsystem %]_lua_thread_traceback(lua_State *L, lua_State *co,
 
     while (co) {
 
-        if (coid >= NGX_[% subsystem FILTER upper %]_LUA_BT_MAX_COROS) {
+        if (coid >= NGX_[% SUBSYS %]_LUA_BT_MAX_COROS) {
             break;
         }
 
@@ -2959,7 +2959,7 @@ ngx_[% subsystem %]_lua_thread_traceback(lua_State *L, lua_State *co,
 
             lua_checkstack(L, 5);
 
-            if (level > NGX_[% subsystem FILTER upper %]_LUA_BT_DEPTH) {
+            if (level > NGX_[% SUBSYS %]_LUA_BT_DEPTH) {
                 lua_pushliteral(L, "\n\t...");
                 break;
             }
@@ -2995,7 +2995,7 @@ ngx_[% subsystem %]_lua_thread_traceback(lua_State *L, lua_State *co,
 
         /* check if the coroutine has a parent coroutine*/
         coctx = coctx->parent_co_ctx;
-        if (!coctx || coctx->co_status == NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD) {
+        if (!coctx || coctx->co_status == NGX_[% SUBSYS %]_LUA_CO_DEAD) {
             break;
         }
 
@@ -3072,14 +3072,14 @@ ngx_[% subsys %]_lua_param_get(lua_State *L)
         return luaL_error(L, "ctx not found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SET
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BODY_FILTER);
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_SET
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_BODY_FILTER);
 
-    if (ctx->context & (NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SET)) {
+    if (ctx->context & (NGX_[% SUBSYS %]_LUA_CONTEXT_SET)) {
         return ngx_[% subsystem %]_lua_setby_param_get(L);
     }
 
-    /* ctx->context & (NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BODY_FILTER) */
+    /* ctx->context & (NGX_[% SUBSYS %]_LUA_CONTEXT_BODY_FILTER) */
 
     return ngx_[% subsystem %]_lua_body_filter_param_get(L);
 }
@@ -3101,7 +3101,7 @@ ngx_[% subsys %]_lua_param_set(lua_State *L)
         return luaL_error(L, "ctx not found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BODY_FILTER);
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_BODY_FILTER);
 
     return ngx_[% subsystem %]_lua_body_filter_param_set(L, r, ctx);
 }
@@ -3200,7 +3200,7 @@ ngx_[% subsystem %]_lua_run_posted_threads(ngx_connection_t *c, lua_State *L,
         ngx_[% subsys %]_lua_probe_run_posted_thread(r, pt->co_ctx->co,
                                                      (int) pt->co_ctx->co_status);
 
-        if (pt->co_ctx->co_status != NGX_[% subsystem FILTER upper %]_LUA_CO_RUNNING) {
+        if (pt->co_ctx->co_status != NGX_[% SUBSYS %]_LUA_CO_RUNNING) {
             continue;
         }
 
@@ -3273,7 +3273,7 @@ ngx_[% subsystem %]_lua_finalize_threads([% req_type %] *r,
 #if 1
     coctx = ctx->on_abort_co_ctx;
     if (coctx && coctx->co_ref != LUA_NOREF) {
-        if (coctx->co_status != NGX_[% subsystem FILTER upper %]_LUA_CO_SUSPENDED) {
+        if (coctx->co_status != NGX_[% SUBSYS %]_LUA_CO_SUSPENDED) {
             /* the on_abort thread contributes to the coctx->uthreads
              * counter only when it actually starts running */
             ngx_[% subsystem %]_lua_cleanup_pending_operation(coctx);
@@ -3289,7 +3289,7 @@ ngx_[% subsystem %]_lua_finalize_threads([% req_type %] *r,
         luaL_unref(L, -1, coctx->co_ref);
         coctx->co_ref = LUA_NOREF;
 
-        coctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
+        coctx->co_status = NGX_[% SUBSYS %]_LUA_CO_DEAD;
         ctx->on_abort_co_ctx = NULL;
     }
 #endif
@@ -3330,7 +3330,7 @@ ngx_[% subsystem %]_lua_finalize_threads([% req_type %] *r,
                 luaL_unref(L, -1, ref);
                 coctx->co_ref = LUA_NOREF;
 
-                coctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
+                coctx->co_status = NGX_[% SUBSYS %]_LUA_CO_DEAD;
                 ctx->uthreads--;
             }
         }
@@ -3358,7 +3358,7 @@ ngx_[% subsystem %]_lua_finalize_threads([% req_type %] *r,
 
         luaL_unref(L, -1, coctx->co_ref);
         coctx->co_ref = LUA_NOREF;
-        coctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD;
+        coctx->co_status = NGX_[% SUBSYS %]_LUA_CO_DEAD;
     }
 
     if (inited) {
@@ -3434,7 +3434,7 @@ ngx_[% subsys %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *ev)
             event = ev->write ? NGX_WRITE_EVENT : NGX_READ_EVENT;
 
             if (ngx_del_event(ev, event, 0) != NGX_OK) {
-                return NGX_[% subsystem FILTER upper %]_INTERNAL_SERVER_ERROR;
+                return NGX_[% SUBSYS %]_INTERNAL_SERVER_ERROR;
             }
         }
 
@@ -3487,7 +3487,7 @@ ngx_[% subsys %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *ev)
 
     err = ngx_socket_errno;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ev->log, err,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], ev->log, err,
                    "http lua recv(): %d", n);
 
     if (ev->write && (n >= 0 || err == NGX_EAGAIN)) {
@@ -3501,7 +3501,7 @@ ngx_[% subsys %]_lua_check_broken_connection([% req_type %] *r, ngx_event_t *ev)
 
 #if 1
         if (ngx_del_event(ev, event, 0) != NGX_OK) {
-            return NGX_[% subsystem FILTER upper %]_INTERNAL_SERVER_ERROR;
+            return NGX_[% SUBSYS %]_INTERNAL_SERVER_ERROR;
         }
 #endif
     }
@@ -3570,7 +3570,7 @@ ngx_[% subsystem %]_lua_rd_check_broken_connection([% req_type %] *r)
         return;
     }
 
-    if (ctx->on_abort_co_ctx->co_status != NGX_[% subsystem FILTER upper %]_LUA_CO_SUSPENDED) {
+    if (ctx->on_abort_co_ctx->co_status != NGX_[% SUBSYS %]_LUA_CO_SUSPENDED) {
 
         /* on_abort already run for the current request handler */
 
@@ -3591,7 +3591,7 @@ ngx_[% subsystem %]_lua_rd_check_broken_connection([% req_type %] *r)
 
     ctx->uthreads++;
     ctx->resume_handler = ngx_[% subsystem %]_lua_on_abort_resume;
-    ctx->on_abort_co_ctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_RUNNING;
+    ctx->on_abort_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_RUNNING;
     ctx->cur_co_ctx = ctx->on_abort_co_ctx;
 
     ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
@@ -3624,7 +3624,7 @@ ngx_[% subsystem %]_lua_on_abort_resume([% req_type %] *r)
 
     ctx->resume_handler = ngx_[% subsystem %]_lua_wev_handler;
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua resuming the on_abort callback thread");
 
 #if 0
@@ -3637,7 +3637,7 @@ ngx_[% subsystem %]_lua_on_abort_resume([% req_type %] *r)
 
     rc = ngx_[% subsystem %]_lua_run_thread(vm, r, ctx, 0);
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua run thread returned %d", rc);
 
     if (rc == NGX_AGAIN) {
@@ -3684,7 +3684,7 @@ ngx_[% subsystem %]_lua_test_expect([% req_type %] *r)
         return NGX_OK;
     }
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "send 100 Continue");
 
     n = r->connection->send(r->connection,
@@ -3767,7 +3767,7 @@ ngx_[% subsystem %]_lua_finalize_fake_request([% req_type %] *r, ngx_int_t rc)
     if (rc == NGX_ERROR || rc >= NGX_STREAM_BAD_REQUEST) {
 [% END %]
 
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
 
         if (r->connection->ssl) {
             ssl_conn = r->connection->ssl->connection;
@@ -3814,7 +3814,7 @@ ngx_[% subsystem %]_lua_close_fake_request([% req_type %] *r)
     c = r->connection;
 
 [% IF http_subsys %]
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], c->log, 0,
                    "http lua fake request count:%d", r->count);
 
 [% END %]
@@ -3850,7 +3850,7 @@ ngx_[% subsystem %]_lua_free_fake_request([% req_type %] *r)
 
     log = r->connection->log;
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], log, 0, "[% subsystem %] lua close fake "
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], log, 0, "[% subsystem %] lua close fake "
                    "request");
 
     if (r->pool == NULL) {
@@ -3884,7 +3884,7 @@ ngx_[% subsystem %]_lua_close_fake_connection(ngx_connection_t *c)
     ngx_pool_t          *pool;
     ngx_connection_t    *saved_c = NULL;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], c->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], c->log, 0,
                    "[% subsystem %] lua close fake [% subsystem %] connection %p", c);
 
     c->destroyed = 1;
@@ -3947,7 +3947,7 @@ ngx_[% subsystem %]_lua_init_vm(lua_State *parent_vm, ngx_cycle_t *cycle,
         return NULL;
     }
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], log, 0, "lua initialize the "
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], log, 0, "lua initialize the "
                    "global Lua VM %p", L);
 
     /* register cleanup handler for Lua VM */
@@ -4009,7 +4009,7 @@ ngx_[% subsystem %]_lua_cleanup_vm(void *data)
 #endif
 
     if (state) {
-        ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+        ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], ngx_cycle->log, 0,
                        "[% log_prefix %]lua decrementing the reference count for Lua VM: %i",
                        state->count);
 
@@ -4018,7 +4018,7 @@ ngx_[% subsystem %]_lua_cleanup_vm(void *data)
 
             ngx_[% subsystem %]_lua_cleanup_conn_pools(L);
 
-            ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
+            ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], ngx_cycle->log, 0,
                            "[% log_prefix %]lua close the global Lua VM %p", L);
             lua_close(L);
             ngx_free(state);
@@ -4313,7 +4313,7 @@ ngx_[% subsys %]_lua_cleanup_add([% req_type %] *r, size_t size)
 
             dd("reuse cleanup: %p", cln);
 
-            ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+            ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                            "lua http cleanup reuse: %p", cln);
 
             cln->handler = NULL;
@@ -4363,7 +4363,7 @@ ngx_[% subsystem %]_lua_cleanup_free([% req_type %] *r,
             cln->next = ctx->free_cleanup;
             ctx->free_cleanup = cln;
 
-            ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+            ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                            "lua [% subsystem %] cleanup free: %p", cln);
 
             return;

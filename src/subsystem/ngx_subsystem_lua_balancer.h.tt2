@@ -4,8 +4,8 @@
  */
 
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_BALANCER_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_BALANCER_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_BALANCER_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_BALANCER_H_INCLUDED_
 
 
 #include "ngx_[% subsystem %]_lua_common.h"
@@ -24,4 +24,4 @@ char *ngx_[% subsystem %]_lua_balancer_by_lua_block(ngx_conf_t *cf, ngx_command_
     void *conf);
 
 
-#endif /* _NGX_[% subsystem FILTER upper %]_LUA_BALANCER_H_INCLUDED_ */
+#endif /* _NGX_[% SUBSYS %]_LUA_BALANCER_H_INCLUDED_ */

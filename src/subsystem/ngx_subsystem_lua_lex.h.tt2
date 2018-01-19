@@ -4,8 +4,8 @@
  */
 
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_LEX_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_LEX_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_LEX_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_LEX_H_INCLUDED_
 
 
 #include "ngx_[% subsystem %]_lua_common.h"

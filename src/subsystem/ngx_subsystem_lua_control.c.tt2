@@ -106,9 +106,9 @@ ngx_[% subsys %]_lua_ngx_exec(lua_State *L)
         return luaL_error(L, "no ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT);
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT);
 
     ngx_[% subsystem %]_lua_check_if_abortable(L, ctx);
 
@@ -186,7 +186,7 @@ ngx_[% subsys %]_lua_ngx_exec(lua_State *L)
     ctx->exec_uri = uri;
     ctx->exec_args = args;
 
-    ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug2(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua exec \"%V?%V\"",
                    &ctx->exec_uri, &ctx->exec_args);
 
@@ -242,9 +242,9 @@ ngx_[% subsys %]_lua_ngx_redirect(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT);
+    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT);
 
     ngx_[% subsystem %]_lua_check_if_abortable(L, ctx);
 
@@ -283,7 +283,7 @@ ngx_[% subsys %]_lua_ngx_redirect(lua_State *L)
     ctx->exit_code = rc;
     ctx->exited = 1;
 
-    ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug2(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua redirect to \"%V\" with code %i",
                    &h->value, ctx->exit_code);
 
@@ -322,16 +322,16 @@ ngx_[% subsys %]_lua_ngx_exit(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER
+    ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_BALANCER
 [% IF http_subsys -%]
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_HEADER_FILTER
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_STORE
-                               | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_HEADER_FILTER
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 
 [% ELSIF stream_subsys -%]
                                | NGX_STREAM_LUA_CONTEXT_PREREAD
@@ -341,20 +341,20 @@ ngx_[% subsys %]_lua_ngx_exit(lua_State *L)
     rc = (ngx_int_t) luaL_checkinteger(L, 1);
 
 [% IF http_subsys %]
-    if (ctx->context & (NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-                        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_STORE
-                        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH))
+    if (ctx->context & (NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
+                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE
+                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH))
     {
 
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
 
         ctx->exit_code = rc;
         ctx->exited = 1;
 
-        ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+        ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                        "lua exit with code %i", rc);
 
-        if (ctx->context == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_STORE) {
+        if (ctx->context == NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE) {
             return 0;
         }
 
@@ -397,7 +397,7 @@ ngx_[% subsys %]_lua_ngx_exit(lua_State *L)
     ctx->exit_code = rc;
     ctx->exited = 1;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua exit with code %i", ctx->exit_code);
 
 [%- IF http_subsys %]
@@ -467,7 +467,7 @@ ngx_[% subsys %]_lua_on_abort(lua_State *L)
 
     dd("on_wait thread 2: %p", coctx->co);
 
-    coctx->co_status = NGX_[% subsystem FILTER upper %]_LUA_CO_SUSPENDED;
+    coctx->co_status = NGX_[% SUBSYS %]_LUA_CO_SUSPENDED;
     coctx->parent_co_ctx = ctx->cur_co_ctx;
 
     lua_pushinteger(L, 1);
@@ -488,35 +488,35 @@ ngx_[% subsystem %]_lua_ffi_exit([% req_type %] *r, int status, u_char *err,
         return NGX_ERROR;
     }
 
-    if (ngx_[% subsystem %]_lua_ffi_check_context(ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_REWRITE
-                                       | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_ACCESS
-                                       | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
-                                       | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
-                                       | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_HEADER_FILTER
-                                       | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER
-                                       | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-                                       | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_STORE
-                                       | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH,
+    if (ngx_[% subsystem %]_lua_ffi_check_context(ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_HEADER_FILTER
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_BALANCER
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH,
                                        err, errlen)
         != NGX_OK)
     {
         return NGX_ERROR;
     }
 
-    if (ctx->context & (NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_CERT
-                        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_STORE
-                        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_FETCH))
+    if (ctx->context & (NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
+                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE
+                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH))
     {
 
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
 
         ctx->exit_code = status;
         ctx->exited = 1;
 
-        ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+        ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                        "lua exit with code %d", status);
 
-        if (ctx->context == NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_SSL_SESS_STORE) {
+        if (ctx->context == NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE) {
             return NGX_DONE;
         }
 
@@ -562,11 +562,11 @@ ngx_[% subsystem %]_lua_ffi_exit([% req_type %] *r, int status, u_char *err,
     ctx->exit_code = status;
     ctx->exited = 1;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], r->connection->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "lua exit with code %i", ctx->exit_code);
 
-    if (ctx->context & (NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_HEADER_FILTER
-                        | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER))
+    if (ctx->context & (NGX_[% SUBSYS %]_LUA_CONTEXT_HEADER_FILTER
+                        | NGX_[% SUBSYS %]_LUA_CONTEXT_BALANCER))
     {
         return NGX_DONE;
     }
