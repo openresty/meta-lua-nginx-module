@@ -10,40 +10,40 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_shdict.h"
-#include "ngx_[% subsystem %]_lua_util.h"
-#include "ngx_[% subsystem %]_lua_api.h"
+#include "ngx_[% subsys %]_lua_shdict.h"
+#include "ngx_[% subsys %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_api.h"
 
 
-static int ngx_[% subsystem %]_lua_shdict_set(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_safe_set(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_get(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_get_stale(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_get_helper(lua_State *L, int get_stale);
-static int ngx_[% subsystem %]_lua_shdict_expire(ngx_[% subsystem %]_lua_shdict_ctx_t *ctx,
+static int ngx_[% subsys %]_lua_shdict_set(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_safe_set(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_get(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_get_stale(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_get_helper(lua_State *L, int get_stale);
+static int ngx_[% subsys %]_lua_shdict_expire(ngx_[% subsys %]_lua_shdict_ctx_t *ctx,
     ngx_uint_t n);
-static ngx_int_t ngx_[% subsystem %]_lua_shdict_lookup(ngx_shm_zone_t *shm_zone,
+static ngx_int_t ngx_[% subsys %]_lua_shdict_lookup(ngx_shm_zone_t *shm_zone,
     ngx_uint_t hash, u_char *kdata, size_t klen,
-    ngx_[% subsystem %]_lua_shdict_node_t **sdp);
-static int ngx_[% subsystem %]_lua_shdict_set_helper(lua_State *L, int flags);
-static int ngx_[% subsystem %]_lua_shdict_add(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_safe_add(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_replace(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_incr(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_delete(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_flush_all(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_flush_expired(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_get_keys(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_lpush(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_rpush(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_push_helper(lua_State *L, int flags);
-static int ngx_[% subsystem %]_lua_shdict_lpop(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_rpop(lua_State *L);
-static int ngx_[% subsystem %]_lua_shdict_pop_helper(lua_State *L, int flags);
-static int ngx_[% subsystem %]_lua_shdict_llen(lua_State *L);
+    ngx_[% subsys %]_lua_shdict_node_t **sdp);
+static int ngx_[% subsys %]_lua_shdict_set_helper(lua_State *L, int flags);
+static int ngx_[% subsys %]_lua_shdict_add(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_safe_add(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_replace(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_incr(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_delete(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_flush_all(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_flush_expired(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_get_keys(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_lpush(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_rpush(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_push_helper(lua_State *L, int flags);
+static int ngx_[% subsys %]_lua_shdict_lpop(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_rpop(lua_State *L);
+static int ngx_[% subsys %]_lua_shdict_pop_helper(lua_State *L, int flags);
+static int ngx_[% subsys %]_lua_shdict_llen(lua_State *L);
 
 
-static ngx_inline ngx_shm_zone_t *ngx_[% subsystem %]_lua_shdict_get_zone(lua_State *L,
+static ngx_inline ngx_shm_zone_t *ngx_[% subsys %]_lua_shdict_get_zone(lua_State *L,
                                                                int index);
 
 
@@ -71,7 +71,7 @@ enum {
 
 
 static ngx_inline ngx_queue_t *
-ngx_[% subsystem %]_lua_shdict_get_list_head(ngx_[% subsystem %]_lua_shdict_node_t *sd, size_t len)
+ngx_[% subsys %]_lua_shdict_get_list_head(ngx_[% subsys %]_lua_shdict_node_t *sd, size_t len)
 {
     return (ngx_queue_t *) ngx_align_ptr(((u_char *) &sd->data + len),
                                          NGX_ALIGNMENT);
@@ -79,12 +79,12 @@ ngx_[% subsystem %]_lua_shdict_get_list_head(ngx_[% subsystem %]_lua_shdict_node
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_shdict_init_zone(ngx_shm_zone_t *shm_zone, void *data)
+ngx_[% subsys %]_lua_shdict_init_zone(ngx_shm_zone_t *shm_zone, void *data)
 {
-    ngx_[% subsystem %]_lua_shdict_ctx_t  *octx = data;
+    ngx_[% subsys %]_lua_shdict_ctx_t  *octx = data;
+    ngx_[% subsys %]_lua_shdict_ctx_t  *ctx;
 
-    size_t                      len;
-    ngx_[% subsystem %]_lua_shdict_ctx_t  *ctx;
+    size_t          len;
 
     dd("init zone");
 
@@ -105,7 +105,7 @@ ngx_[% subsystem %]_lua_shdict_init_zone(ngx_shm_zone_t *shm_zone, void *data)
         return NGX_OK;
     }
 
-    ctx->sh = ngx_slab_alloc(ctx->shpool, sizeof(ngx_[% subsystem %]_lua_shdict_shctx_t));
+    ctx->sh = ngx_slab_alloc(ctx->shpool, sizeof(ngx_[% subsys %]_lua_shdict_shctx_t));
     if (ctx->sh == NULL) {
         return NGX_ERROR;
     }
@@ -113,7 +113,7 @@ ngx_[% subsystem %]_lua_shdict_init_zone(ngx_shm_zone_t *shm_zone, void *data)
     ctx->shpool->data = ctx->sh;
 
     ngx_rbtree_init(&ctx->sh->rbtree, &ctx->sh->sentinel,
-                    ngx_[% subsystem %]_lua_shdict_rbtree_insert_value);
+                    ngx_[% subsys %]_lua_shdict_rbtree_insert_value);
 
     ngx_queue_init(&ctx->sh->lru_queue);
 
@@ -136,11 +136,12 @@ ngx_[% subsystem %]_lua_shdict_init_zone(ngx_shm_zone_t *shm_zone, void *data)
 
 
 void
-ngx_[% subsystem %]_lua_shdict_rbtree_insert_value(ngx_rbtree_node_t *temp,
+ngx_[% subsys %]_lua_shdict_rbtree_insert_value(ngx_rbtree_node_t *temp,
     ngx_rbtree_node_t *node, ngx_rbtree_node_t *sentinel)
 {
     ngx_rbtree_node_t           **p;
-    ngx_[% subsystem %]_lua_shdict_node_t   *sdn, *sdnt;
+
+    ngx_[% subsys %]_lua_shdict_node_t   *sdn, *sdnt;
 
     for ( ;; ) {
 
@@ -154,8 +155,8 @@ ngx_[% subsystem %]_lua_shdict_rbtree_insert_value(ngx_rbtree_node_t *temp,
 
         } else { /* node->key == temp->key */
 
-            sdn = (ngx_[% subsystem %]_lua_shdict_node_t *) &node->color;
-            sdnt = (ngx_[% subsystem %]_lua_shdict_node_t *) &temp->color;
+            sdn = (ngx_[% subsys %]_lua_shdict_node_t *) &node->color;
+            sdnt = (ngx_[% subsys %]_lua_shdict_node_t *) &temp->color;
 
             p = ngx_memn2cmp(sdn->data, sdnt->data, sdn->key_len,
                              sdnt->key_len) < 0 ? &temp->left : &temp->right;
@@ -177,16 +178,17 @@ ngx_[% subsystem %]_lua_shdict_rbtree_insert_value(ngx_rbtree_node_t *temp,
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_shdict_lookup(ngx_shm_zone_t *shm_zone, ngx_uint_t hash,
-    u_char *kdata, size_t klen, ngx_[% subsystem %]_lua_shdict_node_t **sdp)
+ngx_[% subsys %]_lua_shdict_lookup(ngx_shm_zone_t *shm_zone, ngx_uint_t hash,
+    u_char *kdata, size_t klen, ngx_[% subsys %]_lua_shdict_node_t **sdp)
 {
     ngx_int_t                    rc;
     ngx_time_t                  *tp;
     uint64_t                     now;
     int64_t                      ms;
     ngx_rbtree_node_t           *node, *sentinel;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
 
     ctx = shm_zone->data;
 
@@ -207,7 +209,7 @@ ngx_[% subsystem %]_lua_shdict_lookup(ngx_shm_zone_t *shm_zone, ngx_uint_t hash,
 
         /* hash == node->key */
 
-        sd = (ngx_[% subsystem %]_lua_shdict_node_t *) &node->color;
+        sd = (ngx_[% subsys %]_lua_shdict_node_t *) &node->color;
 
         rc = ngx_memn2cmp(kdata, sd->data, klen, (size_t) sd->key_len);
 
@@ -246,16 +248,17 @@ ngx_[% subsystem %]_lua_shdict_lookup(ngx_shm_zone_t *shm_zone, ngx_uint_t hash,
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_expire(ngx_[% subsystem %]_lua_shdict_ctx_t *ctx, ngx_uint_t n)
+ngx_[% subsys %]_lua_shdict_expire(ngx_[% subsys %]_lua_shdict_ctx_t *ctx, ngx_uint_t n)
 {
     ngx_time_t                      *tp;
     uint64_t                         now;
     ngx_queue_t                     *q, *list_queue, *lq;
     int64_t                          ms;
     ngx_rbtree_node_t               *node;
-    ngx_[% subsystem %]_lua_shdict_node_t      *sd;
     int                              freed = 0;
-    ngx_[% subsystem %]_lua_shdict_list_node_t *lnode;
+
+    ngx_[% subsys %]_lua_shdict_node_t      *sd;
+    ngx_[% subsys %]_lua_shdict_list_node_t *lnode;
 
     tp = ngx_timeofday();
 
@@ -275,7 +278,7 @@ ngx_[% subsystem %]_lua_shdict_expire(ngx_[% subsystem %]_lua_shdict_ctx_t *ctx,
 
         q = ngx_queue_last(&ctx->sh->lru_queue);
 
-        sd = ngx_queue_data(q, ngx_[% subsystem %]_lua_shdict_node_t, queue);
+        sd = ngx_queue_data(q, ngx_[% subsys %]_lua_shdict_node_t, queue);
 
         if (n++ != 0) {
 
@@ -290,13 +293,13 @@ ngx_[% subsystem %]_lua_shdict_expire(ngx_[% subsystem %]_lua_shdict_ctx_t *ctx,
         }
 
         if (sd->value_type == SHDICT_TLIST) {
-            list_queue = ngx_[% subsystem %]_lua_shdict_get_list_head(sd, sd->key_len);
+            list_queue = ngx_[% subsys %]_lua_shdict_get_list_head(sd, sd->key_len);
 
             for (lq = ngx_queue_head(list_queue);
                  lq != ngx_queue_sentinel(list_queue);
                  lq = ngx_queue_next(lq))
             {
-                lnode = ngx_queue_data(lq, ngx_[% subsystem %]_lua_shdict_list_node_t,
+                lnode = ngx_queue_data(lq, ngx_[% subsys %]_lua_shdict_list_node_t,
                                        queue);
 
                 ngx_slab_free_locked(ctx->shpool, lnode);
@@ -320,9 +323,10 @@ ngx_[% subsystem %]_lua_shdict_expire(ngx_[% subsystem %]_lua_shdict_ctx_t *ctx,
 
 
 void
-ngx_[% subsystem %]_lua_inject_shdict_api(ngx_[% subsystem %]_lua_main_conf_t *lmcf, lua_State *L)
+ngx_[% subsys %]_lua_inject_shdict_api(ngx_[% subsys %]_lua_main_conf_t *lmcf, lua_State *L)
 {
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+
     ngx_uint_t                   i;
     ngx_shm_zone_t             **zone;
 
@@ -332,55 +336,55 @@ ngx_[% subsystem %]_lua_inject_shdict_api(ngx_[% subsystem %]_lua_main_conf_t *l
 
         lua_createtable(L, 0 /* narr */, 18 /* nrec */); /* shared mt */
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_get);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_get);
         lua_setfield(L, -2, "get");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_get_stale);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_get_stale);
         lua_setfield(L, -2, "get_stale");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_set);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_set);
         lua_setfield(L, -2, "set");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_safe_set);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_safe_set);
         lua_setfield(L, -2, "safe_set");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_add);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_add);
         lua_setfield(L, -2, "add");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_safe_add);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_safe_add);
         lua_setfield(L, -2, "safe_add");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_replace);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_replace);
         lua_setfield(L, -2, "replace");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_incr);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_incr);
         lua_setfield(L, -2, "incr");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_delete);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_delete);
         lua_setfield(L, -2, "delete");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_lpush);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_lpush);
         lua_setfield(L, -2, "lpush");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_rpush);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_rpush);
         lua_setfield(L, -2, "rpush");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_lpop);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_lpop);
         lua_setfield(L, -2, "lpop");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_rpop);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_rpop);
         lua_setfield(L, -2, "rpop");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_llen);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_llen);
         lua_setfield(L, -2, "llen");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_flush_all);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_flush_all);
         lua_setfield(L, -2, "flush_all");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_flush_expired);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_flush_expired);
         lua_setfield(L, -2, "flush_expired");
 
-        lua_pushcfunction(L, ngx_[% subsystem %]_lua_shdict_get_keys);
+        lua_pushcfunction(L, ngx_[% subsys %]_lua_shdict_get_keys);
         lua_setfield(L, -2, "get_keys");
 
         lua_pushvalue(L, -1); /* shared mt mt */
@@ -414,21 +418,21 @@ ngx_[% subsystem %]_lua_inject_shdict_api(ngx_[% subsystem %]_lua_main_conf_t *l
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_get(lua_State *L)
+ngx_[% subsys %]_lua_shdict_get(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_shdict_get_helper(L, 0 /* stale */);
+    return ngx_[% subsys %]_lua_shdict_get_helper(L, 0 /* stale */);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_get_stale(lua_State *L)
+ngx_[% subsys %]_lua_shdict_get_stale(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_shdict_get_helper(L, 1 /* stale */);
+    return ngx_[% subsys %]_lua_shdict_get_helper(L, 1 /* stale */);
 }
 
 
 static ngx_inline ngx_shm_zone_t *
-ngx_[% subsystem %]_lua_shdict_get_zone(lua_State *L, int index)
+ngx_[% subsys %]_lua_shdict_get_zone(lua_State *L, int index)
 {
     ngx_shm_zone_t      *zone;
 
@@ -441,21 +445,22 @@ ngx_[% subsystem %]_lua_shdict_get_zone(lua_State *L, int index)
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_get_helper(lua_State *L, int get_stale)
+ngx_[% subsys %]_lua_shdict_get_helper(lua_State *L, int get_stale)
 {
     int                          n;
     ngx_str_t                    name;
     ngx_str_t                    key;
     uint32_t                     hash;
     ngx_int_t                    rc;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
     ngx_str_t                    value;
     int                          value_type;
     double                       num;
     u_char                       c;
     ngx_shm_zone_t              *zone;
     uint32_t                     user_flags = 0;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
 
     n = lua_gettop(L);
 
@@ -468,7 +473,7 @@ ngx_[% subsystem %]_lua_shdict_get_helper(lua_State *L, int get_stale)
         return luaL_error(L, "bad \"zone\" argument");
     }
 
-    zone = ngx_[% subsystem %]_lua_shdict_get_zone(L, 1);
+    zone = ngx_[% subsys %]_lua_shdict_get_zone(L, 1);
     if (zone == NULL) {
         return luaL_error(L, "bad \"zone\" argument");
     }
@@ -499,7 +504,7 @@ ngx_[% subsystem %]_lua_shdict_get_helper(lua_State *L, int get_stale)
     hash = ngx_crc32_short(key.data, key.len);
 
 #if (NGX_DEBUG)
-    ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+    ngx_log_debug2(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                    "fetching key \"%V\" in shared dict \"%V\"", &key, &name);
 #endif /* NGX_DEBUG */
 
@@ -507,11 +512,11 @@ ngx_[% subsystem %]_lua_shdict_get_helper(lua_State *L, int get_stale)
 
 #if 1
     if (!get_stale) {
-        ngx_[% subsystem %]_lua_shdict_expire(ctx, 1);
+        ngx_[% subsys %]_lua_shdict_expire(ctx, 1);
     }
 #endif
 
-    rc = ngx_[% subsystem %]_lua_shdict_lookup(zone, hash, key.data, key.len, &sd);
+    rc = ngx_[% subsys %]_lua_shdict_lookup(zone, hash, key.data, key.len, &sd);
 
     dd("shdict lookup returns %d", (int) rc);
 
@@ -616,7 +621,7 @@ ngx_[% subsystem %]_lua_shdict_get_helper(lua_State *L, int get_stale)
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_delete(lua_State *L)
+ngx_[% subsys %]_lua_shdict_delete(lua_State *L)
 {
     int             n;
 
@@ -629,18 +634,19 @@ ngx_[% subsystem %]_lua_shdict_delete(lua_State *L)
 
     lua_pushnil(L);
 
-    return ngx_[% subsystem %]_lua_shdict_set_helper(L, 0);
+    return ngx_[% subsys %]_lua_shdict_set_helper(L, 0);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_flush_all(lua_State *L)
+ngx_[% subsys %]_lua_shdict_flush_all(lua_State *L)
 {
     ngx_queue_t                 *q;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
     int                          n;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
     ngx_shm_zone_t              *zone;
+
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
 
     n = lua_gettop(L);
 
@@ -650,7 +656,7 @@ ngx_[% subsystem %]_lua_shdict_flush_all(lua_State *L)
 
     luaL_checktype(L, 1, LUA_TTABLE);
 
-    zone = ngx_[% subsystem %]_lua_shdict_get_zone(L, 1);
+    zone = ngx_[% subsys %]_lua_shdict_get_zone(L, 1);
     if (zone == NULL) {
         return luaL_error(L, "bad user data for the ngx_shm_zone_t pointer");
     }
@@ -663,11 +669,11 @@ ngx_[% subsystem %]_lua_shdict_flush_all(lua_State *L)
          q != ngx_queue_sentinel(&ctx->sh->lru_queue);
          q = ngx_queue_next(q))
     {
-        sd = ngx_queue_data(q, ngx_[% subsystem %]_lua_shdict_node_t, queue);
+        sd = ngx_queue_data(q, ngx_[% subsys %]_lua_shdict_node_t, queue);
         sd->expires = 1;
     }
 
-    ngx_[% subsystem %]_lua_shdict_expire(ctx, 0);
+    ngx_[% subsys %]_lua_shdict_expire(ctx, 0);
 
     ngx_shmtx_unlock(&ctx->shpool->mutex);
 
@@ -676,11 +682,9 @@ ngx_[% subsystem %]_lua_shdict_flush_all(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_flush_expired(lua_State *L)
+ngx_[% subsys %]_lua_shdict_flush_expired(lua_State *L)
 {
     ngx_queue_t                     *q, *prev, *list_queue, *lq;
-    ngx_[% subsystem %]_lua_shdict_node_t      *sd;
-    ngx_[% subsystem %]_lua_shdict_ctx_t       *ctx;
     ngx_shm_zone_t                  *zone;
     ngx_time_t                      *tp;
     int                              freed = 0;
@@ -688,7 +692,10 @@ ngx_[% subsystem %]_lua_shdict_flush_expired(lua_State *L)
     ngx_rbtree_node_t               *node;
     uint64_t                         now;
     int                              n;
-    ngx_[% subsystem %]_lua_shdict_list_node_t *lnode;
+
+    ngx_[% subsys %]_lua_shdict_node_t      *sd;
+    ngx_[% subsys %]_lua_shdict_ctx_t       *ctx;
+    ngx_[% subsys %]_lua_shdict_list_node_t *lnode;
 
     n = lua_gettop(L);
 
@@ -698,7 +705,7 @@ ngx_[% subsystem %]_lua_shdict_flush_expired(lua_State *L)
 
     luaL_checktype(L, 1, LUA_TTABLE);
 
-    zone = ngx_[% subsystem %]_lua_shdict_get_zone(L, 1);
+    zone = ngx_[% subsys %]_lua_shdict_get_zone(L, 1);
     if (zone == NULL) {
         return luaL_error(L, "bad user data for the ngx_shm_zone_t pointer");
     }
@@ -726,18 +733,18 @@ ngx_[% subsystem %]_lua_shdict_flush_expired(lua_State *L)
     while (q != ngx_queue_sentinel(&ctx->sh->lru_queue)) {
         prev = ngx_queue_prev(q);
 
-        sd = ngx_queue_data(q, ngx_[% subsystem %]_lua_shdict_node_t, queue);
+        sd = ngx_queue_data(q, ngx_[% subsys %]_lua_shdict_node_t, queue);
 
         if (sd->expires != 0 && sd->expires <= now) {
 
             if (sd->value_type == SHDICT_TLIST) {
-                list_queue = ngx_[% subsystem %]_lua_shdict_get_list_head(sd, sd->key_len);
+                list_queue = ngx_[% subsys %]_lua_shdict_get_list_head(sd, sd->key_len);
 
                 for (lq = ngx_queue_head(list_queue);
                      lq != ngx_queue_sentinel(list_queue);
                      lq = ngx_queue_next(lq))
                 {
-                    lnode = ngx_queue_data(lq, ngx_[% subsystem %]_lua_shdict_list_node_t,
+                    lnode = ngx_queue_data(lq, ngx_[% subsys %]_lua_shdict_list_node_t,
                                            queue);
 
                     ngx_slab_free_locked(ctx->shpool, lnode);
@@ -773,17 +780,18 @@ ngx_[% subsystem %]_lua_shdict_flush_expired(lua_State *L)
  */
 
 static int
-ngx_[% subsystem %]_lua_shdict_get_keys(lua_State *L)
+ngx_[% subsys %]_lua_shdict_get_keys(lua_State *L)
 {
     ngx_queue_t                 *q, *prev;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
     ngx_shm_zone_t              *zone;
     ngx_time_t                  *tp;
     int                          total = 0;
     int                          attempts = 1024;
     uint64_t                     now;
     int                          n;
+
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
 
     n = lua_gettop(L);
 
@@ -794,7 +802,7 @@ ngx_[% subsystem %]_lua_shdict_get_keys(lua_State *L)
 
     luaL_checktype(L, 1, LUA_TTABLE);
 
-    zone = ngx_[% subsystem %]_lua_shdict_get_zone(L, 1);
+    zone = ngx_[% subsys %]_lua_shdict_get_zone(L, 1);
     if (zone == NULL) {
         return luaL_error(L, "bad user data for the ngx_shm_zone_t pointer");
     }
@@ -824,7 +832,7 @@ ngx_[% subsystem %]_lua_shdict_get_keys(lua_State *L)
     while (q != ngx_queue_sentinel(&ctx->sh->lru_queue)) {
         prev = ngx_queue_prev(q);
 
-        sd = ngx_queue_data(q, ngx_[% subsystem %]_lua_shdict_node_t, queue);
+        sd = ngx_queue_data(q, ngx_[% subsys %]_lua_shdict_node_t, queue);
 
         if (sd->expires == 0 || sd->expires > now) {
             total++;
@@ -846,7 +854,7 @@ ngx_[% subsystem %]_lua_shdict_get_keys(lua_State *L)
     while (q != ngx_queue_sentinel(&ctx->sh->lru_queue)) {
         prev = ngx_queue_prev(q);
 
-        sd = ngx_queue_data(q, ngx_[% subsystem %]_lua_shdict_node_t, queue);
+        sd = ngx_queue_data(q, ngx_[% subsys %]_lua_shdict_node_t, queue);
 
         if (sd->expires == 0 || sd->expires > now) {
             lua_pushlstring(L, (char *) sd->data, sd->key_len);
@@ -867,50 +875,48 @@ ngx_[% subsystem %]_lua_shdict_get_keys(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_add(lua_State *L)
+ngx_[% subsys %]_lua_shdict_add(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_shdict_set_helper(L, NGX_[% subsystem FILTER upper %]_LUA_SHDICT_ADD);
+    return ngx_[% subsys %]_lua_shdict_set_helper(L, NGX_[% SUBSYS %]_LUA_SHDICT_ADD);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_safe_add(lua_State *L)
+ngx_[% subsys %]_lua_shdict_safe_add(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_shdict_set_helper(L, NGX_[% subsystem FILTER upper %]_LUA_SHDICT_ADD
-                                          |NGX_[% subsystem FILTER upper %]_LUA_SHDICT_SAFE_STORE);
+    return ngx_[% subsys %]_lua_shdict_set_helper(L, NGX_[% SUBSYS %]_LUA_SHDICT_ADD
+                                          |NGX_[% SUBSYS %]_LUA_SHDICT_SAFE_STORE);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_replace(lua_State *L)
+ngx_[% subsys %]_lua_shdict_replace(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_shdict_set_helper(L, NGX_[% subsystem FILTER upper %]_LUA_SHDICT_REPLACE);
+    return ngx_[% subsys %]_lua_shdict_set_helper(L, NGX_[% SUBSYS %]_LUA_SHDICT_REPLACE);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_set(lua_State *L)
+ngx_[% subsys %]_lua_shdict_set(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_shdict_set_helper(L, 0);
+    return ngx_[% subsys %]_lua_shdict_set_helper(L, 0);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_safe_set(lua_State *L)
+ngx_[% subsys %]_lua_shdict_safe_set(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_shdict_set_helper(L, NGX_[% subsystem FILTER upper %]_LUA_SHDICT_SAFE_STORE);
+    return ngx_[% subsys %]_lua_shdict_set_helper(L, NGX_[% SUBSYS %]_LUA_SHDICT_SAFE_STORE);
 }
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_set_helper(lua_State *L, int flags)
+ngx_[% subsys %]_lua_shdict_set_helper(lua_State *L, int flags)
 {
     int                          i, n;
     ngx_str_t                    key;
     uint32_t                     hash;
     ngx_int_t                    rc;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
     ngx_str_t                    value;
     int                          value_type;
     double                       num;
@@ -926,6 +932,9 @@ ngx_[% subsystem %]_lua_shdict_set_helper(lua_State *L, int flags)
     int32_t                      user_flags = 0;
     ngx_queue_t                 *queue, *q;
 
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
+
     n = lua_gettop(L);
 
     if (n != 3 && n != 4 && n != 5) {
@@ -937,7 +946,7 @@ ngx_[% subsystem %]_lua_shdict_set_helper(lua_State *L, int flags)
         return luaL_error(L, "bad \"zone\" argument");
     }
 
-    zone = ngx_[% subsystem %]_lua_shdict_get_zone(L, 1);
+    zone = ngx_[% subsys %]_lua_shdict_get_zone(L, 1);
     if (zone == NULL) {
         return luaL_error(L, "bad \"zone\" argument");
     }
@@ -987,7 +996,7 @@ ngx_[% subsystem %]_lua_shdict_set_helper(lua_State *L, int flags)
         break;
 
     case LUA_TNIL:
-        if (flags & (NGX_[% subsystem FILTER upper %]_LUA_SHDICT_ADD|NGX_[% subsystem FILTER upper %]_LUA_SHDICT_REPLACE)) {
+        if (flags & (NGX_[% SUBSYS %]_LUA_SHDICT_ADD|NGX_[% SUBSYS %]_LUA_SHDICT_REPLACE)) {
             lua_pushnil(L);
             lua_pushliteral(L, "attempt to add or replace nil values");
             return 2;
@@ -1016,14 +1025,14 @@ ngx_[% subsystem %]_lua_shdict_set_helper(lua_State *L, int flags)
     ngx_shmtx_lock(&ctx->shpool->mutex);
 
 #if 1
-    ngx_[% subsystem %]_lua_shdict_expire(ctx, 1);
+    ngx_[% subsys %]_lua_shdict_expire(ctx, 1);
 #endif
 
-    rc = ngx_[% subsystem %]_lua_shdict_lookup(zone, hash, key.data, key.len, &sd);
+    rc = ngx_[% subsys %]_lua_shdict_lookup(zone, hash, key.data, key.len, &sd);
 
     dd("shdict lookup returned %d", (int) rc);
 
-    if (flags & NGX_[% subsystem FILTER upper %]_LUA_SHDICT_REPLACE) {
+    if (flags & NGX_[% SUBSYS %]_LUA_SHDICT_REPLACE) {
 
         if (rc == NGX_DECLINED || rc == NGX_DONE) {
             ngx_shmtx_unlock(&ctx->shpool->mutex);
@@ -1039,7 +1048,7 @@ ngx_[% subsystem %]_lua_shdict_set_helper(lua_State *L, int flags)
         goto replace;
     }
 
-    if (flags & NGX_[% subsystem FILTER upper %]_LUA_SHDICT_ADD) {
+    if (flags & NGX_[% SUBSYS %]_LUA_SHDICT_ADD) {
 
         if (rc == NGX_OK) {
             ngx_shmtx_unlock(&ctx->shpool->mutex);
@@ -1076,7 +1085,7 @@ replace:
             && sd->value_type != SHDICT_TLIST)
         {
 
-            ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+            ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                            "lua shared dict set: found old entry and value "
                            "size matched, reusing it");
 
@@ -1113,7 +1122,7 @@ replace:
             return 3;
         }
 
-        ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+        ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                        "lua shared dict set: found old entry but value size "
                        "NOT matched, removing it first");
 
@@ -1247,14 +1256,12 @@ allocated:
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_incr(lua_State *L)
+ngx_[% subsys %]_lua_shdict_incr(lua_State *L)
 {
     int                          i, n;
     ngx_str_t                    key;
     uint32_t                     hash;
     ngx_int_t                    rc;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
     double                       num;
     double                       init = 0;
     u_char                      *p;
@@ -1266,6 +1273,9 @@ ngx_[% subsystem %]_lua_shdict_incr(lua_State *L)
     int                          forcible = 0;
     ngx_queue_t                 *queue, *q;
 
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
+
     n = lua_gettop(L);
 
     if (n != 3 && n != 4) {
@@ -1276,7 +1286,7 @@ ngx_[% subsystem %]_lua_shdict_incr(lua_State *L)
         return luaL_error(L, "bad \"zone\" argument");
     }
 
-    zone = ngx_[% subsystem %]_lua_shdict_get_zone(L, 1);
+    zone = ngx_[% subsys %]_lua_shdict_get_zone(L, 1);
     if (zone == NULL) {
         return luaL_error(L, "bad user data for the ngx_shm_zone_t pointer");
     }
@@ -1497,15 +1507,16 @@ setvalue:
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_shared_dict_get(ngx_shm_zone_t *zone, u_char *key_data,
-    size_t key_len, ngx_[% subsystem %]_lua_value_t *value)
+ngx_[% subsys %]_lua_shared_dict_get(ngx_shm_zone_t *zone, u_char *key_data,
+    size_t key_len, ngx_[% subsys %]_lua_value_t *value)
 {
     u_char                      *data;
     size_t                       len;
     uint32_t                     hash;
     ngx_int_t                    rc;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
 
     if (zone == NULL) {
         return NGX_ERROR;
@@ -1517,7 +1528,7 @@ ngx_[% subsystem %]_lua_shared_dict_get(ngx_shm_zone_t *zone, u_char *key_data,
 
     ngx_shmtx_lock(&ctx->shpool->mutex);
 
-    rc = ngx_[% subsystem %]_lua_shdict_lookup(zone, hash, key_data, key_len, &sd);
+    rc = ngx_[% subsys %]_lua_shdict_lookup(zone, hash, key_data, key_len, &sd);
 
     dd("shdict lookup returned %d", (int) rc);
 
@@ -1614,21 +1625,22 @@ ngx_[% subsystem %]_lua_shdict_rpush(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_push_helper(lua_State *L, int flags)
+ngx_[% subsys %]_lua_shdict_push_helper(lua_State *L, int flags)
 {
     int                              n;
     ngx_str_t                        key;
     uint32_t                         hash;
     ngx_int_t                        rc;
-    ngx_[% subsystem %]_lua_shdict_ctx_t       *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t      *sd;
     ngx_str_t                        value;
     int                              value_type;
     double                           num;
     ngx_rbtree_node_t               *node;
     ngx_shm_zone_t                  *zone;
     ngx_queue_t                     *queue, *q;
-    ngx_[% subsystem %]_lua_shdict_list_node_t *lnode;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t       *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t      *sd;
+    ngx_[% subsys %]_lua_shdict_list_node_t *lnode;
 
     n = lua_gettop(L);
 
@@ -1641,7 +1653,7 @@ ngx_[% subsystem %]_lua_shdict_push_helper(lua_State *L, int flags)
         return luaL_error(L, "bad \"zone\" argument");
     }
 
-    zone = ngx_[% subsystem %]_lua_shdict_get_zone(L, 1);
+    zone = ngx_[% subsys %]_lua_shdict_get_zone(L, 1);
     if (zone == NULL) {
         return luaL_error(L, "bad \"zone\" argument");
     }
@@ -1905,22 +1917,23 @@ ngx_[% subsystem %]_lua_shdict_rpop(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_pop_helper(lua_State *L, int flags)
+ngx_[% subsys %]_lua_shdict_pop_helper(lua_State *L, int flags)
 {
     int                              n;
     ngx_str_t                        name;
     ngx_str_t                        key;
     uint32_t                         hash;
     ngx_int_t                        rc;
-    ngx_[% subsystem %]_lua_shdict_ctx_t       *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t      *sd;
     ngx_str_t                        value;
     int                              value_type;
     double                           num;
     ngx_rbtree_node_t               *node;
     ngx_shm_zone_t                  *zone;
     ngx_queue_t                     *queue;
-    ngx_[% subsystem %]_lua_shdict_list_node_t *lnode;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t       *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t      *sd;
+    ngx_[% subsys %]_lua_shdict_list_node_t *lnode;
 
     n = lua_gettop(L);
 
@@ -1933,7 +1946,7 @@ ngx_[% subsystem %]_lua_shdict_pop_helper(lua_State *L, int flags)
         return luaL_error(L, "bad \"zone\" argument");
     }
 
-    zone = ngx_[% subsystem %]_lua_shdict_get_zone(L, 1);
+    zone = ngx_[% subsys %]_lua_shdict_get_zone(L, 1);
     if (zone == NULL) {
         return luaL_error(L, "bad \"zone\" argument");
     }
@@ -2081,15 +2094,16 @@ ngx_[% subsystem %]_lua_shdict_pop_helper(lua_State *L, int flags)
 
 
 static int
-ngx_[% subsystem %]_lua_shdict_llen(lua_State *L)
+ngx_[% subsys %]_lua_shdict_llen(lua_State *L)
 {
     int                          n;
     ngx_str_t                    key;
     uint32_t                     hash;
     ngx_int_t                    rc;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
     ngx_shm_zone_t              *zone;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
 
     n = lua_gettop(L);
 
@@ -2102,7 +2116,7 @@ ngx_[% subsystem %]_lua_shdict_llen(lua_State *L)
         return luaL_error(L, "bad \"zone\" argument");
     }
 
-    zone = ngx_[% subsystem %]_lua_shdict_get_zone(L, 1);
+    zone = ngx_[% subsys %]_lua_shdict_get_zone(L, 1);
     if (zone == NULL) {
         return luaL_error(L, "bad \"zone\" argument");
     }
@@ -2168,13 +2182,14 @@ ngx_[% subsystem %]_lua_shdict_llen(lua_State *L)
 
 
 ngx_shm_zone_t *
-ngx_[% subsystem %]_lua_find_zone(u_char *name_data, size_t name_len)
+ngx_[% subsys %]_lua_find_zone(u_char *name_data, size_t name_len)
 {
     ngx_str_t                       *name;
     ngx_uint_t                       i;
     ngx_shm_zone_t                  *zone;
-    ngx_[% subsystem %]_lua_shm_zone_ctx_t     *ctx;
     volatile ngx_list_part_t        *part;
+
+    ngx_[% subsys %]_lua_shm_zone_ctx_t     *ctx;
 
     part = &ngx_cycle->shared_memory.part;
     zone = part->elts;
@@ -2199,7 +2214,7 @@ ngx_[% subsystem %]_lua_find_zone(u_char *name_data, size_t name_len)
         if (name->len == name_len
             && ngx_strncmp(name->data, name_data, name_len) == 0)
         {
-            ctx = (ngx_[% subsystem %]_lua_shm_zone_ctx_t *) zone[i].data;
+            ctx = (ngx_[% subsys %]_lua_shm_zone_ctx_t *) zone[i].data;
             return &ctx->zone;
         }
     }
@@ -2210,7 +2225,7 @@ ngx_[% subsystem %]_lua_find_zone(u_char *name_data, size_t name_len)
 
 #ifndef NGX_LUA_NO_FFI_API
 int
-ngx_[% subsystem %]_lua_ffi_shdict_store(ngx_shm_zone_t *zone, int op, u_char *key,
+ngx_[% subsys %]_lua_ffi_shdict_store(ngx_shm_zone_t *zone, int op, u_char *key,
     size_t key_len, int value_type, u_char *str_value_buf,
     size_t str_value_len, double num_value, int exptime, int user_flags,
     char **errmsg, int *forcible)
@@ -2222,8 +2237,9 @@ ngx_[% subsystem %]_lua_ffi_shdict_store(ngx_shm_zone_t *zone, int op, u_char *k
     ngx_time_t                  *tp;
     ngx_queue_t                 *queue, *q;
     ngx_rbtree_node_t           *node;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
 
     if (zone == NULL) {
         return NGX_ERROR;
@@ -2478,7 +2494,7 @@ allocated:
 
 
 int
-ngx_[% subsystem %]_lua_ffi_shdict_get(ngx_shm_zone_t *zone, u_char *key,
+ngx_[% subsys %]_lua_ffi_shdict_get(ngx_shm_zone_t *zone, u_char *key,
     size_t key_len, int *value_type, u_char **str_value_buf,
     size_t *str_value_len, double *num_value, int *user_flags,
     int get_stale, int *is_stale, char **err)
@@ -2486,9 +2502,10 @@ ngx_[% subsystem %]_lua_ffi_shdict_get(ngx_shm_zone_t *zone, u_char *key,
     ngx_str_t                    name;
     uint32_t                     hash;
     ngx_int_t                    rc;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
     ngx_str_t                    value;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
 
     if (zone == NULL) {
         return NGX_ERROR;
@@ -2502,7 +2519,7 @@ ngx_[% subsystem %]_lua_ffi_shdict_get(ngx_shm_zone_t *zone, u_char *key,
     hash = ngx_crc32_short(key, key_len);
 
 #if (NGX_DEBUG)
-    ngx_log_debug3(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+    ngx_log_debug3(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                    "fetching key \"%*s\" in shared dict \"%V\"", key_len,
                    key, &name);
 #endif /* NGX_DEBUG */
@@ -2511,11 +2528,11 @@ ngx_[% subsystem %]_lua_ffi_shdict_get(ngx_shm_zone_t *zone, u_char *key,
 
 #if 1
     if (!get_stale) {
-        ngx_[% subsystem %]_lua_shdict_expire(ctx, 1);
+        ngx_[% subsys %]_lua_shdict_expire(ctx, 1);
     }
 #endif
 
-    rc = ngx_[% subsystem %]_lua_shdict_lookup(zone, hash, key, key_len, &sd);
+    rc = ngx_[% subsys %]_lua_shdict_lookup(zone, hash, key, key_len, &sd);
 
     dd("shdict lookup returns %d", (int) rc);
 
@@ -2621,19 +2638,20 @@ ngx_[% subsystem %]_lua_ffi_shdict_get(ngx_shm_zone_t *zone, u_char *key,
 
 
 int
-ngx_[% subsystem %]_lua_ffi_shdict_incr(ngx_shm_zone_t *zone, u_char *key,
+ngx_[% subsys %]_lua_ffi_shdict_incr(ngx_shm_zone_t *zone, u_char *key,
     size_t key_len, double *value, char **err, int has_init, double init,
     int *forcible)
 {
     int                          i, n;
     uint32_t                     hash;
     ngx_int_t                    rc;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
     double                       num;
     ngx_rbtree_node_t           *node;
     u_char                      *p;
     ngx_queue_t                 *queue, *q;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
 
     if (zone == NULL) {
         return NGX_ERROR;
@@ -2650,9 +2668,9 @@ ngx_[% subsystem %]_lua_ffi_shdict_incr(ngx_shm_zone_t *zone, u_char *key,
 
     ngx_shmtx_lock(&ctx->shpool->mutex);
 #if 1
-    ngx_[% subsystem %]_lua_shdict_expire(ctx, 1);
+    ngx_[% subsys %]_lua_shdict_expire(ctx, 1);
 #endif
-    rc = ngx_[% subsystem %]_lua_shdict_lookup(zone, hash, key, key_len, &sd);
+    rc = ngx_[% subsys %]_lua_shdict_lookup(zone, hash, key, key_len, &sd);
 
     dd("shdict lookup returned %d", (int) rc);
 
@@ -2786,7 +2804,7 @@ insert:
 
 allocated:
 
-    sd = (ngx_[% subsystem %]_lua_shdict_node_t *) &node->color;
+    sd = (ngx_[% subsys %]_lua_shdict_node_t *) &node->color;
 
     node->key = hash;
 
@@ -2819,11 +2837,12 @@ setvalue:
 
 
 int
-ngx_[% subsystem %]_lua_ffi_shdict_flush_all(ngx_shm_zone_t *zone)
+ngx_[% subsys %]_lua_ffi_shdict_flush_all(ngx_shm_zone_t *zone)
 {
     ngx_queue_t                 *q;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
+
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
 
     ctx = zone->data;
 
@@ -2833,11 +2852,11 @@ ngx_[% subsystem %]_lua_ffi_shdict_flush_all(ngx_shm_zone_t *zone)
          q != ngx_queue_sentinel(&ctx->sh->lru_queue);
          q = ngx_queue_next(q))
     {
-        sd = ngx_queue_data(q, ngx_[% subsystem %]_lua_shdict_node_t, queue);
+        sd = ngx_queue_data(q, ngx_[% subsys %]_lua_shdict_node_t, queue);
         sd->expires = 1;
     }
 
-    ngx_[% subsystem %]_lua_shdict_expire(ctx, 0);
+    ngx_[% subsys %]_lua_shdict_expire(ctx, 0);
 
     ngx_shmtx_unlock(&ctx->shpool->mutex);
 
@@ -2846,13 +2865,14 @@ ngx_[% subsystem %]_lua_ffi_shdict_flush_all(ngx_shm_zone_t *zone)
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_shdict_peek(ngx_shm_zone_t *shm_zone, ngx_uint_t hash,
-    u_char *kdata, size_t klen, ngx_[% subsystem %]_lua_shdict_node_t **sdp)
+ngx_[% subsys %]_lua_shdict_peek(ngx_shm_zone_t *shm_zone, ngx_uint_t hash,
+    u_char *kdata, size_t klen, ngx_[% subsys %]_lua_shdict_node_t **sdp)
 {
     ngx_int_t                    rc;
     ngx_rbtree_node_t           *node, *sentinel;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
 
     ctx = shm_zone->data;
 
@@ -2873,7 +2893,7 @@ ngx_[% subsystem %]_lua_shdict_peek(ngx_shm_zone_t *shm_zone, ngx_uint_t hash,
 
         /* hash == node->key */
 
-        sd = (ngx_[% subsystem %]_lua_shdict_node_t *) &node->color;
+        sd = (ngx_[% subsys %]_lua_shdict_node_t *) &node->color;
 
         rc = ngx_memn2cmp(kdata, sd->data, klen, (size_t) sd->key_len);
 
@@ -2893,7 +2913,7 @@ ngx_[% subsystem %]_lua_shdict_peek(ngx_shm_zone_t *shm_zone, ngx_uint_t hash,
 
 
 int
-ngx_[% subsystem %]_lua_ffi_shdict_get_ttl(ngx_shm_zone_t *zone, u_char *key,
+ngx_[% subsys %]_lua_ffi_shdict_get_ttl(ngx_shm_zone_t *zone, u_char *key,
     size_t key_len)
 {
     uint32_t                     hash;
@@ -2901,8 +2921,9 @@ ngx_[% subsystem %]_lua_ffi_shdict_get_ttl(ngx_shm_zone_t *zone, u_char *key,
     uint64_t                     expires;
     ngx_int_t                    rc;
     ngx_time_t                  *tp;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
 
     if (zone == NULL) {
         return NGX_ERROR;
@@ -2913,7 +2934,7 @@ ngx_[% subsystem %]_lua_ffi_shdict_get_ttl(ngx_shm_zone_t *zone, u_char *key,
 
     ngx_shmtx_lock(&ctx->shpool->mutex);
 
-    rc = ngx_[% subsystem %]_lua_shdict_peek(zone, hash, key, key_len, &sd);
+    rc = ngx_[% subsys %]_lua_shdict_peek(zone, hash, key, key_len, &sd);
 
     if (rc == NGX_DECLINED) {
         ngx_shmtx_unlock(&ctx->shpool->mutex);
@@ -2939,14 +2960,15 @@ ngx_[% subsystem %]_lua_ffi_shdict_get_ttl(ngx_shm_zone_t *zone, u_char *key,
 
 
 int
-ngx_[% subsystem %]_lua_ffi_shdict_set_expire(ngx_shm_zone_t *zone, u_char *key,
+ngx_[% subsys %]_lua_ffi_shdict_set_expire(ngx_shm_zone_t *zone, u_char *key,
     size_t key_len, int exptime)
 {
     uint32_t                     hash;
     ngx_int_t                    rc;
     ngx_time_t                  *tp = NULL;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
-    ngx_[% subsystem %]_lua_shdict_node_t  *sd;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
+    ngx_[% subsys %]_lua_shdict_node_t  *sd;
 
     if (zone == NULL) {
         return NGX_ERROR;
@@ -2961,7 +2983,7 @@ ngx_[% subsystem %]_lua_ffi_shdict_set_expire(ngx_shm_zone_t *zone, u_char *key,
 
     ngx_shmtx_lock(&ctx->shpool->mutex);
 
-    rc = ngx_[% subsystem %]_lua_shdict_peek(zone, hash, key, key_len, &sd);
+    rc = ngx_[% subsys %]_lua_shdict_peek(zone, hash, key, key_len, &sd);
 
     if (rc == NGX_DECLINED) {
         ngx_shmtx_unlock(&ctx->shpool->mutex);
@@ -2986,7 +3008,7 @@ ngx_[% subsystem %]_lua_ffi_shdict_set_expire(ngx_shm_zone_t *zone, u_char *key,
 
 
 size_t
-ngx_[% subsystem %]_lua_ffi_shdict_capacity(ngx_shm_zone_t *zone)
+ngx_[% subsys %]_lua_ffi_shdict_capacity(ngx_shm_zone_t *zone)
 {
     return zone->shm.size;
 }
@@ -2994,10 +3016,11 @@ ngx_[% subsystem %]_lua_ffi_shdict_capacity(ngx_shm_zone_t *zone)
 
 #    if nginx_version >= 1011007
 size_t
-ngx_[% subsystem %]_lua_ffi_shdict_free_space(ngx_shm_zone_t *zone)
+ngx_[% subsys %]_lua_ffi_shdict_free_space(ngx_shm_zone_t *zone)
 {
-    size_t                       bytes;
-    ngx_[% subsystem %]_lua_shdict_ctx_t   *ctx;
+    size_t         bytes;
+
+    ngx_[% subsys %]_lua_shdict_ctx_t   *ctx;
 
     ctx = zone->data;
 

@@ -13,6 +13,8 @@ use Getopt::Std qw( getopts );
 sub usage ($);
 sub replace_tt2_var ($$);
 
+my $var_with_init_pat = qr/(\**) \b [a-z]\w* (?: :\d+ )? \s* (?: = \s* \w+ )?/x;
+
 my %opts;
 getopts "hs:d:", \%opts or usage(1);
 
@@ -86,7 +88,7 @@ open my $in, $infile
 my ($out, $tmpfile) = tempfile "$subsys-XXXXXXX", TMPDIR => 1;
 
 my ($raw_line, $skip);
-my ($prev_var_decl, $prev_var_var_col);
+my ($prev_var_decl, $prev_raw_var_col);
 my ($continued_func_call, $func_name, $func_prefix_len_diff, $func_indent_len);
 my ($func_raw_prefix_len);
 my ($in_if, $in_else, $if_branch_hit);
@@ -166,7 +168,8 @@ while (<$in>) {
             my $v = $3 // $4;
 
             if ($var =~ /^subsys(?:tem)?$/ && $v !~ /^(?:http|stream)$/) {
-                die "$infile: line $.: bad subsystem value to be compared: $v\n";
+                die "$infile: line $.: bad subsystem value to be compared: ",
+                    "$v\n";
             }
 
             if ($v eq $tt2_vars{$var}) {
@@ -181,7 +184,8 @@ while (<$in>) {
             my $var = $1;
 
             if ($var =~ /^ (?: subsys(?:tem)? | req_type | req_subsys ) $/ix) {
-                die "$infile: line $.: variable $var is always true: $tt2_vars{$var}.\n";
+                die "$infile: line $.: variable $var is always true: ",
+                    "$tt2_vars{$var}.\n";
             }
 
             if ($tt2_vars{$var}) {
@@ -296,10 +300,9 @@ while (<$in>) {
 
     # check local variable declaration and struct member declaration alignment
 
-    my $var_with_init_pat = qr/(\**) \b [a-z]\w* \s* (?: = \s* \w+ )?/x;
-
-    if (/^ (\s+) ([a-z]\w*) \b (\s*) $var_with_init_pat
-           (?: \s* , \s* $var_with_init_pat )* \s* ; \s* $/x
+    if (m{^ (\s+) ([a-z]\w*) \b (\s*) $var_with_init_pat
+           (?: \s* , \s* $var_with_init_pat )* \s* ; \s*
+           (?: /\* .*? \*/ \s* )? $}x
         && $2 !~ /^(?:goto|return)$/)
     {
         my ($indent, $type, $padding, $pointer) = ($1, $2, $3, $4);
@@ -318,11 +321,6 @@ while (<$in>) {
         my $raw_var_col = length $1;
 
         my $var_col_diff = $raw_var_col - $var_col;
-
-        #if ($var_col_diff != 0) {
-            #warn "HIT a var declaration (col $var_col): $raw_line";
-            #warn "line $.: raw var column: $raw_var_col (diff: $var_col_diff)";
-        #}
 
         if ($var_col_diff > 0) {
             $_ = $indent . $type . $padding . (" " x $var_col_diff)
@@ -345,6 +343,24 @@ while (<$in>) {
                 . $pointer . substr $_, $var_col;
             #warn "NEW: $_";
         }
+
+        #if ($var_col_diff != 0) {
+            #warn "HIT a var declaration (col $var_col): $raw_line";
+            #warn "line $.: raw var column: $raw_var_col (diff: $var_col_diff)";
+        #}
+
+        # FIXME take into account skipped lines due to IF directives and etc.
+        if (defined $prev_var_decl && $prev_var_decl == $. - 1) {
+            # check vertical alignment in the templates
+            if ($prev_raw_var_col != $raw_var_col) {
+                die "$infile: $.: variable declaration or struct/enum ",
+                    "member declarations' identifiers not aligned ",
+                    "vertically: $_";
+            }
+        }
+
+        $prev_var_decl = $.;
+        $prev_raw_var_col = $raw_var_col;
 
         undef $continued_func_call;
         $passthrough = 1;
@@ -379,10 +395,10 @@ while (<$in>) {
 
         if ($raw_line =~ /^ (\s*) /x) {
             my $raw_len = length $1;
-            #warn "raw len: $raw_len, func raw prefix len: $func_raw_prefix_len";
+            #warn "raw len: $raw_len, raw prefix len: $func_raw_prefix_len";
             if ($raw_len != $func_raw_prefix_len) {
-                warn "WARNING: $infile: line $.: continued arguments not aligned with ",
-                     "the function call on line $continued_func_call.\n";
+                die "$infile: line $.: continued arguments not aligned with ",
+                    "the function call on line $continued_func_call.\n";
                 $skip_patching = 1;
             }
         }
@@ -403,7 +419,8 @@ while (<$in>) {
 
             my $excess = length($_) - 80;
             if ($excess > 0) {
-                #warn "line $.: line too long (len: ", length($_), ", excess: $excess)";
+                #warn "line $.: line too long (len: ", length($_),
+                #     ", excess: $excess)";
                 if (!s/^ {$excess}//) {
                     die "$infile: line $.: failed to remove ",
                         "$excess spaces from the indentation ",
@@ -458,7 +475,7 @@ sub replace_tt2_var ($$) {
 
     $var =~ s/\s+$//;
 
-    if ($var =~ /^ (?: subsystem \s* (?: \bFILTER\b | \| )
+    if ($var =~ /^ (?: subsys(?:tem)? \s* (?: \bFILTER\b | \| )
                    \s* upper | SUBSYS ) $/x)
     {
         return $tt2_vars{SUBSYS};

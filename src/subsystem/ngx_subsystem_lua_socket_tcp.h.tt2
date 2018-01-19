@@ -59,9 +59,10 @@ struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s {
 
     ngx_[% subsystem %]_lua_socket_pool_t      *socket_pool;
 
-    ngx_[% subsystem %]_lua_loc_conf_t         *conf;
-    ngx_[% req_subsystem %]_cleanup_pt             *cleanup;
-    [% req_type %]              *request;
+    ngx_[% subsys %]_lua_loc_conf_t         *conf;
+    ngx_[% req_subsys %]_cleanup_pt         *cleanup;
+    [% req_type %]                          *request;
+
     ngx_peer_connection_t            peer;
 
     ngx_msec_t                       read_timeout;
@@ -114,10 +115,10 @@ struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s {
 typedef struct ngx_[% subsystem %]_lua_dfa_edge_s  ngx_[% subsystem %]_lua_dfa_edge_t;
 
 
-struct ngx_[% subsystem %]_lua_dfa_edge_s {
-    u_char                           chr;
+struct ngx_[% subsys %]_lua_dfa_edge_s {
+    ngx_[% subsys %]_lua_dfa_edge_t *next;
     int                              new_state;
-    ngx_[% subsystem %]_lua_dfa_edge_t         *next;
+    u_char                           chr;
 };
 
 
@@ -125,8 +126,8 @@ typedef struct {
     ngx_[% subsystem %]_lua_socket_tcp_upstream_t  *upstream;
 
     ngx_str_t                            pattern;
+    ngx_[% subsys %]_lua_dfa_edge_t    **recovering;
     int                                  state;
-    ngx_[% subsystem %]_lua_dfa_edge_t            **recovering;
 
     unsigned                             inclusive:1;
 } ngx_[% subsystem %]_lua_socket_compiled_pattern_t;

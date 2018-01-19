@@ -171,9 +171,9 @@ ngx_[% subsystem %]_lua_ngx_ctx_add_cleanup([% req_type %] *r, int ref)
 {
     lua_State                   *L;
     ngx_pool_cleanup_t          *cln;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
 
-    ngx_[% subsystem %]_lua_ngx_ctx_cleanup_data_t    *data;
+    ngx_[% subsys %]_lua_ctx_t                     *ctx;
+    ngx_[% subsys %]_lua_ngx_ctx_cleanup_data_t    *data;
 
     ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     L = ngx_[% subsystem %]_lua_get_lua_vm(r, ctx);
