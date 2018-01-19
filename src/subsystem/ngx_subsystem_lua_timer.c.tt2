@@ -387,8 +387,9 @@ ngx_[% subsystem %]_lua_timer_copy(ngx_[% subsystem %]_lua_timer_ctx_t *old_tctx
     lua_State                   *co;
     lua_State                   *L;
     ngx_event_t                 *ev = NULL;
-    ngx_[% subsystem %]_lua_timer_ctx_t    *tctx = NULL;
-    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
+
+    ngx_[% subsys %]_lua_timer_ctx_t    *tctx = NULL;
+    ngx_[% subsys %]_lua_main_conf_t    *lmcf;
 
     /* L stack: func [args] */
     L = old_tctx->co;
@@ -812,8 +813,9 @@ ngx_[% subsystem %]_lua_abort_pending_timers(ngx_event_t *ev)
     ngx_event_t                **events;
     ngx_connection_t            *c, *saved_c = NULL;
     ngx_rbtree_node_t           *cur, *prev, *next, *sentinel, *temp;
-    ngx_[% subsystem %]_lua_timer_ctx_t    *tctx;
-    ngx_[% subsystem %]_lua_main_conf_t    *lmcf;
+
+    ngx_[% subsys %]_lua_timer_ctx_t    *tctx;
+    ngx_[% subsys %]_lua_main_conf_t    *lmcf;
 
     ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ngx_cycle->log, 0,
                    "lua abort pending timers");

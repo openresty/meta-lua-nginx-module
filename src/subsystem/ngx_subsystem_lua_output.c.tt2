@@ -850,9 +850,9 @@ static void
 ngx_[% subsystem %]_lua_flush_cleanup(void *data)
 {
     [% req_type %]                      *r;
-    ngx_event_t                             *wev;
-    ngx_[% subsystem %]_lua_ctx_t                      *ctx;
-    ngx_[% subsystem %]_lua_co_ctx_t                   *coctx = data;
+    ngx_event_t                         *wev;
+    ngx_[% subsys %]_lua_ctx_t          *ctx;
+    ngx_[% subsys %]_lua_co_ctx_t       *coctx = data;
 
     coctx->flushing = 0;
 

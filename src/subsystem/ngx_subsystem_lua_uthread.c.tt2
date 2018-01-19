@@ -39,7 +39,7 @@ ngx_[% subsystem %]_lua_inject_uthread_api(ngx_log_t *log, lua_State *L)
     lua_pushcfunction(L, ngx_[% subsystem %]_lua_uthread_wait);
     lua_setfield(L, -2, "wait");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_uthread_kill);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_uthread_kill);
     lua_setfield(L, -2, "kill");
 
     lua_setfield(L, -2, "thread");
@@ -47,30 +47,30 @@ ngx_[% subsystem %]_lua_inject_uthread_api(ngx_log_t *log, lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_uthread_spawn(lua_State *L)
+ngx_[% subsys %]_lua_uthread_spawn(lua_State *L)
 {
-    int                           n;
-    [% req_type %]           *r;
-    ngx_[% subsystem %]_lua_ctx_t           *ctx;
-    ngx_[% subsystem %]_lua_co_ctx_t        *coctx = NULL;
+    int                              n;
+    [% req_type %]                  *r;
+    ngx_[% subsys %]_lua_ctx_t      *ctx;
+    ngx_[% subsys %]_lua_co_ctx_t   *coctx = NULL;
 
     n = lua_gettop(L);
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_coroutine_create_helper(L, r, ctx, &coctx);
+    ngx_[% subsys %]_lua_coroutine_create_helper(L, r, ctx, &coctx);
 
     /* anchor the newly created coroutine into the Lua registry */
 
-    lua_pushlightuserdata(L, &ngx_[% subsystem %]_lua_coroutines_key);
+    lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_coroutines_key);
     lua_rawget(L, LUA_REGISTRYINDEX);
     lua_pushvalue(L, -2);
     coctx->co_ref = luaL_ref(L, -2);

@@ -1167,13 +1167,13 @@ ngx_[% subsystem %]_lua_create_srv_conf(ngx_conf_t *cf)
 
 
 static char *
-ngx_[% subsystem %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
+ngx_[% subsys %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
 {
 [% IF http_subsys %]
 #if (NGX_[% subsystem FILTER upper %]_SSL)
-    ngx_[% subsystem %]_lua_srv_conf_t *prev = parent;
-    ngx_[% subsystem %]_lua_srv_conf_t *conf = child;
-    ngx_http_ssl_srv_conf_t *sscf;
+    ngx_[% subsys %]_lua_srv_conf_t *prev = parent;
+    ngx_[% subsys %]_lua_srv_conf_t *conf = child;
+    ngx_http_ssl_srv_conf_t         *sscf;
 
     dd("merge srv conf");
 
