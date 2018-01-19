@@ -82,12 +82,11 @@ char *
 ngx_[% subsys %]_lua_shared_dict(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ngx_[% subsys %]_lua_main_conf_t   *lmcf = conf;
-
-    ngx_str_t                             *value, name;
-    ngx_shm_zone_t                        *zone;
-    ngx_shm_zone_t                       **zp;
+    ngx_str_t                          *value, name;
+    ngx_shm_zone_t                     *zone;
+    ngx_shm_zone_t                    **zp;
     ngx_[% subsys %]_lua_shdict_ctx_t  *ctx;
-    ssize_t                                size;
+    ssize_t                             size;
 
     if (lmcf->shdict_zones == NULL) {
         lmcf->shdict_zones = ngx_palloc(cf->pool, sizeof(ngx_array_t));
@@ -195,7 +194,8 @@ char *
 ngx_[% subsys %]_lua_package_cpath(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ngx_[% subsys %]_lua_main_conf_t *lmcf = conf;
-    ngx_str_t                           *value;
+
+    ngx_str_t        *value;
 
     if (lmcf->lua_cpath.len != 0) {
         return "is duplicate";
@@ -216,7 +216,8 @@ char *
 ngx_[% subsys %]_lua_package_path(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ngx_[% subsys %]_lua_main_conf_t *lmcf = conf;
-    ngx_str_t                           *value;
+
+    ngx_str_t         *value;
 
     if (lmcf->lua_path.len != 0) {
         return "is duplicate";
@@ -940,11 +941,10 @@ ngx_[% subsys %]_lua_log_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,
 char *
 ngx_[% subsys %]_lua_log_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
-    u_char                                       *p, *chunkname;
-    ngx_str_t                                    *value;
+    u_char                                    *p, *chunkname;
+    ngx_str_t                                 *value;
     ngx_[% subsys %]_lua_main_conf_t          *lmcf;
     ngx_[% subsys %]_lua_loc_conf_t           *llcf = conf;
-
     ngx_[% subsys %]_compile_complex_value_t   ccv;
 
     dd("enter");
@@ -1253,8 +1253,8 @@ char *
 ngx_[% subsys %]_lua_init_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf)
 {
-    u_char                                 *name;
-    ngx_str_t                              *value;
+    u_char                              *name;
+    ngx_str_t                           *value;
     ngx_[% subsys %]_lua_main_conf_t    *lmcf = conf;
 
     dd("enter");

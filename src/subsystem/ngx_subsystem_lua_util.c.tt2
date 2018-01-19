@@ -2650,8 +2650,8 @@ ngx_[% subsys %]_lua_process_args_option([% req_type %] *r, lua_State *L,
                     if (total_escape) {
                         p = (u_char *)
                                 ngx_[% subsys %]_lua_escape_uri(p, key,
-                                                                   key_len,
-                                                                   NGX_ESCAPE_URI_COMPONENT);
+                                                                key_len,
+                                                                NGX_ESCAPE_URI_COMPONENT);
 
                     } else {
                         dd("shortcut: no escape required");
@@ -3611,10 +3611,10 @@ ngx_[% subsys %]_lua_rd_check_broken_connection([% req_type %] *r)
 static ngx_int_t
 ngx_[% subsys %]_lua_on_abort_resume([% req_type %] *r)
 {
-    lua_State                              *vm;
-    ngx_int_t                               rc;
-    ngx_uint_t                              nreqs;
-    ngx_connection_t                       *c;
+    lua_State                           *vm;
+    ngx_int_t                            rc;
+    ngx_uint_t                           nreqs;
+    ngx_connection_t                    *c;
     ngx_[% subsys %]_lua_ctx_t          *ctx;
 
     ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
@@ -4000,7 +4000,7 @@ void
 ngx_[% subsys %]_lua_cleanup_vm(void *data)
 {
     lua_State                       *L;
-    ngx_[% subsys %]_lua_vm_state_t         *state = data;
+    ngx_[% subsys %]_lua_vm_state_t *state = data;
 
 #if (DDEBUG)
     if (state) {

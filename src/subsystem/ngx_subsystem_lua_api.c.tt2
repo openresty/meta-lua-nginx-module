@@ -42,7 +42,8 @@ ngx_int_t
 ngx_[% subsys %]_lua_add_package_preload(ngx_conf_t *cf, const char *package,
     lua_CFunction func)
 {
-    lua_State                     *L;
+    lua_State       *L;
+
     ngx_[% subsys %]_lua_main_conf_t      *lmcf;
     ngx_[% subsys %]_lua_preload_hook_t   *hook;
 

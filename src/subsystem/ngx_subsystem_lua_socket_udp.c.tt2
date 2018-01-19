@@ -662,7 +662,7 @@ nomem:
 
     u->prepare_retvals = ngx_[% subsys %]_lua_socket_error_retval_handler;
     ngx_[% subsys %]_lua_socket_udp_handle_error(r, u,
-                                                    NGX_[% SUBSYS %]_LUA_SOCKET_FT_NOMEM);
+                                                 NGX_[% SUBSYS %]_LUA_SOCKET_FT_NOMEM);
 
     if (waiting) {
 [% IF http_subsys %]
@@ -1208,7 +1208,7 @@ ngx_[% subsys %]_lua_socket_udp_read([% req_type %] *r,
     if (n == NGX_ERROR) {
         u->socket_errno = ngx_socket_errno;
         ngx_[% subsys %]_lua_socket_udp_handle_error(r, u,
-                                                        NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR);
+                                                     NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR);
         return NGX_ERROR;
     }
 
@@ -1217,7 +1217,7 @@ ngx_[% subsys %]_lua_socket_udp_read([% req_type %] *r,
 #if 1
     if (ngx_handle_read_event(rev, 0) != NGX_OK) {
         ngx_[% subsys %]_lua_socket_udp_handle_error(r, u,
-                                                        NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR);
+                                                     NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR);
         return NGX_ERROR;
     }
 #endif
@@ -1338,12 +1338,11 @@ ngx_[% subsys %]_lua_socket_udp_cleanup(void *data)
 static void
 ngx_[% subsys %]_lua_socket_udp_handler(ngx_event_t *ev)
 {
-    [% req_type %]                                 *r;
+    [% req_type %]                              *r;
     ngx_[% subsys %]_lua_socket_udp_upstream_t  *u;
-    ngx_connection_t                               *c;
-
+    ngx_connection_t                            *c;
 [% IF http_subsys -%]
-    ngx_http_log_ctx_t                             *ctx;
+    ngx_http_log_ctx_t                          *ctx;
 [% END -%]
 
     c = ev->data;
@@ -1569,11 +1568,11 @@ ngx_[% subsys %]_lua_socket_udp_close(lua_State *L)
 static ngx_int_t
 ngx_[% subsys %]_lua_socket_udp_resume([% req_type %] *r)
 {
-    int                                     nret;
-    lua_State                              *vm;
-    ngx_int_t                               rc;
-    ngx_uint_t                              nreqs;
-    ngx_connection_t                       *c;
+    int                                  nret;
+    lua_State                           *vm;
+    ngx_int_t                            rc;
+    ngx_uint_t                           nreqs;
+    ngx_connection_t                    *c;
     ngx_[% subsys %]_lua_ctx_t          *ctx;
     ngx_[% subsys %]_lua_co_ctx_t       *coctx;
 
