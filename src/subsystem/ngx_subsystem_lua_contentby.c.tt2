@@ -11,15 +11,15 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_contentby.h"
-#include "ngx_[% subsystem %]_lua_util.h"
-#include "ngx_[% subsystem %]_lua_exception.h"
-#include "ngx_[% subsystem %]_lua_cache.h"
-#include "ngx_[% subsystem %]_lua_probe.h"
+#include "ngx_[% subsys %]_lua_contentby.h"
+#include "ngx_[% subsys %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_exception.h"
+#include "ngx_[% subsys %]_lua_cache.h"
+#include "ngx_[% subsys %]_lua_probe.h"
 
 
 [% IF http_subsys %]
-static void ngx_[% subsystem %]_lua_content_phase_post_read([% req_type %] *r);
+static void ngx_[% subsys %]_lua_content_phase_post_read([% req_type %] *r);
 [% END %]
 
 
@@ -52,16 +52,16 @@ ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
     }
 
 [% ELSIF stream_subsys %]
-    ngx_[% subsystem %]_lua_assert(ctx != NULL);
+    ngx_[% subsys %]_lua_assert(ctx != NULL);
 
     dd("reset ctx");
-    ngx_[% subsystem %]_lua_reset_ctx(r, L, ctx);
+    ngx_[% subsys %]_lua_reset_ctx(r, L, ctx);
 [% END %]
 
     ctx->entered_content_phase = 1;
 
     /*  {{{ new coroutine to handle request */
-    co = ngx_[% subsystem %]_lua_new_thread(r, L, &co_ref);
+    co = ngx_[% subsys %]_lua_new_thread(r, L, &co_ref);
 
     if (co == NULL) {
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
@@ -79,11 +79,11 @@ ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
     lua_xmove(L, co, 1);
 
     /*  set closure's env table to new coroutine's globals table */
-    ngx_[% subsystem %]_lua_get_globals_table(co);
+    ngx_[% subsys %]_lua_get_globals_table(co);
     lua_setfenv(co, -2);
 
     /*  save nginx request in coroutine globals table */
-    ngx_[% subsystem %]_lua_set_req(co, r);
+    ngx_[% subsys %]_lua_set_req(co, r);
 
     ctx->cur_co_ctx = &ctx->entry_co_ctx;
     ctx->cur_co_ctx->co = co;
@@ -104,7 +104,7 @@ ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
 [% END %]
         }
 
-        cln->handler = ngx_[% subsystem %]_lua_request_cleanup_handler;
+        cln->handler = ngx_[% subsys %]_lua_request_cleanup_handler;
         cln->data = ctx;
         ctx->cleanup = &cln->handler;
     }
@@ -112,7 +112,7 @@ ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
 
     ctx->context = NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT;
 
-    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
 [% IF stream_subsys %]
     r->connection->read->handler = ngx_stream_lua_request_handler;
@@ -120,7 +120,7 @@ ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
 [% END %]
 
     if (llcf->check_client_abort) {
-        r->read_event_handler = ngx_[% subsystem %]_lua_rd_check_broken_connection;
+        r->read_event_handler = ngx_[% subsys %]_lua_rd_check_broken_connection;
 
 [% IF http_subsys %]
 #if (NGX_HTTP_V2)
@@ -146,18 +146,18 @@ ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
         r->read_event_handler = ngx_[% req_subsys %]_block_reading;
     }
 
-    rc = ngx_[% subsystem %]_lua_run_thread(L, r, ctx, 0);
+    rc = ngx_[% subsys %]_lua_run_thread(L, r, ctx, 0);
 
     if (rc == NGX_ERROR || rc >= NGX_OK) {
         return rc;
     }
 
     if (rc == NGX_AGAIN) {
-        return ngx_[% subsystem %]_lua_content_run_posted_threads(L, r, ctx, 0);
+        return ngx_[% subsys %]_lua_content_run_posted_threads(L, r, ctx, 0);
     }
 
     if (rc == NGX_DONE) {
-        return ngx_[% subsystem %]_lua_content_run_posted_threads(L, r, ctx, 1);
+        return ngx_[% subsys %]_lua_content_run_posted_threads(L, r, ctx, 1);
     }
 
     return NGX_OK;
@@ -165,17 +165,17 @@ ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
 
 
 void
-ngx_[% subsystem %]_lua_content_wev_handler([% req_type %] *r)
+ngx_[% subsys %]_lua_content_wev_handler([% req_type %] *r)
 {
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
+    ngx_[% subsys %]_lua_ctx_t          *ctx;
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return;
     }
 
     ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
-                   "lua ngx_[% subsystem %]_lua_content_wev_handler");
+                   "lua ngx_[% subsys %]_lua_content_wev_handler");
 
     (void) ctx->resume_handler(r);
 }
@@ -313,17 +313,17 @@ ngx_stream_lua_content_handler(ngx_stream_session_t *s)
 [% IF http_subsys %]
 /* post read callback for the content phase */
 static void
-ngx_[% subsystem %]_lua_content_phase_post_read([% req_type %] *r)
+ngx_[% subsys %]_lua_content_phase_post_read([% req_type %] *r)
 {
-    ngx_[% subsystem %]_lua_ctx_t  *ctx;
+    ngx_[% subsys %]_lua_ctx_t  *ctx;
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
 
     ctx->read_body_done = 1;
 
     if (ctx->waiting_more_body) {
         ctx->waiting_more_body = 0;
-        ngx_[% subsystem %]_lua_finalize_request(r, ngx_[% subsystem %]_lua_content_handler(r));
+        ngx_[% subsys %]_lua_finalize_request(r, ngx_[% subsys %]_lua_content_handler(r));
 
     } else {
         r->main->count--;
@@ -364,7 +364,7 @@ ngx_[% subsys %]_lua_content_handler_file([% req_type %] *r)
         return NGX_ERROR;
     }
 
-    L = ngx_[% subsystem %]_lua_get_lua_vm(r, NULL);
+    L = ngx_[% subsys %]_lua_get_lua_vm(r, NULL);
 
     /*  load Lua script file (w/ cache)        sp = 1 */
     rc = ngx_[% subsys %]_lua_cache_loadfile(r->connection->log, L, script_path,
@@ -418,7 +418,7 @@ ngx_[% subsys %]_lua_content_handler_inline([% req_type %] *r)
 [% END %]
     }
 
-    return ngx_[% subsystem %]_lua_content_by_chunk(L, r);
+    return ngx_[% subsys %]_lua_content_by_chunk(L, r);
 }
 
 
@@ -451,7 +451,7 @@ ngx_[% subsys %]_lua_content_run_posted_threads(lua_State *L, [% req_type %] *r,
 
         ctx->cur_co_ctx = pt->co_ctx;
 
-        rc = ngx_[% subsystem %]_lua_run_thread(L, r, ctx, 0);
+        rc = ngx_[% subsys %]_lua_run_thread(L, r, ctx, 0);
 
         if (rc == NGX_AGAIN) {
             continue;
@@ -464,7 +464,7 @@ ngx_[% subsys %]_lua_content_run_posted_threads(lua_State *L, [% req_type %] *r,
 
         if (rc == NGX_OK) {
             while (n > 0) {
-                ngx_[% subsystem %]_lua_finalize_request(r, NGX_DONE);
+                ngx_[% subsys %]_lua_finalize_request(r, NGX_DONE);
                 n--;
             }
 
@@ -492,7 +492,7 @@ done:
     /* n > 1 */
 
     do {
-        ngx_[% subsystem %]_lua_finalize_request(r, NGX_DONE);
+        ngx_[% subsys %]_lua_finalize_request(r, NGX_DONE);
     } while (--n > 1);
 
     return NGX_DONE;

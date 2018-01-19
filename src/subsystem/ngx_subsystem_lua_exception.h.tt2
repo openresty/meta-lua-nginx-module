@@ -9,23 +9,23 @@
 #define _NGX_[% SUBSYS %]_LUA_EXCEPTION_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
 #define NGX_LUA_EXCEPTION_TRY                                               \
-    if (setjmp(ngx_[% subsystem %]_lua_exception) == 0)
+    if (setjmp(ngx_[% subsys %]_lua_exception) == 0)
 
 #define NGX_LUA_EXCEPTION_CATCH                                             \
     else
 
 #define NGX_LUA_EXCEPTION_THROW(x)                                          \
-    longjmp(ngx_[% subsystem %]_lua_exception, (x))
+    longjmp(ngx_[% subsys %]_lua_exception, (x))
 
 
-extern jmp_buf ngx_[% subsystem %]_lua_exception;
+extern jmp_buf ngx_[% subsys %]_lua_exception;
 
 
-int ngx_[% subsystem %]_lua_atpanic(lua_State *L);
+int ngx_[% subsys %]_lua_atpanic(lua_State *L);
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_EXCEPTION_H_INCLUDED_ */

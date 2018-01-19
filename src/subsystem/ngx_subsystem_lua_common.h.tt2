@@ -18,7 +18,7 @@
 
 #include <nginx.h>
 #include <ngx_core.h>
-#include <ngx_[% subsystem %].h>
+#include <ngx_[% subsys %].h>
 #include <ngx_md5.h>
 
 #include <setjmp.h>
@@ -83,9 +83,9 @@
 
 #ifdef NGX_LUA_USE_ASSERT
 #   include <assert.h>
-#   define ngx_[% subsystem %]_lua_assert(a)  assert(a)
+#   define ngx_[% subsys %]_lua_assert(a)  assert(a)
 #else
-#   define ngx_[% subsystem %]_lua_assert(a)
+#   define ngx_[% subsys %]_lua_assert(a)
 #endif
 
 
@@ -168,7 +168,7 @@ typedef struct {
 #endif
 
 
-typedef struct ngx_[% subsystem %]_lua_main_conf_s  ngx_[% subsystem %]_lua_main_conf_t;
+typedef struct ngx_[% subsys %]_lua_main_conf_s  ngx_[% subsys %]_lua_main_conf_t;
 [% IF http_subsys %]
 typedef union ngx_http_lua_srv_conf_u  ngx_http_lua_srv_conf_t;
 [% ELSIF stream_subsys %]
@@ -176,26 +176,26 @@ typedef struct ngx_stream_lua_srv_conf_s ngx_stream_lua_srv_conf_t;
 [% END %]
 
 
-typedef struct ngx_[% subsystem %]_lua_balancer_peer_data_s
-    ngx_[% subsystem %]_lua_balancer_peer_data_t;
+typedef struct ngx_[% subsys %]_lua_balancer_peer_data_s
+    ngx_[% subsys %]_lua_balancer_peer_data_t;
 
 
-typedef struct ngx_[% subsystem %]_lua_sema_mm_s  ngx_[% subsystem %]_lua_sema_mm_t;
+typedef struct ngx_[% subsys %]_lua_sema_mm_s  ngx_[% subsys %]_lua_sema_mm_t;
 
 
-typedef ngx_int_t (*ngx_[% subsystem %]_lua_main_conf_handler_pt)(ngx_log_t *log,
-    ngx_[% subsystem %]_lua_main_conf_t *lmcf, lua_State *L);
-typedef ngx_int_t (*ngx_[% subsystem %]_lua_srv_conf_handler_pt)([% req_type %] *r,
-    ngx_[% subsystem %]_lua_srv_conf_t *lscf, lua_State *L);
+typedef ngx_int_t (*ngx_[% subsys %]_lua_main_conf_handler_pt)(ngx_log_t *log,
+    ngx_[% subsys %]_lua_main_conf_t *lmcf, lua_State *L);
+typedef ngx_int_t (*ngx_[% subsys %]_lua_srv_conf_handler_pt)([% req_type %] *r,
+    ngx_[% subsys %]_lua_srv_conf_t *lscf, lua_State *L);
 
 
 typedef struct {
     u_char              *package;
     lua_CFunction        loader;
-} ngx_[% subsystem %]_lua_preload_hook_t;
+} ngx_[% subsys %]_lua_preload_hook_t;
 
 
-struct ngx_[% subsystem %]_lua_main_conf_s {
+struct ngx_[% subsys %]_lua_main_conf_s {
     lua_State           *lua;
     ngx_pool_cleanup_t  *vm_cleanup;
 
@@ -308,7 +308,7 @@ union ngx_http_lua_srv_conf_u {
         ngx_str_t           src;
         u_char             *src_key;
 
-        ngx_[% subsystem %]_lua_srv_conf_handler_pt  handler;
+        ngx_[% subsys %]_lua_srv_conf_handler_pt  handler;
     } balancer;
 };
 [% END %]
@@ -376,14 +376,14 @@ struct ngx_stream_lua_srv_conf_s {
 [% END %]
 
     u_char                  *content_chunkname;
-    ngx_[% subsystem %]_complex_value_t content_src;    /*  content_by_lua
+    ngx_[% subsys %]_complex_value_t content_src;    /*  content_by_lua
                                                 inline script/script
                                                 file path */
 
     u_char                 *content_src_key; /* cached key for content_src */
 
     u_char                                 *log_chunkname;
-    ngx_[% subsystem %]_complex_value_t     log_src;     /* log_by_lua inline script/script
+    ngx_[% subsys %]_complex_value_t     log_src;     /* log_by_lua inline script/script
                                                  file path */
 
     u_char                                 *log_src_key;
@@ -428,7 +428,7 @@ struct ngx_stream_lua_srv_conf_s {
         ngx_str_t           src;
         u_char             *src_key;
 
-        ngx_[% subsystem %]_lua_srv_conf_handler_pt  handler;
+        ngx_[% subsys %]_lua_srv_conf_handler_pt  handler;
     } balancer;
 [% END -%]
 
@@ -446,7 +446,7 @@ typedef enum {
     NGX_[% SUBSYS %]_LUA_USER_CORO_RESUME   = 1,
     NGX_[% SUBSYS %]_LUA_USER_CORO_YIELD    = 2,
     NGX_[% SUBSYS %]_LUA_USER_THREAD_RESUME = 3
-} ngx_[% subsystem %]_lua_user_coro_op_t;
+} ngx_[% subsys %]_lua_user_coro_op_t;
 
 
 typedef enum {
@@ -455,16 +455,16 @@ typedef enum {
     NGX_[% SUBSYS %]_LUA_CO_NORMAL    = 2, /* coroutine normal */
     NGX_[% SUBSYS %]_LUA_CO_DEAD      = 3, /* coroutine dead */
     NGX_[% SUBSYS %]_LUA_CO_ZOMBIE    = 4, /* coroutine zombie */
-} ngx_[% subsystem %]_lua_co_status_t;
+} ngx_[% subsys %]_lua_co_status_t;
 
 
-typedef struct ngx_[% subsystem %]_lua_co_ctx_s  ngx_[% subsystem %]_lua_co_ctx_t;
+typedef struct ngx_[% subsys %]_lua_co_ctx_s  ngx_[% subsys %]_lua_co_ctx_t;
 
-typedef struct ngx_[% subsystem %]_lua_posted_thread_s  ngx_[% subsystem %]_lua_posted_thread_t;
+typedef struct ngx_[% subsys %]_lua_posted_thread_s  ngx_[% subsys %]_lua_posted_thread_t;
 
-struct ngx_[% subsystem %]_lua_posted_thread_s {
-    ngx_[% subsystem %]_lua_co_ctx_t               *co_ctx;
-    ngx_[% subsystem %]_lua_posted_thread_t        *next;
+struct ngx_[% subsys %]_lua_posted_thread_s {
+    ngx_[% subsys %]_lua_co_ctx_t               *co_ctx;
+    ngx_[% subsys %]_lua_posted_thread_t        *next;
 };
 
 
@@ -543,10 +543,10 @@ struct ngx_[% subsys %]_lua_co_ctx_s {
 typedef struct {
     lua_State       *vm;
     ngx_int_t        count;
-} ngx_[% subsystem %]_lua_vm_state_t;
+} ngx_[% subsys %]_lua_vm_state_t;
 
 
-typedef struct ngx_[% subsystem %]_lua_ctx_s {
+typedef struct ngx_[% subsys %]_lua_ctx_s {
     /* for lua_coce_cache off: */
     ngx_[% subsys %]_lua_vm_state_t     *vm_state;
 
@@ -559,10 +559,10 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
     ngx_list_t              *user_co_ctx; /* coroutine contexts for user
                                              coroutines */
 
-    ngx_[% subsystem %]_lua_co_ctx_t    entry_co_ctx; /* coroutine context for the
+    ngx_[% subsys %]_lua_co_ctx_t    entry_co_ctx; /* coroutine context for the
                                               entry coroutine */
 
-    ngx_[% subsystem %]_lua_co_ctx_t   *on_abort_co_ctx; /* coroutine context for the
+    ngx_[% subsys %]_lua_co_ctx_t   *on_abort_co_ctx; /* coroutine context for the
                                                  on_abort thread */
 
     int                      ctx_ref;  /*  reference to anchor
@@ -602,8 +602,8 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
     ngx_int_t                exit_code;
 
     void                    *downstream;  /* can be either
-                                             ngx_[% subsystem %]_lua_socket_tcp_upstream_t
-                                             or ngx_[% subsystem %]_lua_co_ctx_t */
+                                             ngx_[% subsys %]_lua_socket_tcp_upstream_t
+                                             or ngx_[% subsys %]_lua_co_ctx_t */
 
 [% IF http_subsys %]
     ngx_uint_t               index;              /* index of the current
@@ -611,7 +611,7 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
                                                     request */
 [% END %]
 
-    ngx_[% subsystem %]_lua_posted_thread_t   *posted_threads;
+    ngx_[% subsys %]_lua_posted_thread_t   *posted_threads;
 
     int                      uthreads; /* number of active user threads */
 
@@ -678,15 +678,15 @@ typedef struct ngx_[% subsystem %]_lua_ctx_s {
     unsigned         acquired_raw_req_socket:1;  /* whether a raw req socket
                                                     is acquired */
     unsigned         seen_body_data:1;
-} ngx_[% subsystem %]_lua_ctx_t;
+} ngx_[% subsys %]_lua_ctx_t;
 
 
 [% IF http_subsys %]
-typedef struct ngx_[% subsystem %]_lua_header_val_s  ngx_[% subsystem %]_lua_header_val_t;
+typedef struct ngx_[% subsys %]_lua_header_val_s  ngx_[% subsys %]_lua_header_val_t;
 
 
-typedef ngx_int_t (*ngx_[% subsystem %]_lua_set_header_pt)([% req_type %] *r,
-    ngx_[% subsystem %]_lua_header_val_t *hv, ngx_str_t *value);
+typedef ngx_int_t (*ngx_[% subsys %]_lua_set_header_pt)([% req_type %] *r,
+    ngx_[% subsys %]_lua_header_val_t *hv, ngx_str_t *value);
 
 
 struct ngx_[% subsys %]_lua_header_val_s {
@@ -707,11 +707,11 @@ typedef struct {
 [% END %]
 
 
-extern ngx_module_t ngx_[% subsystem %]_lua_module;
+extern ngx_module_t ngx_[% subsys %]_lua_module;
 
 [% IF http_subsys %]
-extern ngx_http_output_header_filter_pt ngx_[% subsystem %]_lua_next_header_filter;
-extern ngx_http_output_body_filter_pt ngx_[% subsystem %]_lua_next_body_filter;
+extern ngx_http_output_header_filter_pt ngx_[% subsys %]_lua_next_header_filter;
+extern ngx_http_output_body_filter_pt ngx_[% subsys %]_lua_next_body_filter;
 [% END %]
 
 

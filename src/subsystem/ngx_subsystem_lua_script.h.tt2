@@ -55,12 +55,12 @@ typedef struct {
     unsigned                    skip:1;
 
     ngx_log_t                  *log;
-} ngx_[% subsystem %]_lua_script_engine_t;
+} ngx_[% subsys %]_lua_script_engine_t;
 
 
-typedef void (*ngx_[% subsystem %]_lua_script_code_pt) (ngx_[% subsystem %]_lua_script_engine_t *e);
-typedef size_t (*ngx_[% subsystem %]_lua_script_len_code_pt)
-    (ngx_[% subsystem %]_lua_script_engine_t *e);
+typedef void (*ngx_[% subsys %]_lua_script_code_pt) (ngx_[% subsys %]_lua_script_engine_t *e);
+typedef size_t (*ngx_[% subsys %]_lua_script_len_code_pt)
+    (ngx_[% subsys %]_lua_script_engine_t *e);
 
 
 typedef struct {
@@ -75,11 +75,11 @@ typedef struct {
 } ngx_[% subsys %]_lua_script_capture_code_t;
 
 
-ngx_int_t ngx_[% subsystem %]_lua_compile_complex_value(
-    ngx_[% subsystem %]_lua_compile_complex_value_t *ccv);
-ngx_int_t ngx_[% subsystem %]_lua_complex_value([% req_type %] *r, ngx_str_t *subj,
+ngx_int_t ngx_[% subsys %]_lua_compile_complex_value(
+    ngx_[% subsys %]_lua_compile_complex_value_t *ccv);
+ngx_int_t ngx_[% subsys %]_lua_complex_value([% req_type %] *r, ngx_str_t *subj,
     size_t offset, ngx_int_t count, int *cap,
-    ngx_[% subsystem %]_lua_complex_value_t *val, luaL_Buffer *luabuf);
+    ngx_[% subsys %]_lua_complex_value_t *val, luaL_Buffer *luabuf);
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_SCRIPT_H_INCLUDED_ */

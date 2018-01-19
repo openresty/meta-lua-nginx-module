@@ -9,12 +9,12 @@
 #define _NGX_[% SUBSYS %]_LUA_PCREFIX_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
 #if (NGX_PCRE)
-ngx_pool_t *ngx_[% subsystem %]_lua_pcre_malloc_init(ngx_pool_t *pool);
-void ngx_[% subsystem %]_lua_pcre_malloc_done(ngx_pool_t *old_pool);
+ngx_pool_t *ngx_[% subsys %]_lua_pcre_malloc_init(ngx_pool_t *pool);
+void ngx_[% subsys %]_lua_pcre_malloc_done(ngx_pool_t *old_pool);
 #endif
 
 

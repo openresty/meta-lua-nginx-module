@@ -10,17 +10,17 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_cache.h"
-#include "ngx_[% subsystem %]_lua_balancer.h"
-#include "ngx_[% subsystem %]_lua_util.h"
-#include "ngx_[% subsystem %]_lua_directive.h"
+#include "ngx_[% subsys %]_lua_cache.h"
+#include "ngx_[% subsys %]_lua_balancer.h"
+#include "ngx_[% subsys %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_directive.h"
 
 
-struct ngx_[% subsystem %]_lua_balancer_peer_data_s {
+struct ngx_[% subsys %]_lua_balancer_peer_data_s {
     /* the round robin data must be first */
-    ngx_[% subsystem %]_upstream_rr_peer_data_t  rrp;
+    ngx_[% subsys %]_upstream_rr_peer_data_t  rrp;
 
-    ngx_[% subsystem %]_lua_srv_conf_t          *conf;
+    ngx_[% subsys %]_lua_srv_conf_t          *conf;
     [% req_type %]                              *request;
 
     ngx_uint_t                                   more_tries;
@@ -47,13 +47,13 @@ struct ngx_[% subsystem %]_lua_balancer_peer_data_s {
 [%- ELSIF stream_subsys -%]
 #if (NGX_STREAM_SSL && HAVE_NGX_STREAM_BALANCER_EXPORT_PATCH)
 [%- END %]
-static ngx_int_t ngx_[% subsystem %]_lua_balancer_set_session(ngx_peer_connection_t *pc,
+static ngx_int_t ngx_[% subsys %]_lua_balancer_set_session(ngx_peer_connection_t *pc,
     void *data);
-static void ngx_[% subsystem %]_lua_balancer_save_session(ngx_peer_connection_t *pc,
+static void ngx_[% subsys %]_lua_balancer_save_session(ngx_peer_connection_t *pc,
     void *data);
 #endif
-static ngx_int_t ngx_[% subsystem %]_lua_balancer_init(ngx_conf_t *cf,
-    ngx_[% subsystem %]_upstream_srv_conf_t *us);
+static ngx_int_t ngx_[% subsys %]_lua_balancer_init(ngx_conf_t *cf,
+    ngx_[% subsys %]_upstream_srv_conf_t *us);
 
 
 [% IF http_subsys %]
@@ -71,21 +71,21 @@ ngx_stream_proxy_get_next_upstream_tries(ngx_stream_session_t *s);
 [% END %]
 
 
-static ngx_int_t ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc,
+static ngx_int_t ngx_[% subsys %]_lua_balancer_get_peer(ngx_peer_connection_t *pc,
     void *data);
-static ngx_int_t ngx_[% subsystem %]_lua_balancer_by_chunk(lua_State *L,
+static ngx_int_t ngx_[% subsys %]_lua_balancer_by_chunk(lua_State *L,
     [% req_type %] *r);
-void ngx_[% subsystem %]_lua_balancer_free_peer(ngx_peer_connection_t *pc, void *data,
+void ngx_[% subsys %]_lua_balancer_free_peer(ngx_peer_connection_t *pc, void *data,
     ngx_uint_t state);
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_balancer_handler_file([% req_type %] *r,
-    ngx_[% subsystem %]_lua_srv_conf_t *lscf, lua_State *L)
+ngx_[% subsys %]_lua_balancer_handler_file([% req_type %] *r,
+    ngx_[% subsys %]_lua_srv_conf_t *lscf, lua_State *L)
 {
     ngx_int_t           rc;
 
-    rc = ngx_[% subsystem %]_lua_cache_loadfile(r->connection->log, L,
+    rc = ngx_[% subsys %]_lua_cache_loadfile(r->connection->log, L,
                                                 lscf->balancer.src.data,
                                                 lscf->balancer.src_key);
     if (rc != NGX_OK) {
@@ -93,19 +93,19 @@ ngx_[% subsystem %]_lua_balancer_handler_file([% req_type %] *r,
     }
 
     /*  make sure we have a valid code chunk */
-    ngx_[% subsystem %]_lua_assert(lua_isfunction(L, -1));
+    ngx_[% subsys %]_lua_assert(lua_isfunction(L, -1));
 
-    return ngx_[% subsystem %]_lua_balancer_by_chunk(L, r);
+    return ngx_[% subsys %]_lua_balancer_by_chunk(L, r);
 }
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_balancer_handler_inline([% req_type %] *r,
-    ngx_[% subsystem %]_lua_srv_conf_t *lscf, lua_State *L)
+ngx_[% subsys %]_lua_balancer_handler_inline([% req_type %] *r,
+    ngx_[% subsys %]_lua_srv_conf_t *lscf, lua_State *L)
 {
     ngx_int_t           rc;
 
-    rc = ngx_[% subsystem %]_lua_cache_loadbuffer(r->connection->log, L,
+    rc = ngx_[% subsys %]_lua_cache_loadbuffer(r->connection->log, L,
                                                   lscf->balancer.src.data,
                                                   lscf->balancer.src.len,
                                                   lscf->balancer.src_key,
@@ -115,24 +115,24 @@ ngx_[% subsystem %]_lua_balancer_handler_inline([% req_type %] *r,
     }
 
     /*  make sure we have a valid code chunk */
-    ngx_[% subsystem %]_lua_assert(lua_isfunction(L, -1));
+    ngx_[% subsys %]_lua_assert(lua_isfunction(L, -1));
 
-    return ngx_[% subsystem %]_lua_balancer_by_chunk(L, r);
+    return ngx_[% subsys %]_lua_balancer_by_chunk(L, r);
 }
 
 
 char *
-ngx_[% subsystem %]_lua_balancer_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,
+ngx_[% subsys %]_lua_balancer_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf)
 {
     char        *rv;
     ngx_conf_t   save;
 
     save = *cf;
-    cf->handler = ngx_[% subsystem %]_lua_balancer_by_lua;
+    cf->handler = ngx_[% subsys %]_lua_balancer_by_lua;
     cf->handler_conf = conf;
 
-    rv = ngx_[% subsystem %]_lua_conf_lua_block_parse(cf, cmd);
+    rv = ngx_[% subsys %]_lua_conf_lua_block_parse(cf, cmd);
 
     *cf = save;
 
@@ -141,7 +141,7 @@ ngx_[% subsystem %]_lua_balancer_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd
 
 
 char *
-ngx_[% subsystem %]_lua_balancer_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
+ngx_[% subsys %]_lua_balancer_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf)
 {
     u_char                      *p;
@@ -164,12 +164,12 @@ ngx_[% subsystem %]_lua_balancer_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 
     value = cf->args->elts;
 
-    lscf->balancer.handler = (ngx_[% subsystem %]_lua_srv_conf_handler_pt) cmd->post;
+    lscf->balancer.handler = (ngx_[% subsys %]_lua_srv_conf_handler_pt) cmd->post;
 
-    if (cmd->post == ngx_[% subsystem %]_lua_balancer_handler_file) {
+    if (cmd->post == ngx_[% subsys %]_lua_balancer_handler_file) {
         /* Lua code in an external file */
 
-        name = ngx_[% subsystem %]_lua_rebase_path(cf->pool, value[1].data,
+        name = ngx_[% subsys %]_lua_rebase_path(cf->pool, value[1].data,
                                                    value[1].len);
         if (name == NULL) {
             return NGX_CONF_ERROR;
@@ -186,7 +186,7 @@ ngx_[% subsystem %]_lua_balancer_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
         lscf->balancer.src_key = p;
 
         p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG, NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
-        p = ngx_[% subsystem %]_lua_digest_hex(p, value[1].data, value[1].len);
+        p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
         *p = '\0';
 
     } else {
@@ -202,18 +202,18 @@ ngx_[% subsystem %]_lua_balancer_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
         lscf->balancer.src_key = p;
 
         p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG, NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
-        p = ngx_[% subsystem %]_lua_digest_hex(p, value[1].data, value[1].len);
+        p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
         *p = '\0';
     }
 
-    uscf = ngx_[% subsystem %]_conf_get_module_srv_conf(cf, ngx_[% subsystem %]_upstream_module);
+    uscf = ngx_[% subsys %]_conf_get_module_srv_conf(cf, ngx_[% subsys %]_upstream_module);
 
     if (uscf->peer.init_upstream) {
         ngx_conf_log_error(NGX_LOG_WARN, cf, 0,
                            "load balancing method redefined");
     }
 
-    uscf->peer.init_upstream = ngx_[% subsystem %]_lua_balancer_init;
+    uscf->peer.init_upstream = ngx_[% subsys %]_lua_balancer_init;
 
     uscf->flags = NGX_[% SUBSYS %]_UPSTREAM_CREATE
                   |NGX_[% SUBSYS %]_UPSTREAM_WEIGHT
@@ -226,15 +226,15 @@ ngx_[% subsystem %]_lua_balancer_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_balancer_init(ngx_conf_t *cf,
-    ngx_[% subsystem %]_upstream_srv_conf_t *us)
+ngx_[% subsys %]_lua_balancer_init(ngx_conf_t *cf,
+    ngx_[% subsys %]_upstream_srv_conf_t *us)
 {
-    if (ngx_[% subsystem %]_upstream_init_round_robin(cf, us) != NGX_OK) {
+    if (ngx_[% subsys %]_upstream_init_round_robin(cf, us) != NGX_OK) {
         return NGX_ERROR;
     }
 
     /* this callback is called upon individual requests */
-    us->peer.init = ngx_[% subsystem %]_lua_balancer_init_peer;
+    us->peer.init = ngx_[% subsys %]_lua_balancer_init_peer;
 
     return NGX_OK;
 }
@@ -242,15 +242,15 @@ ngx_[% subsystem %]_lua_balancer_init(ngx_conf_t *cf,
 
 static ngx_int_t
 [% IF http_subsys %]
-ngx_[% subsystem %]_lua_balancer_init_peer(ngx_http_request_t *r,
+ngx_[% subsys %]_lua_balancer_init_peer(ngx_http_request_t *r,
 [% ELSIF stream_subsys %]
-ngx_[% subsystem %]_lua_balancer_init_peer(ngx_stream_session_t *s,
+ngx_[% subsys %]_lua_balancer_init_peer(ngx_stream_session_t *s,
 [% END %]
-    ngx_[% subsystem %]_upstream_srv_conf_t *us)
+    ngx_[% subsys %]_upstream_srv_conf_t *us)
 {
-    ngx_[% subsystem %]_lua_srv_conf_t            *bcf;
-    ngx_[% subsystem %]_lua_balancer_peer_data_t  *bp;
-    ngx_[% subsystem %]_upstream_t                *upstream;
+    ngx_[% subsys %]_lua_srv_conf_t            *bcf;
+    ngx_[% subsys %]_lua_balancer_peer_data_t  *bp;
+    ngx_[% subsys %]_upstream_t                *upstream;
 
 [%- IF stream_subsys %]
     [% req_type %]                                *r;
@@ -273,7 +273,7 @@ ngx_[% subsystem %]_lua_balancer_init_peer(ngx_stream_session_t *s,
     upstream = r->upstream;
 [% END -%]
 
-    bp = ngx_pcalloc(r->pool, sizeof(ngx_[% subsystem %]_lua_balancer_peer_data_t));
+    bp = ngx_pcalloc(r->pool, sizeof(ngx_[% subsys %]_lua_balancer_peer_data_t));
     if (bp == NULL) {
         return NGX_ERROR;
     }
@@ -289,8 +289,8 @@ ngx_[% subsystem %]_lua_balancer_init_peer(ngx_stream_session_t *s,
         return NGX_ERROR;
     }
 
-    upstream->peer.get = ngx_[% subsystem %]_lua_balancer_get_peer;
-    upstream->peer.free = ngx_[% subsystem %]_lua_balancer_free_peer;
+    upstream->peer.get = ngx_[% subsys %]_lua_balancer_get_peer;
+    upstream->peer.free = ngx_[% subsys %]_lua_balancer_free_peer;
 
 [%- IF stream_subsys %]
     upstream->peer.notify = NULL;
@@ -301,11 +301,11 @@ ngx_[% subsystem %]_lua_balancer_init_peer(ngx_stream_session_t *s,
 [%- ELSIF stream_subsys -%]
 #if (NGX_STREAM_SSL && HAVE_NGX_STREAM_BALANCER_EXPORT_PATCH)
 [%- END %]
-    upstream->peer.set_session = ngx_[% subsystem %]_lua_balancer_set_session;
-    upstream->peer.save_session = ngx_[% subsystem %]_lua_balancer_save_session;
+    upstream->peer.set_session = ngx_[% subsys %]_lua_balancer_set_session;
+    upstream->peer.save_session = ngx_[% subsys %]_lua_balancer_save_session;
 #endif
 
-    bcf = ngx_[% subsystem %]_conf_upstream_srv_conf(us, ngx_[% subsystem %]_lua_module);
+    bcf = ngx_[% subsys %]_conf_upstream_srv_conf(us, ngx_[% subsys %]_lua_module);
 
     bp->conf = bcf;
     bp->request = r;
@@ -315,7 +315,7 @@ ngx_[% subsystem %]_lua_balancer_init_peer(ngx_stream_session_t *s,
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
+ngx_[% subsys %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
 {
     lua_State                          *L;
     ngx_int_t                           rc;
@@ -333,9 +333,9 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
 
     r = bp->request;
 
-    ngx_[% subsystem %]_lua_assert(lscf->balancer.handler && r);
+    ngx_[% subsys %]_lua_assert(lscf->balancer.handler && r);
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
 
     if (ctx == NULL) {
 
@@ -350,13 +350,13 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
             return NGX_ERROR;
         }
 
-        L = ngx_[% subsystem %]_lua_get_lua_vm(r, ctx);
+        L = ngx_[% subsys %]_lua_get_lua_vm(r, ctx);
 
     } else {
-        L = ngx_[% subsystem %]_lua_get_lua_vm(r, ctx);
+        L = ngx_[% subsys %]_lua_get_lua_vm(r, ctx);
 
         dd("reset ctx");
-        ngx_[% subsystem %]_lua_reset_ctx(r, L, ctx);
+        ngx_[% subsys %]_lua_reset_ctx(r, L, ctx);
     }
 
     ctx->context = NGX_[% SUBSYS %]_LUA_CONTEXT_BALANCER;
@@ -366,7 +366,7 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
     bp->more_tries = 0;
     bp->total_tries++;
 
-    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsys %]_lua_module);
 
     /* balancer_by_lua does not support yielding and
      * there cannot be any conflicts among concurrent requests,
@@ -424,31 +424,31 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
         return NGX_OK;
     }
 
-    return ngx_[% subsystem %]_upstream_get_round_robin_peer(pc, &bp->rrp);
+    return ngx_[% subsys %]_upstream_get_round_robin_peer(pc, &bp->rrp);
 }
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_balancer_by_chunk(lua_State *L, [% req_type %] *r)
+ngx_[% subsys %]_lua_balancer_by_chunk(lua_State *L, [% req_type %] *r)
 {
     u_char                  *err_msg;
     size_t                   len;
     ngx_int_t                rc;
 
     /* init nginx context in Lua VM */
-    ngx_[% subsystem %]_lua_set_req(L, r);
-    ngx_[% subsystem %]_lua_create_new_globals_table(L, 0 /* narr */, 1 /* nrec */);
+    ngx_[% subsys %]_lua_set_req(L, r);
+    ngx_[% subsys %]_lua_create_new_globals_table(L, 0 /* narr */, 1 /* nrec */);
 
     /*  {{{ make new env inheriting main thread's globals table */
     lua_createtable(L, 0, 1 /* nrec */);   /* the metatable for the new env */
-    ngx_[% subsystem %]_lua_get_globals_table(L);
+    ngx_[% subsys %]_lua_get_globals_table(L);
     lua_setfield(L, -2, "__index");
     lua_setmetatable(L, -2);    /*  setmetatable({}, {__index = _G}) */
     /*  }}} */
 
     lua_setfenv(L, -2);    /*  set new running env for the code closure */
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_traceback);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_traceback);
     lua_insert(L, 1);  /* put it under chunk and args */
 
     /*  protected call user code */
@@ -481,10 +481,10 @@ ngx_[% subsystem %]_lua_balancer_by_chunk(lua_State *L, [% req_type %] *r)
 
 
 void
-ngx_[% subsystem %]_lua_balancer_free_peer(ngx_peer_connection_t *pc, void *data,
+ngx_[% subsys %]_lua_balancer_free_peer(ngx_peer_connection_t *pc, void *data,
     ngx_uint_t state)
 {
-    ngx_[% subsystem %]_lua_balancer_peer_data_t  *bp = data;
+    ngx_[% subsys %]_lua_balancer_peer_data_t  *bp = data;
 
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, pc->log, 0,
                    "lua balancer free peer, tries: %ui", pc->tries);
@@ -501,7 +501,7 @@ ngx_[% subsystem %]_lua_balancer_free_peer(ngx_peer_connection_t *pc, void *data
 
     /* fallback */
 
-    ngx_[% subsystem %]_upstream_free_round_robin_peer(pc, data, state);
+    ngx_[% subsys %]_upstream_free_round_robin_peer(pc, data, state);
 }
 
 
@@ -511,30 +511,30 @@ ngx_[% subsystem %]_lua_balancer_free_peer(ngx_peer_connection_t *pc, void *data
 #if (NGX_STREAM_SSL && HAVE_NGX_STREAM_BALANCER_EXPORT_PATCH)
 [%- END %]
 static ngx_int_t
-ngx_[% subsystem %]_lua_balancer_set_session(ngx_peer_connection_t *pc, void *data)
+ngx_[% subsys %]_lua_balancer_set_session(ngx_peer_connection_t *pc, void *data)
 {
-    ngx_[% subsystem %]_lua_balancer_peer_data_t  *bp = data;
+    ngx_[% subsys %]_lua_balancer_peer_data_t  *bp = data;
 
     if (bp->sockaddr && bp->socklen) {
         /* TODO */
         return NGX_OK;
     }
 
-    return ngx_[% subsystem %]_upstream_set_round_robin_peer_session(pc, &bp->rrp);
+    return ngx_[% subsys %]_upstream_set_round_robin_peer_session(pc, &bp->rrp);
 }
 
 
 static void
-ngx_[% subsystem %]_lua_balancer_save_session(ngx_peer_connection_t *pc, void *data)
+ngx_[% subsys %]_lua_balancer_save_session(ngx_peer_connection_t *pc, void *data)
 {
-    ngx_[% subsystem %]_lua_balancer_peer_data_t  *bp = data;
+    ngx_[% subsys %]_lua_balancer_peer_data_t  *bp = data;
 
     if (bp->sockaddr && bp->socklen) {
         /* TODO */
         return;
     }
 
-    ngx_[% subsystem %]_upstream_save_round_robin_peer_session(pc, &bp->rrp);
+    ngx_[% subsys %]_upstream_save_round_robin_peer_session(pc, &bp->rrp);
     return;
 }
 
@@ -548,7 +548,7 @@ ngx_[% subsystem %]_lua_balancer_save_session(ngx_peer_connection_t *pc, void *d
 [%- END -%]
 
 int
-ngx_[% subsystem %]_lua_ffi_balancer_set_current_peer([% req_type %] *r,
+ngx_[% subsys %]_lua_ffi_balancer_set_current_peer([% req_type %] *r,
     const u_char *addr, size_t addr_len, int port, char **err)
 {
     ngx_url_t                      url;
@@ -575,7 +575,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_current_peer([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         *err = "no ctx found";
         return NGX_ERROR;
@@ -586,11 +586,11 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_current_peer([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsys %]_lua_module);
 
     /* we cannot read r->upstream->peer.data here directly because
      * it could be overridden by other modules like
-     * ngx_[% subsystem %]_upstream_keepalive_module.
+     * ngx_[% subsys %]_upstream_keepalive_module.
      */
     bp = lmcf->balancer_peer_data;
     if (bp == NULL) {
@@ -787,7 +787,7 @@ ngx_stream_lua_ffi_balancer_set_timeouts(ngx_stream_lua_request_t *r,
 
 
 int
-ngx_[% subsystem %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
+ngx_[% subsys %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
     int count, char **err)
 {
 [%- IF http_subsys %]
@@ -798,11 +798,11 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
 [%- END %]
     ngx_uint_t                                     max_tries, total;
 #endif
-    ngx_[% subsystem %]_lua_ctx_t                 *ctx;
-    ngx_[% subsystem %]_upstream_t                *u;
+    ngx_[% subsys %]_lua_ctx_t                 *ctx;
+    ngx_[% subsys %]_upstream_t                *u;
 
-    ngx_[% subsystem %]_lua_main_conf_t           *lmcf;
-    ngx_[% subsystem %]_lua_balancer_peer_data_t  *bp;
+    ngx_[% subsys %]_lua_main_conf_t           *lmcf;
+    ngx_[% subsys %]_lua_balancer_peer_data_t  *bp;
 
     if (r == NULL) {
         *err = "no request found";
@@ -821,7 +821,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         *err = "no ctx found";
         return NGX_ERROR;
@@ -832,7 +832,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsys %]_lua_module);
 
     bp = lmcf->balancer_peer_data;
     if (bp == NULL) {
@@ -879,19 +879,19 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
 
 
 int
-ngx_[% subsystem %]_lua_ffi_balancer_get_last_failure([% req_type %] *r,
+ngx_[% subsys %]_lua_ffi_balancer_get_last_failure([% req_type %] *r,
     int *status, char **err)
 {
-    ngx_[% subsystem %]_lua_ctx_t                 *ctx;
-    ngx_[% subsystem %]_upstream_t                *u;
+    ngx_[% subsys %]_lua_ctx_t                 *ctx;
+    ngx_[% subsys %]_upstream_t                *u;
 
 [%- IF http_subsys -%]
-    ngx_[% subsystem %]_upstream_state_t          *state;
+    ngx_[% subsys %]_upstream_state_t          *state;
     ngx_array_t                                   *upstream_states;
 [%- END -%]
 
-    ngx_[% subsystem %]_lua_balancer_peer_data_t  *bp;
-    ngx_[% subsystem %]_lua_main_conf_t           *lmcf;
+    ngx_[% subsys %]_lua_balancer_peer_data_t  *bp;
+    ngx_[% subsys %]_lua_main_conf_t           *lmcf;
 
     if (r == NULL) {
         *err = "no request found";
@@ -911,7 +911,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_get_last_failure([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         *err = "no ctx found";
         return NGX_ERROR;
@@ -922,7 +922,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_get_last_failure([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsys %]_lua_module);
 
     bp = lmcf->balancer_peer_data;
     if (bp == NULL) {

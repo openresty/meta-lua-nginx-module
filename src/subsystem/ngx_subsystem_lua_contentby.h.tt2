@@ -9,13 +9,13 @@
 #define _NGX_[% SUBSYS %]_LUA_CONTENT_BY_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
-ngx_int_t ngx_[% subsystem %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r);
-void ngx_[% subsystem %]_lua_content_wev_handler([% req_type %] *r);
-ngx_int_t ngx_[% subsystem %]_lua_content_handler_file([% req_type %] *r);
-ngx_int_t ngx_[% subsystem %]_lua_content_handler_inline([% req_type %] *r);
+ngx_int_t ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r);
+void ngx_[% subsys %]_lua_content_wev_handler([% req_type %] *r);
+ngx_int_t ngx_[% subsys %]_lua_content_handler_file([% req_type %] *r);
+ngx_int_t ngx_[% subsys %]_lua_content_handler_inline([% req_type %] *r);
 
 [% IF http_subsys %]
 ngx_int_t ngx_http_lua_content_handler(ngx_http_request_t *r);
@@ -23,8 +23,8 @@ ngx_int_t ngx_http_lua_content_handler(ngx_http_request_t *r);
 void ngx_stream_lua_content_handler(ngx_stream_session_t *r);
 [% END %]
 
-ngx_int_t ngx_[% subsystem %]_lua_content_run_posted_threads(lua_State *L,
-    [% req_type %] *r, ngx_[% subsystem %]_lua_ctx_t *ctx, int n);
+ngx_int_t ngx_[% subsys %]_lua_content_run_posted_threads(lua_State *L,
+    [% req_type %] *r, ngx_[% subsys %]_lua_ctx_t *ctx, int n);
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_CONTENT_BY_H_INCLUDED_ */

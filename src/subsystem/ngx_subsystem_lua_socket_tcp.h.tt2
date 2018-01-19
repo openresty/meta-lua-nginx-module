@@ -8,7 +8,7 @@
 #define _NGX_[% SUBSYS %]_LUA_SOCKET_TCP_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
 #define NGX_[% SUBSYS %]_LUA_SOCKET_FT_ERROR         0x0001
@@ -22,17 +22,17 @@
 #define NGX_[% SUBSYS %]_LUA_SOCKET_FT_SSL           0x0100
 
 
-typedef struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s
-        ngx_[% subsystem %]_lua_socket_tcp_upstream_t;
+typedef struct ngx_[% subsys %]_lua_socket_tcp_upstream_s
+        ngx_[% subsys %]_lua_socket_tcp_upstream_t;
 
 
 typedef
-    int (*ngx_[% subsystem %]_lua_socket_tcp_retval_handler)([% req_type %] *r,
-        ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u, lua_State *L);
+    int (*ngx_[% subsys %]_lua_socket_tcp_retval_handler)([% req_type %] *r,
+        ngx_[% subsys %]_lua_socket_tcp_upstream_t *u, lua_State *L);
 
 
-typedef void (*ngx_[% subsystem %]_lua_socket_tcp_upstream_handler_pt)
-    ([% req_type %] *r, ngx_[% subsystem %]_lua_socket_tcp_upstream_t *u);
+typedef void (*ngx_[% subsys %]_lua_socket_tcp_upstream_handler_pt)
+    ([% req_type %] *r, ngx_[% subsys %]_lua_socket_tcp_upstream_t *u);
 
 
 typedef struct {
@@ -42,22 +42,22 @@ typedef struct {
      *                       + in-pool connections */
     ngx_uint_t                         active_connections;
 
-    /* queues of ngx_[% subsystem %]_lua_socket_pool_item_t: */
+    /* queues of ngx_[% subsys %]_lua_socket_pool_item_t: */
     ngx_queue_t                        cache;
     ngx_queue_t                        free;
 
     u_char                             key[1];
 
-} ngx_[% subsystem %]_lua_socket_pool_t;
+} ngx_[% subsys %]_lua_socket_pool_t;
 
 
-struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s {
-    ngx_[% subsystem %]_lua_socket_tcp_retval_handler          read_prepare_retvals;
-    ngx_[% subsystem %]_lua_socket_tcp_retval_handler          write_prepare_retvals;
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_handler_pt     read_event_handler;
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_handler_pt     write_event_handler;
+struct ngx_[% subsys %]_lua_socket_tcp_upstream_s {
+    ngx_[% subsys %]_lua_socket_tcp_retval_handler          read_prepare_retvals;
+    ngx_[% subsys %]_lua_socket_tcp_retval_handler          write_prepare_retvals;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_handler_pt     read_event_handler;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_handler_pt     write_event_handler;
 
-    ngx_[% subsystem %]_lua_socket_pool_t      *socket_pool;
+    ngx_[% subsys %]_lua_socket_pool_t      *socket_pool;
 
     ngx_[% subsys %]_lua_loc_conf_t         *conf;
     ngx_[% req_subsys %]_cleanup_pt         *cleanup;
@@ -69,7 +69,7 @@ struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s {
     ngx_msec_t                       send_timeout;
     ngx_msec_t                       connect_timeout;
 
-    ngx_[% subsystem %]_upstream_resolved_t    *resolved;
+    ngx_[% subsys %]_upstream_resolved_t    *resolved;
 
     ngx_chain_t                     *bufs_in; /* input data buffers */
     ngx_chain_t                     *buf_in; /* last input data buffer */
@@ -86,8 +86,8 @@ struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s {
     size_t                           request_len;
     ngx_chain_t                     *request_bufs;
 
-    ngx_[% subsystem %]_lua_co_ctx_t           *read_co_ctx;
-    ngx_[% subsystem %]_lua_co_ctx_t           *write_co_ctx;
+    ngx_[% subsys %]_lua_co_ctx_t           *read_co_ctx;
+    ngx_[% subsys %]_lua_co_ctx_t           *write_co_ctx;
 
     ngx_uint_t                       reused;
 
@@ -112,7 +112,7 @@ struct ngx_[% subsystem %]_lua_socket_tcp_upstream_s {
 };
 
 
-typedef struct ngx_[% subsystem %]_lua_dfa_edge_s  ngx_[% subsystem %]_lua_dfa_edge_t;
+typedef struct ngx_[% subsys %]_lua_dfa_edge_s  ngx_[% subsys %]_lua_dfa_edge_t;
 
 
 struct ngx_[% subsys %]_lua_dfa_edge_s {
@@ -123,18 +123,18 @@ struct ngx_[% subsys %]_lua_dfa_edge_s {
 
 
 typedef struct {
-    ngx_[% subsystem %]_lua_socket_tcp_upstream_t  *upstream;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t  *upstream;
 
     ngx_str_t                            pattern;
     ngx_[% subsys %]_lua_dfa_edge_t    **recovering;
     int                                  state;
 
     unsigned                             inclusive:1;
-} ngx_[% subsystem %]_lua_socket_compiled_pattern_t;
+} ngx_[% subsys %]_lua_socket_compiled_pattern_t;
 
 
 typedef struct {
-    ngx_[% subsystem %]_lua_socket_pool_t      *socket_pool;
+    ngx_[% subsys %]_lua_socket_pool_t      *socket_pool;
 
     ngx_queue_t                      queue;
     ngx_connection_t                *connection;
@@ -144,12 +144,12 @@ typedef struct {
 
     ngx_uint_t                       reused;
 
-} ngx_[% subsystem %]_lua_socket_pool_item_t;
+} ngx_[% subsys %]_lua_socket_pool_item_t;
 
 
-void ngx_[% subsystem %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L);
-void ngx_[% subsystem %]_lua_inject_req_socket_api(lua_State *L);
-void ngx_[% subsystem %]_lua_cleanup_conn_pools(lua_State *L);
+void ngx_[% subsys %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L);
+void ngx_[% subsys %]_lua_inject_req_socket_api(lua_State *L);
+void ngx_[% subsys %]_lua_cleanup_conn_pools(lua_State *L);
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_SOCKET_TCP_H_INCLUDED_ */

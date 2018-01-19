@@ -11,27 +11,27 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_misc.h"
-#include "ngx_[% subsystem %]_lua_ctx.h"
-#include "ngx_[% subsystem %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_misc.h"
+#include "ngx_[% subsys %]_lua_ctx.h"
+#include "ngx_[% subsys %]_lua_util.h"
 
 
-static int ngx_[% subsystem %]_lua_ngx_get(lua_State *L);
-static int ngx_[% subsystem %]_lua_ngx_set(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_get(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_set(lua_State *L);
 
 [% IF http_subsys %]
-static int ngx_[% subsystem %]_lua_ngx_req_is_internal(lua_State *L);
+static int ngx_[% subsys %]_lua_ngx_req_is_internal(lua_State *L);
 [% END %]
 
 
 void
-ngx_[% subsystem %]_lua_inject_misc_api(lua_State *L)
+ngx_[% subsys %]_lua_inject_misc_api(lua_State *L)
 {
     /* ngx. getter and setter */
     lua_createtable(L, 0, 2); /* metatable for .ngx */
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_get);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_get);
     lua_setfield(L, -2, "__index");
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_set);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_set);
     lua_setfield(L, -2, "__newindex");
     lua_setmetatable(L, -2);
 }
@@ -39,19 +39,19 @@ ngx_[% subsystem %]_lua_inject_misc_api(lua_State *L)
 
 [% IF http_subsys %]
 void
-ngx_[% subsystem %]_lua_inject_req_misc_api(lua_State *L)
+ngx_[% subsys %]_lua_inject_req_misc_api(lua_State *L)
 {
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_ngx_req_is_internal);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_req_is_internal);
     lua_setfield(L, -2, "is_internal");
 }
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_req_is_internal(lua_State *L)
+ngx_[% subsys %]_lua_ngx_req_is_internal(lua_State *L)
 {
     [% req_type %]          *r;
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request object found");
     }
@@ -63,21 +63,21 @@ ngx_[% subsystem %]_lua_ngx_req_is_internal(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
+ngx_[% subsys %]_lua_ngx_get(lua_State *L)
 {
     int                             status;
     [% req_type %]                 *r;
     u_char                         *p;
     size_t                          len;
-    ngx_[% subsystem %]_lua_ctx_t  *ctx;
+    ngx_[% subsys %]_lua_ctx_t  *ctx;
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         lua_pushnil(L);
         return 1;
     }
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         lua_pushnil(L);
         return 1;
@@ -90,7 +90,7 @@ ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
     if (len == sizeof("status") - 1
         && ngx_strncmp(p, "status", sizeof("status") - 1) == 0)
     {
-        ngx_[% subsystem %]_lua_check_fake_request(L, r);
+        ngx_[% subsys %]_lua_check_fake_request(L, r);
 
 [% IF http_subsys -%]
         if (r->err_status) {
@@ -119,7 +119,7 @@ ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
     if (len == sizeof("ctx") - 1
         && ngx_strncmp(p, "ctx", sizeof("ctx") - 1) == 0)
     {
-        return ngx_[% subsystem %]_lua_ngx_get_ctx(L);
+        return ngx_[% subsys %]_lua_ngx_get_ctx(L);
     }
 
 [% IF http_subsys %]
@@ -133,7 +133,7 @@ ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
     if (len == sizeof("headers_sent") - 1
         && ngx_strncmp(p, "headers_sent", sizeof("headers_sent") - 1) == 0)
     {
-        ngx_[% subsystem %]_lua_check_fake_request(L, r);
+        ngx_[% subsys %]_lua_check_fake_request(L, r);
 
         dd("headers sent: %d", r->header_sent || ctx->header_sent);
 
@@ -150,7 +150,7 @@ ngx_[% subsystem %]_lua_ngx_get(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_set(lua_State *L)
+ngx_[% subsys %]_lua_ngx_set(lua_State *L)
 {
     [% req_type %]              *r;
     u_char                      *p;
@@ -163,7 +163,7 @@ ngx_[% subsystem %]_lua_ngx_set(lua_State *L)
     if (len == sizeof("status") - 1
         && ngx_strncmp(p, "status", sizeof("status") - 1) == 0)
     {
-        r = ngx_[% subsystem %]_lua_get_req(L);
+        r = ngx_[% subsys %]_lua_get_req(L);
         if (r == NULL) {
             return luaL_error(L, "no request object found");
         }
@@ -179,7 +179,7 @@ ngx_[% subsystem %]_lua_ngx_set(lua_State *L)
             r->err_status = 0;
         }
 
-        ngx_[% subsystem %]_lua_check_fake_request(L, r);
+        ngx_[% subsys %]_lua_check_fake_request(L, r);
 
         /* get the value */
         r->headers_out.status = (ngx_uint_t) luaL_checknumber(L, 3);
@@ -203,12 +203,12 @@ ngx_[% subsystem %]_lua_ngx_set(lua_State *L)
     if (len == sizeof("ctx") - 1
         && ngx_strncmp(p, "ctx", sizeof("ctx") - 1) == 0)
     {
-        r = ngx_[% subsystem %]_lua_get_req(L);
+        r = ngx_[% subsys %]_lua_get_req(L);
         if (r == NULL) {
             return luaL_error(L, "no request object found");
         }
 
-        return ngx_[% subsystem %]_lua_ngx_set_ctx(L);
+        return ngx_[% subsys %]_lua_ngx_set_ctx(L);
     }
 
     lua_rawset(L, -3);
@@ -219,7 +219,7 @@ ngx_[% subsystem %]_lua_ngx_set(lua_State *L)
 #ifndef NGX_LUA_NO_FFI_API
 [% IF http_subsys %]
 int
-ngx_[% subsystem %]_lua_ffi_get_resp_status([% req_type %] *r)
+ngx_[% subsys %]_lua_ffi_get_resp_status([% req_type %] *r)
 {
     if (r->connection->fd == (ngx_socket_t) -1) {
         return NGX_[% SUBSYS %]_LUA_FFI_BAD_CONTEXT;
@@ -241,7 +241,7 @@ ngx_[% subsystem %]_lua_ffi_get_resp_status([% req_type %] *r)
 
 
 int
-ngx_[% subsystem %]_lua_ffi_set_resp_status([% req_type %] *r, int status)
+ngx_[% subsys %]_lua_ffi_set_resp_status([% req_type %] *r, int status)
 {
     if (r->connection->fd == (ngx_socket_t) -1) {
         return NGX_[% SUBSYS %]_LUA_FFI_BAD_CONTEXT;
@@ -277,7 +277,7 @@ ngx_[% subsystem %]_lua_ffi_set_resp_status([% req_type %] *r, int status)
 
 
 int
-ngx_[% subsystem %]_lua_ffi_is_subrequest([% req_type %] *r)
+ngx_[% subsys %]_lua_ffi_is_subrequest([% req_type %] *r)
 {
     if (r->connection->fd == (ngx_socket_t) -1) {
         return NGX_[% SUBSYS %]_LUA_FFI_BAD_CONTEXT;
@@ -288,11 +288,11 @@ ngx_[% subsystem %]_lua_ffi_is_subrequest([% req_type %] *r)
 
 
 int
-ngx_[% subsystem %]_lua_ffi_headers_sent([% req_type %] *r)
+ngx_[% subsys %]_lua_ffi_headers_sent([% req_type %] *r)
 {
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
+    ngx_[% subsys %]_lua_ctx_t          *ctx;
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return NGX_[% SUBSYS %]_LUA_FFI_NO_REQ_CTX;
     }

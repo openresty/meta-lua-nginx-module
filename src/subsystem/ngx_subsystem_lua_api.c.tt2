@@ -10,43 +10,43 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
-#include "api/ngx_[% subsystem %]_lua_api.h"
-#include "ngx_[% subsystem %]_lua_shdict.h"
-#include "ngx_[% subsystem %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_common.h"
+#include "api/ngx_[% subsys %]_lua_api.h"
+#include "ngx_[% subsys %]_lua_shdict.h"
+#include "ngx_[% subsys %]_lua_util.h"
 
 
 lua_State *
-ngx_[% subsystem %]_lua_get_global_state(ngx_conf_t *cf)
+ngx_[% subsys %]_lua_get_global_state(ngx_conf_t *cf)
 {
-    ngx_[% subsystem %]_lua_main_conf_t *lmcf;
+    ngx_[% subsys %]_lua_main_conf_t *lmcf;
 
-    lmcf = ngx_[% subsystem %]_conf_get_module_main_conf(cf, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% subsys %]_conf_get_module_main_conf(cf, ngx_[% subsys %]_lua_module);
 
     return lmcf->lua;
 }
 
 
 [% req_type %] *
-ngx_[% subsystem %]_lua_get_request(lua_State *L)
+ngx_[% subsys %]_lua_get_request(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_get_req(L);
+    return ngx_[% subsys %]_lua_get_req(L);
 }
 
 
-static ngx_int_t ngx_[% subsystem %]_lua_shared_memory_init(ngx_shm_zone_t *shm_zone,
+static ngx_int_t ngx_[% subsys %]_lua_shared_memory_init(ngx_shm_zone_t *shm_zone,
     void *data);
 
 
 ngx_int_t
-ngx_[% subsystem %]_lua_add_package_preload(ngx_conf_t *cf, const char *package,
+ngx_[% subsys %]_lua_add_package_preload(ngx_conf_t *cf, const char *package,
     lua_CFunction func)
 {
     lua_State                     *L;
-    ngx_[% subsystem %]_lua_main_conf_t      *lmcf;
-    ngx_[% subsystem %]_lua_preload_hook_t   *hook;
+    ngx_[% subsys %]_lua_main_conf_t      *lmcf;
+    ngx_[% subsys %]_lua_preload_hook_t   *hook;
 
-    lmcf = ngx_[% subsystem %]_conf_get_module_main_conf(cf, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% subsys %]_conf_get_module_main_conf(cf, ngx_[% subsys %]_lua_module);
 
     L = lmcf->lua;
 
@@ -64,7 +64,7 @@ ngx_[% subsystem %]_lua_add_package_preload(ngx_conf_t *cf, const char *package,
     if (lmcf->preload_hooks == NULL) {
         lmcf->preload_hooks =
             ngx_array_create(cf->pool, 4,
-                             sizeof(ngx_[% subsystem %]_lua_preload_hook_t));
+                             sizeof(ngx_[% subsys %]_lua_preload_hook_t));
 
         if (lmcf->preload_hooks == NULL) {
             return NGX_ERROR;
@@ -84,7 +84,7 @@ ngx_[% subsystem %]_lua_add_package_preload(ngx_conf_t *cf, const char *package,
 
 
 ngx_shm_zone_t *
-ngx_[% subsystem %]_lua_shared_memory_add(ngx_conf_t *cf, ngx_str_t *name, size_t size,
+ngx_[% subsys %]_lua_shared_memory_add(ngx_conf_t *cf, ngx_str_t *name, size_t size,
     void *tag)
 {
     ngx_[% subsys %]_lua_main_conf_t     *lmcf;
@@ -94,7 +94,7 @@ ngx_[% subsystem %]_lua_shared_memory_add(ngx_conf_t *cf, ngx_str_t *name, size_
     ngx_shm_zone_t               *zone;
     ngx_int_t                     n;
 
-    lmcf = ngx_[% subsystem %]_conf_get_module_main_conf(cf, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% subsys %]_conf_get_module_main_conf(cf, ngx_[% subsys %]_lua_module);
     if (lmcf == NULL) {
         return NULL;
     }
@@ -119,11 +119,11 @@ ngx_[% subsystem %]_lua_shared_memory_add(ngx_conf_t *cf, ngx_str_t *name, size_
     }
 
     if (zone->data) {
-        ctx = (ngx_[% subsystem %]_lua_shm_zone_ctx_t *) zone->data;
+        ctx = (ngx_[% subsys %]_lua_shm_zone_ctx_t *) zone->data;
         return &ctx->zone;
     }
 
-    n = sizeof(ngx_[% subsystem %]_lua_shm_zone_ctx_t);
+    n = sizeof(ngx_[% subsys %]_lua_shm_zone_ctx_t);
 
     ctx = ngx_pcalloc(cf->pool, n);
     if (ctx == NULL) {
@@ -144,7 +144,7 @@ ngx_[% subsystem %]_lua_shared_memory_add(ngx_conf_t *cf, ngx_str_t *name, size_
     *zp = zone;
 
     /* set zone init */
-    zone->init = ngx_[% subsystem %]_lua_shared_memory_init;
+    zone->init = ngx_[% subsys %]_lua_shared_memory_init;
     zone->data = ctx;
 
     lmcf->requires_shm = 1;
@@ -154,7 +154,7 @@ ngx_[% subsystem %]_lua_shared_memory_add(ngx_conf_t *cf, ngx_str_t *name, size_
 
 
 static ngx_int_t
-ngx_[% subsystem %]_lua_shared_memory_init(ngx_shm_zone_t *shm_zone, void *data)
+ngx_[% subsys %]_lua_shared_memory_init(ngx_shm_zone_t *shm_zone, void *data)
 {
     ngx_[% subsys %]_lua_shm_zone_ctx_t *octx = data;
     ngx_[% subsys %]_lua_main_conf_t    *lmcf;
@@ -166,7 +166,7 @@ ngx_[% subsystem %]_lua_shared_memory_init(ngx_shm_zone_t *shm_zone, void *data)
     volatile ngx_cycle_t        *saved_cycle;
     ngx_shm_zone_t              *zone;
 
-    ctx = (ngx_[% subsystem %]_lua_shm_zone_ctx_t *) shm_zone->data;
+    ctx = (ngx_[% subsys %]_lua_shm_zone_ctx_t *) shm_zone->data;
     zone = &ctx->zone;
 
     odata = NULL;

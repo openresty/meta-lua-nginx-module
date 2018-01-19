@@ -11,9 +11,9 @@
 #include "ddebug.h"
 
 
-#include "ngx_[% subsystem %]_lua_coroutine.h"
-#include "ngx_[% subsystem %]_lua_util.h"
-#include "ngx_[% subsystem %]_lua_probe.h"
+#include "ngx_[% subsys %]_lua_coroutine.h"
+#include "ngx_[% subsys %]_lua_util.h"
+#include "ngx_[% subsys %]_lua_probe.h"
 
 
 /*
@@ -24,14 +24,14 @@
  */
 
 
-static int ngx_[% subsystem %]_lua_coroutine_create(lua_State *L);
-static int ngx_[% subsystem %]_lua_coroutine_resume(lua_State *L);
-static int ngx_[% subsystem %]_lua_coroutine_yield(lua_State *L);
-static int ngx_[% subsystem %]_lua_coroutine_status(lua_State *L);
+static int ngx_[% subsys %]_lua_coroutine_create(lua_State *L);
+static int ngx_[% subsys %]_lua_coroutine_resume(lua_State *L);
+static int ngx_[% subsys %]_lua_coroutine_yield(lua_State *L);
+static int ngx_[% subsys %]_lua_coroutine_status(lua_State *L);
 
 
 static const ngx_str_t
-    ngx_[% subsystem %]_lua_co_status_names[] =
+    ngx_[% subsys %]_lua_co_status_names[] =
     {
         ngx_string("running"),
         ngx_string("suspended"),
@@ -43,22 +43,22 @@ static const ngx_str_t
 
 
 static int
-ngx_[% subsystem %]_lua_coroutine_create(lua_State *L)
+ngx_[% subsys %]_lua_coroutine_create(lua_State *L)
 {
     [% req_type %]                  *r;
     ngx_[% subsys %]_lua_ctx_t      *ctx;
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
 
-    return ngx_[% subsystem %]_lua_coroutine_create_helper(L, r, ctx, NULL);
+    return ngx_[% subsys %]_lua_coroutine_create_helper(L, r, ctx, NULL);
 }
 
 
@@ -87,24 +87,24 @@ ngx_[% subsys %]_lua_coroutine_create_helper(lua_State *L, [% req_type %] *r,
 [% END -%]
         );
 
-    vm = ngx_[% subsystem %]_lua_get_lua_vm(r, ctx);
+    vm = ngx_[% subsys %]_lua_get_lua_vm(r, ctx);
 
     /* create new coroutine on root Lua state, so it always yields
      * to main Lua thread
      */
     co = lua_newthread(vm);
 
-    ngx_[% subsystem %]_lua_probe_user_coroutine_create(r, L, co);
+    ngx_[% subsys %]_lua_probe_user_coroutine_create(r, L, co);
 
-    coctx = ngx_[% subsystem %]_lua_get_co_ctx(co, ctx);
+    coctx = ngx_[% subsys %]_lua_get_co_ctx(co, ctx);
     if (coctx == NULL) {
-        coctx = ngx_[% subsystem %]_lua_create_co_ctx(r, ctx);
+        coctx = ngx_[% subsys %]_lua_create_co_ctx(r, ctx);
         if (coctx == NULL) {
             return luaL_error(L, "no memory");
         }
 
     } else {
-        ngx_memzero(coctx, sizeof(ngx_[% subsystem %]_lua_co_ctx_t));
+        ngx_memzero(coctx, sizeof(ngx_[% subsys %]_lua_co_ctx_t));
         coctx->co_ref = LUA_NOREF;
     }
 
@@ -113,9 +113,9 @@ ngx_[% subsys %]_lua_coroutine_create_helper(lua_State *L, [% req_type %] *r,
 
     /* make new coroutine share globals of the parent coroutine.
      * NOTE: globals don't have to be separated! */
-    ngx_[% subsystem %]_lua_get_globals_table(L);
+    ngx_[% subsys %]_lua_get_globals_table(L);
     lua_xmove(L, co, 1);
-    ngx_[% subsystem %]_lua_set_globals_table(co);
+    ngx_[% subsys %]_lua_set_globals_table(co);
 
     lua_xmove(vm, L, 1);    /* move coroutine from main thread to L */
 
@@ -135,7 +135,7 @@ ngx_[% subsys %]_lua_coroutine_create_helper(lua_State *L, [% req_type %] *r,
 
 
 static int
-ngx_[% subsystem %]_lua_coroutine_resume(lua_State *L)
+ngx_[% subsys %]_lua_coroutine_resume(lua_State *L)
 {
     lua_State                           *co;
     [% req_type %]                      *r;
@@ -157,7 +157,7 @@ ngx_[% subsystem %]_lua_coroutine_resume(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
+    ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
 [% IF http_subsys -%]
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
@@ -175,19 +175,19 @@ ngx_[% subsystem %]_lua_coroutine_resume(lua_State *L)
         return luaL_error(L, "no parent co ctx found");
     }
 
-    coctx = ngx_[% subsystem %]_lua_get_co_ctx(co, ctx);
+    coctx = ngx_[% subsys %]_lua_get_co_ctx(co, ctx);
     if (coctx == NULL) {
         return luaL_error(L, "no co ctx found");
     }
 
-    ngx_[% subsystem %]_lua_probe_user_coroutine_resume(r, L, co);
+    ngx_[% subsys %]_lua_probe_user_coroutine_resume(r, L, co);
 
     if (coctx->co_status != NGX_[% SUBSYS %]_LUA_CO_SUSPENDED) {
         dd("coroutine resume: %d", coctx->co_status);
 
         lua_pushboolean(L, 0);
         lua_pushfstring(L, "cannot resume %s coroutine",
-                        ngx_[% subsystem %]_lua_co_status_names[coctx->co_status].data);
+                        ngx_[% subsys %]_lua_co_status_names[coctx->co_status].data);
         return 2;
     }
 
@@ -208,7 +208,7 @@ ngx_[% subsystem %]_lua_coroutine_resume(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_coroutine_yield(lua_State *L)
+ngx_[% subsys %]_lua_coroutine_yield(lua_State *L)
 {
     [% req_type %]                      *r;
     ngx_[% subsys %]_lua_ctx_t          *ctx;
@@ -224,7 +224,7 @@ ngx_[% subsystem %]_lua_coroutine_yield(lua_State *L)
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
+    ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
         | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
 [% IF http_subsys -%]
         | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
@@ -246,10 +246,10 @@ ngx_[% subsystem %]_lua_coroutine_yield(lua_State *L)
         dd("set coroutine to running");
         coctx->parent_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_RUNNING;
 
-        ngx_[% subsystem %]_lua_probe_user_coroutine_yield(r, coctx->parent_co_ctx->co, L);
+        ngx_[% subsys %]_lua_probe_user_coroutine_yield(r, coctx->parent_co_ctx->co, L);
 
     } else {
-        ngx_[% subsystem %]_lua_probe_user_coroutine_yield(r, NULL, L);
+        ngx_[% subsys %]_lua_probe_user_coroutine_yield(r, NULL, L);
     }
 
     /* yield and pass retvals to main thread,
@@ -259,7 +259,7 @@ ngx_[% subsystem %]_lua_coroutine_yield(lua_State *L)
 
 
 void
-ngx_[% subsystem %]_lua_inject_coroutine_api(ngx_log_t *log, lua_State *L)
+ngx_[% subsys %]_lua_inject_coroutine_api(ngx_log_t *log, lua_State *L)
 {
     int         rc;
 
@@ -288,16 +288,16 @@ ngx_[% subsystem %]_lua_inject_coroutine_api(ngx_log_t *log, lua_State *L)
     /* pop the old coroutine */
     lua_pop(L, 1);
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_coroutine_create);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_coroutine_create);
     lua_setfield(L, -2, "__create");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_coroutine_resume);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_coroutine_resume);
     lua_setfield(L, -2, "__resume");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_coroutine_yield);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_coroutine_yield);
     lua_setfield(L, -2, "__yield");
 
-    lua_pushcfunction(L, ngx_[% subsystem %]_lua_coroutine_status);
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_coroutine_status);
     lua_setfield(L, -2, "__status");
 
     lua_setglobal(L, "coroutine");
@@ -394,16 +394,16 @@ ngx_[% subsys %]_lua_coroutine_status(lua_State *L)
     coctx = ngx_[% subsys %]_lua_get_co_ctx(co, ctx);
     if (coctx == NULL) {
         lua_pushlstring(L, (const char *)
-                        ngx_[% subsystem %]_lua_co_status_names[NGX_[% SUBSYS %]_LUA_CO_DEAD].data,
-                        ngx_[% subsystem %]_lua_co_status_names[NGX_[% SUBSYS %]_LUA_CO_DEAD].len);
+                        ngx_[% subsys %]_lua_co_status_names[NGX_[% SUBSYS %]_LUA_CO_DEAD].data,
+                        ngx_[% subsys %]_lua_co_status_names[NGX_[% SUBSYS %]_LUA_CO_DEAD].len);
         return 1;
     }
 
     dd("co status: %d", coctx->co_status);
 
     lua_pushlstring(L, (const char *)
-                    ngx_[% subsystem %]_lua_co_status_names[coctx->co_status].data,
-                    ngx_[% subsystem %]_lua_co_status_names[coctx->co_status].len);
+                    ngx_[% subsys %]_lua_co_status_names[coctx->co_status].data,
+                    ngx_[% subsys %]_lua_co_status_names[coctx->co_status].len);
     return 1;
 }
 
