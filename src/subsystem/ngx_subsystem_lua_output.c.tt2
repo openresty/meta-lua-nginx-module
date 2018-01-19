@@ -60,7 +60,7 @@ ngx_[% subsystem %]_lua_ngx_echo(lua_State *L, unsigned newline)
         return luaL_error(L, "no request object found");
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
@@ -505,7 +505,7 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
         wait = lua_toboolean(L, 1);
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
@@ -612,7 +612,7 @@ ngx_[% subsystem %]_lua_ngx_flush(lua_State *L)
             r->write_event_handler = ngx_[% subsystem %]_lua_content_wev_handler;
 
         } else {
-            r->write_event_handler = ngx_[% req_subsystem %]_core_run_phases;
+            r->write_event_handler = ngx_[% req_subsys %]_core_run_phases;
         }
 
 [% IF http_subsys %]
@@ -672,7 +672,7 @@ ngx_[% subsystem %]_lua_ngx_eof(lua_State *L)
         return luaL_error(L, "no argument is expected");
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
     }
@@ -867,7 +867,7 @@ ngx_[% subsystem %]_lua_flush_cleanup(void *data)
         ngx_del_timer(wev);
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return;
     }

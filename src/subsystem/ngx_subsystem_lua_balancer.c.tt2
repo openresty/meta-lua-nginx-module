@@ -335,7 +335,7 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
 
     ngx_[% subsystem %]_lua_assert(lscf->balancer.handler && r);
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     if (ctx == NULL) {
 
@@ -366,7 +366,7 @@ ngx_[% subsystem %]_lua_balancer_get_peer(ngx_peer_connection_t *pc, void *data)
     bp->more_tries = 0;
     bp->total_tries++;
 
-    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
     /* balancer_by_lua does not support yielding and
      * there cannot be any conflicts among concurrent requests,
@@ -575,7 +575,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_current_peer([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         *err = "no ctx found";
         return NGX_ERROR;
@@ -586,7 +586,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_current_peer([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
     /* we cannot read r->upstream->peer.data here directly because
      * it could be overridden by other modules like
@@ -821,7 +821,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         *err = "no ctx found";
         return NGX_ERROR;
@@ -832,7 +832,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
     bp = lmcf->balancer_peer_data;
     if (bp == NULL) {
@@ -911,7 +911,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_get_last_failure([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         *err = "no ctx found";
         return NGX_ERROR;
@@ -922,7 +922,7 @@ ngx_[% subsystem %]_lua_ffi_balancer_get_last_failure([% req_type %] *r,
         return NGX_ERROR;
     }
 
-    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
     bp = lmcf->balancer_peer_data;
     if (bp == NULL) {

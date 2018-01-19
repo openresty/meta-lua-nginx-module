@@ -49,7 +49,7 @@ my %tt2_vars;
     }
 
     $tt2_vars{req_type} = $req_type;
-    $tt2_vars{req_subsys} = $tt2_vars{req_subsystem} = $req_subsys;
+    $tt2_vars{req_subsys} = $req_subsys;
     $tt2_vars{"${subsys}_subsys"} = 1;
 
     if ($subsys eq 'http') {

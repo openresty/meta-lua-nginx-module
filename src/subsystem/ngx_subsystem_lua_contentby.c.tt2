@@ -94,7 +94,7 @@ ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
 
     /*  {{{ register request cleanup hooks */
     if (ctx->cleanup == NULL) {
-        cln = ngx_[% req_subsystem %]_cleanup_add(r, 0);
+        cln = ngx_[% req_subsys %]_cleanup_add(r, 0);
         if (cln == NULL) {
 [% IF http_subsys %]
             return NGX_HTTP_INTERNAL_SERVER_ERROR;
@@ -112,7 +112,7 @@ ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
 
     ctx->context = NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT;
 
-    llcf = ngx_[% req_subsystem %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
+    llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsystem %]_lua_module);
 
 [% IF stream_subsys %]
     r->connection->read->handler = ngx_stream_lua_request_handler;
@@ -143,7 +143,7 @@ ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
 [% END %]
 
     } else {
-        r->read_event_handler = ngx_[% req_subsystem %]_block_reading;
+        r->read_event_handler = ngx_[% req_subsys %]_block_reading;
     }
 
     rc = ngx_[% subsystem %]_lua_run_thread(L, r, ctx, 0);
@@ -169,7 +169,7 @@ ngx_[% subsystem %]_lua_content_wev_handler([% req_type %] *r)
 {
     ngx_[% subsystem %]_lua_ctx_t          *ctx;
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
     if (ctx == NULL) {
         return;
     }
@@ -317,7 +317,7 @@ ngx_[% subsystem %]_lua_content_phase_post_read([% req_type %] *r)
 {
     ngx_[% subsystem %]_lua_ctx_t  *ctx;
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
 
     ctx->read_body_done = 1;
 

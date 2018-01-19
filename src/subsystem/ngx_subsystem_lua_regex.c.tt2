@@ -243,7 +243,7 @@ ngx_[% subsystem %]_lua_ngx_re_match_helper(lua_State *L, int wantcaps)
 
     flags = ngx_[% subsystem %]_lua_ngx_re_parse_opts(L, &re_comp, &opts, 3);
 
-    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
     if (flags & NGX_LUA_RE_COMPILE_ONCE) {
         pool = lmcf->pool;
@@ -714,7 +714,7 @@ ngx_[% subsystem %]_lua_ngx_re_gmatch(lua_State *L)
 
     flags = ngx_[% subsystem %]_lua_ngx_re_parse_opts(L, &re_comp, &opts, 3);
 
-    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
     if (flags & NGX_LUA_RE_COMPILE_ONCE) {
         pool = lmcf->pool;
@@ -956,7 +956,7 @@ compiled:
         lua_setfield(L, -2, "__gc");
         lua_setmetatable(L, -2);
 
-        cln = ngx_[% req_subsystem %]_cleanup_add(r, 0);
+        cln = ngx_[% req_subsys %]_cleanup_add(r, 0);
         if (cln == NULL) {
             msg = "no memory";
             goto error;
@@ -1383,7 +1383,7 @@ ngx_[% subsys %]_lua_ngx_re_sub_helper(lua_State *L, unsigned global)
 
     flags = ngx_[% subsystem %]_lua_ngx_re_parse_opts(L, &re_comp, &opts, 4);
 
-    lmcf = ngx_[% req_subsystem %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
+    lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsystem %]_lua_module);
 
     if (flags & NGX_LUA_RE_COMPILE_ONCE) {
         pool = lmcf->pool;
