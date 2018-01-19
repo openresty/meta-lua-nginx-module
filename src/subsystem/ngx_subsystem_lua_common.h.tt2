@@ -5,8 +5,8 @@
  */
 
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_COMMON_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_COMMON_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_COMMON_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_COMMON_H_INCLUDED_
 
 
 [% IF stream_subsys %]
@@ -65,7 +65,7 @@
 
 
 #if (!defined OPENSSL_NO_OCSP && defined SSL_CTRL_SET_TLSEXT_STATUS_REQ_CB)
-#   define NGX_[% subsystem FILTER upper %]_LUA_USE_OCSP 1
+#   define NGX_[% SUBSYS %]_LUA_USE_OCSP 1
 #endif
 
 
@@ -91,23 +91,23 @@
 
 /* Nginx HTTP Lua Inline tag prefix */
 
-#define NGX_[% subsystem FILTER upper %]_LUA_INLINE_TAG "nhli_"
+#define NGX_[% SUBSYS %]_LUA_INLINE_TAG "nhli_"
 
-#define NGX_[% subsystem FILTER upper %]_LUA_INLINE_TAG_LEN \
-    (sizeof(NGX_[% subsystem FILTER upper %]_LUA_INLINE_TAG) - 1)
+#define NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN \
+    (sizeof(NGX_[% SUBSYS %]_LUA_INLINE_TAG) - 1)
 
-#define NGX_[% subsystem FILTER upper %]_LUA_INLINE_KEY_LEN \
-    (NGX_[% subsystem FILTER upper %]_LUA_INLINE_TAG_LEN + 2 * MD5_DIGEST_LENGTH)
+#define NGX_[% SUBSYS %]_LUA_INLINE_KEY_LEN \
+    (NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN + 2 * MD5_DIGEST_LENGTH)
 
 /* Nginx HTTP Lua File tag prefix */
 
-#define NGX_[% subsystem FILTER upper %]_LUA_FILE_TAG "nhlf_"
+#define NGX_[% SUBSYS %]_LUA_FILE_TAG "nhlf_"
 
-#define NGX_[% subsystem FILTER upper %]_LUA_FILE_TAG_LEN \
-    (sizeof(NGX_[% subsystem FILTER upper %]_LUA_FILE_TAG) - 1)
+#define NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN \
+    (sizeof(NGX_[% SUBSYS %]_LUA_FILE_TAG) - 1)
 
-#define NGX_[% subsystem FILTER upper %]_LUA_FILE_KEY_LEN \
-    (NGX_[% subsystem FILTER upper %]_LUA_FILE_TAG_LEN + 2 * MD5_DIGEST_LENGTH)
+#define NGX_[% SUBSYS %]_LUA_FILE_KEY_LEN \
+    (NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN + 2 * MD5_DIGEST_LENGTH)
 
 
 [% IF stream_subsys %]
@@ -131,8 +131,8 @@ typedef struct {
 [% END %]
 
 
-#ifndef NGX_[% subsystem FILTER upper %]_LUA_MAX_ARGS
-#define NGX_[% subsystem FILTER upper %]_LUA_MAX_ARGS 100
+#ifndef NGX_[% SUBSYS %]_LUA_MAX_ARGS
+#define NGX_[% SUBSYS %]_LUA_MAX_ARGS 100
 #endif
 
 
@@ -163,8 +163,8 @@ typedef struct {
 
 
 #ifndef NGX_LUA_NO_FFI_API
-#define NGX_[% subsystem FILTER upper %]_LUA_FFI_NO_REQ_CTX         -100
-#define NGX_[% subsystem FILTER upper %]_LUA_FFI_BAD_CONTEXT        -101
+#define NGX_[% SUBSYS %]_LUA_FFI_NO_REQ_CTX         -100
+#define NGX_[% SUBSYS %]_LUA_FFI_BAD_CONTEXT        -101
 #endif
 
 
@@ -288,7 +288,7 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
 
 [% IF http_subsys %]
 union ngx_http_lua_srv_conf_u {
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
     struct {
         ngx_[% subsys %]_lua_srv_conf_handler_pt     ssl_cert_handler;
         ngx_str_t                                    ssl_cert_src;
@@ -319,7 +319,7 @@ typedef struct ngx_http_lua_loc_conf_s {
 [% ELSIF stream_subsys %]
 struct ngx_stream_lua_srv_conf_s {
 [% END %]
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
     ngx_ssl_t              *ssl;  /* shared by SSL cosockets */
     ngx_uint_t              ssl_protocols;
     ngx_str_t               ssl_ciphers;
@@ -442,19 +442,19 @@ typedef ngx_stream_lua_srv_conf_t ngx_stream_lua_loc_conf_t;
 
 
 typedef enum {
-    NGX_[% subsystem FILTER upper %]_LUA_USER_CORO_NOP      = 0,
-    NGX_[% subsystem FILTER upper %]_LUA_USER_CORO_RESUME   = 1,
-    NGX_[% subsystem FILTER upper %]_LUA_USER_CORO_YIELD    = 2,
-    NGX_[% subsystem FILTER upper %]_LUA_USER_THREAD_RESUME = 3
+    NGX_[% SUBSYS %]_LUA_USER_CORO_NOP      = 0,
+    NGX_[% SUBSYS %]_LUA_USER_CORO_RESUME   = 1,
+    NGX_[% SUBSYS %]_LUA_USER_CORO_YIELD    = 2,
+    NGX_[% SUBSYS %]_LUA_USER_THREAD_RESUME = 3
 } ngx_[% subsystem %]_lua_user_coro_op_t;
 
 
 typedef enum {
-    NGX_[% subsystem FILTER upper %]_LUA_CO_RUNNING   = 0, /* coroutine running */
-    NGX_[% subsystem FILTER upper %]_LUA_CO_SUSPENDED = 1, /* coroutine suspended */
-    NGX_[% subsystem FILTER upper %]_LUA_CO_NORMAL    = 2, /* coroutine normal */
-    NGX_[% subsystem FILTER upper %]_LUA_CO_DEAD      = 3, /* coroutine dead */
-    NGX_[% subsystem FILTER upper %]_LUA_CO_ZOMBIE    = 4, /* coroutine zombie */
+    NGX_[% SUBSYS %]_LUA_CO_RUNNING   = 0, /* coroutine running */
+    NGX_[% SUBSYS %]_LUA_CO_SUSPENDED = 1, /* coroutine suspended */
+    NGX_[% SUBSYS %]_LUA_CO_NORMAL    = 2, /* coroutine normal */
+    NGX_[% SUBSYS %]_LUA_CO_DEAD      = 3, /* coroutine dead */
+    NGX_[% SUBSYS %]_LUA_CO_ZOMBIE    = 4, /* coroutine zombie */
 } ngx_[% subsystem %]_lua_co_status_t;
 
 
@@ -470,7 +470,7 @@ struct ngx_[% subsystem %]_lua_posted_thread_s {
 
 [% IF http_subsys %]
 enum {
-    NGX_[% subsystem FILTER upper %]_LUA_SUBREQ_TRUNCATED = 1
+    NGX_[% SUBSYS %]_LUA_SUBREQ_TRUNCATED = 1
 };
 [% END %]
 
@@ -715,6 +715,6 @@ extern ngx_http_output_body_filter_pt ngx_[% subsystem %]_lua_next_body_filter;
 [% END %]
 
 
-#endif /* _NGX_[% subsystem FILTER upper %]_LUA_COMMON_H_INCLUDED_ */
+#endif /* _NGX_[% SUBSYS %]_LUA_COMMON_H_INCLUDED_ */
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

@@ -4,8 +4,8 @@
  */
 
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_ARGS_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_ARGS_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_ARGS_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_ARGS_H_INCLUDED_
 
 
 #include "ngx_[% subsystem %]_lua_common.h"
@@ -18,6 +18,6 @@ void ngx_[% subsystem %]_lua_inject_req_args_api(lua_State *L);
 int ngx_[% subsystem %]_lua_parse_args(lua_State *L, u_char *buf, u_char *last, int max);
 
 
-#endif /* _NGX_[% subsystem FILTER upper %]_LUA_ARGS_H_INCLUDED_ */
+#endif /* _NGX_[% SUBSYS %]_LUA_ARGS_H_INCLUDED_ */
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

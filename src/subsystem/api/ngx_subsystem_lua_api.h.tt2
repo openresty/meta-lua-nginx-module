@@ -4,8 +4,8 @@
  */
 
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_API_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_API_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_API_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_API_H_INCLUDED_
 
 
 #include <nginx.h>
@@ -55,6 +55,6 @@ ngx_shm_zone_t *ngx_[% subsystem %]_lua_shared_memory_add(ngx_conf_t *cf, ngx_st
     size_t size, void *tag);
 
 
-#endif /* _NGX_[% subsystem FILTER upper %]_LUA_API_H_INCLUDED_ */
+#endif /* _NGX_[% SUBSYS %]_LUA_API_H_INCLUDED_ */
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

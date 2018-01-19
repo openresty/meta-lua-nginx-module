@@ -4,14 +4,14 @@
  */
 
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_SSL_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_SSL_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_SSL_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_SSL_H_INCLUDED_
 
 
 #include "ngx_[% subsystem %]_lua_common.h"
 
 
-#if (NGX_[% subsystem FILTER upper %]_SSL)
+#if (NGX_[% SUBSYS %]_SSL)
 
 
 typedef struct {
@@ -44,4 +44,4 @@ extern int ngx_[% subsystem %]_lua_ssl_ctx_index;
 #endif
 
 
-#endif  /* _NGX_[% subsystem FILTER upper %]_LUA_SSL_H_INCLUDED_ */
+#endif  /* _NGX_[% SUBSYS %]_LUA_SSL_H_INCLUDED_ */

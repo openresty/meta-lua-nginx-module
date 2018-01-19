@@ -227,7 +227,7 @@ ngx_[% subsys %]_lua_var_set(lua_State *L)
     v = ngx_hash_find(&cmcf->variables_hash, hash, name.data, name.len);
 
     if (v) {
-        if (!(v->flags & NGX_[% subsystem FILTER upper %]_VAR_CHANGEABLE)) {
+        if (!(v->flags & NGX_[% SUBSYS %]_VAR_CHANGEABLE)) {
             return luaL_error(L, "variable \"%s\" not changeable", lowcase);
         }
 
@@ -265,7 +265,7 @@ ngx_[% subsys %]_lua_var_set(lua_State *L)
             return 0;
         }
 
-        if (v->flags & NGX_[% subsystem FILTER upper %]_VAR_INDEXED) {
+        if (v->flags & NGX_[% SUBSYS %]_VAR_INDEXED) {
 [% IF http_subsys %]
             vv = &r->variables[v->index];
 [% ELSIF stream_subsys %]
@@ -424,7 +424,7 @@ ngx_[% subsys %]_lua_ffi_var_set([% req_type %] *r, u_char *name_data,
     v = ngx_hash_find(&cmcf->variables_hash, hash, lowcase_buf, name_len);
 
     if (v) {
-        if (!(v->flags & NGX_[% subsystem FILTER upper %]_VAR_CHANGEABLE)) {
+        if (!(v->flags & NGX_[% SUBSYS %]_VAR_CHANGEABLE)) {
             dd("variable not changeable");
             *errlen = ngx_snprintf(errbuf, *errlen,
                                    "variable \"%*s\" not changeable",
@@ -475,7 +475,7 @@ ngx_[% subsys %]_lua_ffi_var_set([% req_type %] *r, u_char *name_data,
             return NGX_OK;
         }
 
-        if (v->flags & NGX_[% subsystem FILTER upper %]_VAR_INDEXED) {
+        if (v->flags & NGX_[% SUBSYS %]_VAR_INDEXED) {
             vv = &r->variables[v->index];
 
             dd("set indexed variable");

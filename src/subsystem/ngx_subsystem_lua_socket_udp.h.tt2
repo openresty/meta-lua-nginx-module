@@ -4,8 +4,8 @@
  */
 
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_SOCKET_UDP_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_SOCKET_UDP_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_SOCKET_UDP_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_SOCKET_UDP_H_INCLUDED_
 
 
 #include "ngx_[% subsystem %]_lua_common.h"
@@ -60,6 +60,6 @@ struct ngx_[% subsys %]_lua_socket_udp_upstream_s {
 void ngx_[% subsystem %]_lua_inject_socket_udp_api(ngx_log_t *log, lua_State *L);
 
 
-#endif /* _NGX_[% subsystem FILTER upper %]_LUA_SOCKET_UDP_H_INCLUDED_ */
+#endif /* _NGX_[% SUBSYS %]_LUA_SOCKET_UDP_H_INCLUDED_ */
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

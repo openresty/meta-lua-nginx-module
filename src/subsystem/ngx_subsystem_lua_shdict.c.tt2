@@ -47,13 +47,13 @@ static ngx_inline ngx_shm_zone_t *ngx_[% subsys %]_lua_shdict_get_zone(lua_State
                                                                int index);
 
 
-#define NGX_[% subsystem FILTER upper %]_LUA_SHDICT_ADD         0x0001
-#define NGX_[% subsystem FILTER upper %]_LUA_SHDICT_REPLACE     0x0002
-#define NGX_[% subsystem FILTER upper %]_LUA_SHDICT_SAFE_STORE  0x0004
+#define NGX_[% SUBSYS %]_LUA_SHDICT_ADD         0x0001
+#define NGX_[% SUBSYS %]_LUA_SHDICT_REPLACE     0x0002
+#define NGX_[% SUBSYS %]_LUA_SHDICT_SAFE_STORE  0x0004
 
 
-#define NGX_[% subsystem FILTER upper %]_LUA_SHDICT_LEFT        0x0001
-#define NGX_[% subsystem FILTER upper %]_LUA_SHDICT_RIGHT       0x0002
+#define NGX_[% SUBSYS %]_LUA_SHDICT_LEFT        0x0001
+#define NGX_[% SUBSYS %]_LUA_SHDICT_RIGHT       0x0002
 
 
 enum {
@@ -1167,7 +1167,7 @@ insert:
         return 3;
     }
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                    "lua shared dict set: creating a new entry");
 
     n = offsetof(ngx_rbtree_node_t, color)
@@ -1182,7 +1182,7 @@ insert:
 
     if (node == NULL) {
 
-        if (flags & NGX_[% subsystem FILTER upper %]_LUA_SHDICT_SAFE_STORE) {
+        if (flags & NGX_[% SUBSYS %]_LUA_SHDICT_SAFE_STORE) {
             ngx_shmtx_unlock(&ctx->shpool->mutex);
 
             lua_pushboolean(L, 0);
@@ -1190,7 +1190,7 @@ insert:
             return 2;
         }
 
-        ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+        ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                        "lua shared dict set: overriding non-expired items "
                        "due to memory shortage for entry \"%V\"", &key);
 
@@ -1354,7 +1354,7 @@ ngx_[% subsys %]_lua_shdict_incr(lua_State *L)
             if ((size_t) sd->value_len == sizeof(double)
                 && sd->value_type != SHDICT_TLIST)
             {
-                ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+                ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                                "lua shared dict incr: found old entry and "
                                "value size matched, reusing it");
 
@@ -1403,7 +1403,7 @@ ngx_[% subsys %]_lua_shdict_incr(lua_State *L)
 
 remove:
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                    "lua shared dict incr: found old entry but value size "
                    "NOT matched, removing it first");
 
@@ -1433,7 +1433,7 @@ remove:
 
 insert:
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                    "lua shared dict incr: creating a new entry");
 
     n = offsetof(ngx_rbtree_node_t, color)
@@ -1445,7 +1445,7 @@ insert:
 
     if (node == NULL) {
 
-        ngx_log_debug1(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+        ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                        "lua shared dict incr: overriding non-expired items "
                        "due to memory shortage for entry \"%V\"", &key);
 
@@ -1613,14 +1613,14 @@ ngx_[% subsys %]_lua_shared_dict_get(ngx_shm_zone_t *zone, u_char *key_data,
 static int
 ngx_[% subsystem %]_lua_shdict_lpush(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_shdict_push_helper(L, NGX_[% subsystem FILTER upper %]_LUA_SHDICT_LEFT);
+    return ngx_[% subsystem %]_lua_shdict_push_helper(L, NGX_[% SUBSYS %]_LUA_SHDICT_LEFT);
 }
 
 
 static int
 ngx_[% subsystem %]_lua_shdict_rpush(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_shdict_push_helper(L, NGX_[% subsystem FILTER upper %]_LUA_SHDICT_RIGHT);
+    return ngx_[% subsystem %]_lua_shdict_push_helper(L, NGX_[% SUBSYS %]_LUA_SHDICT_RIGHT);
 }
 
 
@@ -1719,7 +1719,7 @@ ngx_[% subsys %]_lua_shdict_push_helper(lua_State *L, int flags)
         if (sd->value_type != SHDICT_TLIST) {
             /* TODO: reuse when length matched */
 
-            ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+            ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                            "lua shared dict push: found old entry and value "
                            "type not matched, remove it first");
 
@@ -1736,7 +1736,7 @@ ngx_[% subsys %]_lua_shdict_push_helper(lua_State *L, int flags)
             goto init_list;
         }
 
-        ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+        ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                        "lua shared dict push: found old entry and value "
                        "type matched, reusing it");
 
@@ -1789,7 +1789,7 @@ ngx_[% subsys %]_lua_shdict_push_helper(lua_State *L, int flags)
 
 init_list:
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                    "lua shared dict list: creating a new entry");
 
     /* NOTICE: we assume the begin point aligned in slab, be careful */
@@ -1839,7 +1839,7 @@ init_list:
 
 push_node:
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                    "lua shared dict list: creating a new list node");
 
     n = offsetof(ngx_[% subsystem %]_lua_shdict_list_node_t, data)
@@ -1853,7 +1853,7 @@ push_node:
 
         if (sd->value_len == 0) {
 
-            ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+            ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                            "lua shared dict list: no memory for create"
                            " list node and list empty, remove it");
 
@@ -1888,7 +1888,7 @@ push_node:
 
     ngx_memcpy(lnode->data, value.data, value.len);
 
-    if (flags == NGX_[% subsystem FILTER upper %]_LUA_SHDICT_LEFT) {
+    if (flags == NGX_[% SUBSYS %]_LUA_SHDICT_LEFT) {
         ngx_queue_insert_head(queue, &lnode->queue);
 
     } else {
@@ -1905,14 +1905,14 @@ push_node:
 static int
 ngx_[% subsystem %]_lua_shdict_lpop(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_shdict_pop_helper(L, NGX_[% subsystem FILTER upper %]_LUA_SHDICT_LEFT);
+    return ngx_[% subsystem %]_lua_shdict_pop_helper(L, NGX_[% SUBSYS %]_LUA_SHDICT_LEFT);
 }
 
 
 static int
 ngx_[% subsystem %]_lua_shdict_rpop(lua_State *L)
 {
-    return ngx_[% subsystem %]_lua_shdict_pop_helper(L, NGX_[% subsystem FILTER upper %]_LUA_SHDICT_RIGHT);
+    return ngx_[% subsystem %]_lua_shdict_pop_helper(L, NGX_[% SUBSYS %]_LUA_SHDICT_RIGHT);
 }
 
 
@@ -2012,7 +2012,7 @@ ngx_[% subsys %]_lua_shdict_pop_helper(lua_State *L, int flags)
 
     queue = ngx_[% subsystem %]_lua_shdict_get_list_head(sd, key.len);
 
-    if (flags == NGX_[% subsystem FILTER upper %]_LUA_SHDICT_LEFT) {
+    if (flags == NGX_[% SUBSYS %]_LUA_SHDICT_LEFT) {
         queue = ngx_queue_head(queue);
 
     } else {
@@ -2067,7 +2067,7 @@ ngx_[% subsys %]_lua_shdict_pop_helper(lua_State *L, int flags)
 
     if (sd->value_len == 1) {
 
-        ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+        ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                        "lua shared dict list: empty node after pop, "
                        "remove it");
 
@@ -2272,7 +2272,7 @@ ngx_[% subsys %]_lua_ffi_shdict_store(ngx_shm_zone_t *zone, int op, u_char *key,
         break;
 
     case LUA_TNIL:
-        if (op & (NGX_[% subsystem FILTER upper %]_LUA_SHDICT_ADD|NGX_[% subsystem FILTER upper %]_LUA_SHDICT_REPLACE)) {
+        if (op & (NGX_[% SUBSYS %]_LUA_SHDICT_ADD|NGX_[% SUBSYS %]_LUA_SHDICT_REPLACE)) {
             *errmsg = "attempt to add or replace nil values";
             return NGX_ERROR;
         }
@@ -2296,7 +2296,7 @@ ngx_[% subsys %]_lua_ffi_shdict_store(ngx_shm_zone_t *zone, int op, u_char *key,
 
     dd("lookup returns %d", (int) rc);
 
-    if (op & NGX_[% subsystem FILTER upper %]_LUA_SHDICT_REPLACE) {
+    if (op & NGX_[% SUBSYS %]_LUA_SHDICT_REPLACE) {
 
         if (rc == NGX_DECLINED || rc == NGX_DONE) {
             ngx_shmtx_unlock(&ctx->shpool->mutex);
@@ -2309,7 +2309,7 @@ ngx_[% subsys %]_lua_ffi_shdict_store(ngx_shm_zone_t *zone, int op, u_char *key,
         goto replace;
     }
 
-    if (op & NGX_[% subsystem FILTER upper %]_LUA_SHDICT_ADD) {
+    if (op & NGX_[% SUBSYS %]_LUA_SHDICT_ADD) {
 
         if (rc == NGX_OK) {
             ngx_shmtx_unlock(&ctx->shpool->mutex);
@@ -2343,7 +2343,7 @@ replace:
             && sd->value_type != SHDICT_TLIST)
         {
 
-            ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+            ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                            "lua shared dict set: found old entry and value "
                            "size matched, reusing it");
 
@@ -2377,7 +2377,7 @@ replace:
             return NGX_OK;
         }
 
-        ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+        ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                        "lua shared dict set: found old entry but value size "
                        "NOT matched, removing it first");
 
@@ -2418,7 +2418,7 @@ insert:
         return NGX_OK;
     }
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                    "lua shared dict set: creating a new entry");
 
     n = offsetof(ngx_rbtree_node_t, color)
@@ -2430,14 +2430,14 @@ insert:
 
     if (node == NULL) {
 
-        if (op & NGX_[% subsystem FILTER upper %]_LUA_SHDICT_SAFE_STORE) {
+        if (op & NGX_[% SUBSYS %]_LUA_SHDICT_SAFE_STORE) {
             ngx_shmtx_unlock(&ctx->shpool->mutex);
 
             *errmsg = "no memory";
             return NGX_ERROR;
         }
 
-        ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+        ngx_log_debug2(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                        "lua shared dict set: overriding non-expired items "
                        "due to memory shortage for entry \"%*s\"", key_len,
                        key);
@@ -2691,7 +2691,7 @@ ngx_[% subsys %]_lua_ffi_shdict_incr(ngx_shm_zone_t *zone, u_char *key,
             if ((size_t) sd->value_len == sizeof(double)
                 && sd->value_type != SHDICT_TLIST)
             {
-                ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+                ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                                "lua shared dict incr: found old entry and "
                                "value size matched, reusing it");
 
@@ -2737,7 +2737,7 @@ ngx_[% subsys %]_lua_ffi_shdict_incr(ngx_shm_zone_t *zone, u_char *key,
 
 remove:
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                    "lua shared dict incr: found old entry but value size "
                    "NOT matched, removing it first");
 
@@ -2766,7 +2766,7 @@ remove:
 
 insert:
 
-    ngx_log_debug0(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+    ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                    "lua shared dict incr: creating a new entry");
 
     n = offsetof(ngx_rbtree_node_t, color)
@@ -2778,7 +2778,7 @@ insert:
 
     if (node == NULL) {
 
-        ngx_log_debug2(NGX_LOG_DEBUG_[% subsystem FILTER upper %], ctx->log, 0,
+        ngx_log_debug2(NGX_LOG_DEBUG_[% SUBSYS %], ctx->log, 0,
                        "lua shared dict incr: overriding non-expired items "
                        "due to memory shortage for entry \"%*s\"", key_len,
                        key);
