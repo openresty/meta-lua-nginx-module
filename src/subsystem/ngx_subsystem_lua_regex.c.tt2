@@ -1933,7 +1933,7 @@ ngx_[% subsystem %]_lua_ffi_set_jit_stack_size(int size, u_char *errstr,
 #if LUA_HAVE_PCRE_JIT
 
     ngx_[% subsys %]_lua_main_conf_t    *lmcf;
-    ngx_pool_t                  *pool, *old_pool;
+    ngx_pool_t                          *pool, *old_pool;
 
     lmcf = ngx_[% subsys %]_cycle_get_module_main_conf(ngx_cycle,
                                                        ngx_[% subsys %]_lua_module);
@@ -2190,10 +2190,10 @@ ngx_[% subsystem %]_lua_ffi_compile_regex(const unsigned char *pat, size_t pat_l
     const char              *msg;
     ngx_pool_t              *pool, *old_pool;
     pcre_extra              *sd = NULL;
-    ngx_[% subsystem %]_lua_regex_t    *re;
 
-    ngx_[% subsystem %]_lua_main_conf_t         *lmcf;
-    ngx_[% subsystem %]_lua_regex_compile_t      re_comp;
+    ngx_[% subsys %]_lua_regex_t            *re;
+    ngx_[% subsys %]_lua_main_conf_t        *lmcf;
+    ngx_[% subsys %]_lua_regex_compile_t     re_comp;
 
     pool = ngx_create_pool(512, ngx_cycle->log);
     if (pool == NULL) {
@@ -2432,8 +2432,9 @@ ngx_[% subsystem %]_lua_ffi_compile_replace_template(ngx_[% subsystem %]_lua_reg
 {
     ngx_int_t                                rc;
     ngx_str_t                                tpl;
-    ngx_[% subsystem %]_lua_complex_value_t            *ctpl;
-    ngx_[% subsystem %]_lua_compile_complex_value_t     ccv;
+
+    ngx_[% subsys %]_lua_complex_value_t            *ctpl;
+    ngx_[% subsys %]_lua_compile_complex_value_t     ccv;
 
     ctpl = ngx_palloc(re->pool, sizeof(ngx_[% subsystem %]_lua_complex_value_t));
     if (ctpl == NULL) {

@@ -228,7 +228,7 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
 
     ngx_array_t         *shdict_zones; /* shm zones of "shdict" */
 
-    ngx_array_t         *preload_hooks; /* of ngx_[% subsystem %]_lua_preload_hook_t */
+    ngx_array_t         *preload_hooks; /* of ngx_[% subsys %]_lua_preload_hook_t */
 
 [% IF http_subsys -%]
     ngx_flag_t           postponed_to_rewrite_phase_end;
@@ -238,13 +238,13 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
     ngx_flag_t           postponed_to_preread_phase_end;
 [% END -%]
 
-    ngx_[% subsystem %]_lua_main_conf_handler_pt    init_handler;
-    ngx_str_t                            init_src;
+    ngx_[% subsys %]_lua_main_conf_handler_pt    init_handler;
+    ngx_str_t                                    init_src;
 
-    ngx_[% subsystem %]_lua_main_conf_handler_pt    init_worker_handler;
-    ngx_str_t                            init_worker_src;
+    ngx_[% subsys %]_lua_main_conf_handler_pt    init_worker_handler;
+    ngx_str_t                                    init_worker_src;
 
-    ngx_[% subsystem %]_lua_balancer_peer_data_t    *balancer_peer_data;
+    ngx_[% subsys %]_lua_balancer_peer_data_t    *balancer_peer_data;
     /* balancer_by_lua does not support yielding and
      * there cannot be any conflicts among concurrent requests,
      * thus it is safe to store the peer data in the main conf.
@@ -252,7 +252,7 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
 
     ngx_uint_t                      shm_zones_inited;
 
-    ngx_[% subsystem %]_lua_sema_mm_t         *sema_mm;
+    ngx_[% subsys %]_lua_sema_mm_t         *sema_mm;
 
     ngx_uint_t           malloc_trim_cycle;  /* a cycle is defined as the number
                                                 of reqeusts */
@@ -290,17 +290,17 @@ struct ngx_[% subsystem %]_lua_main_conf_s {
 union ngx_http_lua_srv_conf_u {
 #if (NGX_[% subsystem FILTER upper %]_SSL)
     struct {
-        ngx_[% subsystem %]_lua_srv_conf_handler_pt     ssl_cert_handler;
-        ngx_str_t                            ssl_cert_src;
-        u_char                              *ssl_cert_src_key;
+        ngx_[% subsys %]_lua_srv_conf_handler_pt     ssl_cert_handler;
+        ngx_str_t                                    ssl_cert_src;
+        u_char                                      *ssl_cert_src_key;
 
-        ngx_[% subsystem %]_lua_srv_conf_handler_pt     ssl_sess_store_handler;
-        ngx_str_t                            ssl_sess_store_src;
-        u_char                              *ssl_sess_store_src_key;
+        ngx_[% subsys %]_lua_srv_conf_handler_pt     ssl_sess_store_handler;
+        ngx_str_t                                    ssl_sess_store_src;
+        u_char                                      *ssl_sess_store_src_key;
 
-        ngx_[% subsystem %]_lua_srv_conf_handler_pt     ssl_sess_fetch_handler;
-        ngx_str_t                            ssl_sess_fetch_src;
-        u_char                              *ssl_sess_fetch_src_key;
+        ngx_[% subsys %]_lua_srv_conf_handler_pt     ssl_sess_fetch_handler;
+        ngx_str_t                                    ssl_sess_fetch_src;
+        u_char                                      *ssl_sess_fetch_src_key;
     } srv;
 #endif
 
@@ -475,13 +475,13 @@ enum {
 [% END %]
 
 
-struct ngx_[% subsystem %]_lua_co_ctx_s {
+struct ngx_[% subsys %]_lua_co_ctx_s {
     void                    *data;      /* user state for cosockets */
 
-    lua_State               *co;
-    ngx_[% subsystem %]_lua_co_ctx_t   *parent_co_ctx;
+    lua_State                       *co;
+    ngx_[% subsys %]_lua_co_ctx_t   *parent_co_ctx;
 
-    ngx_[% subsystem %]_lua_posted_thread_t    *zombie_child_threads;
+    ngx_[% subsys %]_lua_posted_thread_t    *zombie_child_threads;
 
 [% IF http_subsys %]
     ngx_http_cleanup_pt      cleanup;
@@ -689,11 +689,11 @@ typedef ngx_int_t (*ngx_[% subsystem %]_lua_set_header_pt)([% req_type %] *r,
     ngx_[% subsystem %]_lua_header_val_t *hv, ngx_str_t *value);
 
 
-struct ngx_[% subsystem %]_lua_header_val_s {
+struct ngx_[% subsys %]_lua_header_val_s {
     ngx_http_complex_value_t                value;
     ngx_uint_t                              hash;
     ngx_str_t                               key;
-    ngx_[% subsystem %]_lua_set_header_pt              handler;
+    ngx_[% subsys %]_lua_set_header_pt      handler;
     ngx_uint_t                              offset;
     unsigned                                no_override;
 };
@@ -702,9 +702,8 @@ struct ngx_[% subsystem %]_lua_header_val_s {
 typedef struct {
     ngx_str_t                               name;
     ngx_uint_t                              offset;
-    ngx_[% subsystem %]_lua_set_header_pt              handler;
-
-} ngx_[% subsystem %]_lua_set_header_t;
+    ngx_[% subsys %]_lua_set_header_pt      handler;
+} ngx_[% subsys %]_lua_set_header_t;
 [% END %]
 
 

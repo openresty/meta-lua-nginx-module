@@ -4,11 +4,11 @@
  */
 
 
-#ifndef _NGX_[% subsystem FILTER upper %]_LUA_SCRIPT_H_INCLUDED_
-#define _NGX_[% subsystem FILTER upper %]_LUA_SCRIPT_H_INCLUDED_
+#ifndef _NGX_[% SUBSYS %]_LUA_SCRIPT_H_INCLUDED_
+#define _NGX_[% SUBSYS %]_LUA_SCRIPT_H_INCLUDED_
 
 
-#include "ngx_[% subsystem %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_common.h"
 
 
 typedef struct {
@@ -23,22 +23,23 @@ typedef struct {
 
     unsigned                    complete_lengths:1;
     unsigned                    complete_values:1;
-} ngx_[% subsystem %]_lua_script_compile_t;
+} ngx_[% subsys %]_lua_script_compile_t;
 
 
 typedef struct {
     ngx_str_t                   value;
     void                       *lengths;
     void                       *values;
-} ngx_[% subsystem %]_lua_complex_value_t;
+} ngx_[% subsys %]_lua_complex_value_t;
 
 
 typedef struct {
     ngx_log_t                       *log;
     ngx_pool_t                      *pool;
     ngx_str_t                       *value;
-    ngx_[% subsystem %]_lua_complex_value_t    *complex_value;
-} ngx_[% subsystem %]_lua_compile_complex_value_t;
+
+    ngx_[% subsys %]_lua_complex_value_t    *complex_value;
+} ngx_[% subsys %]_lua_compile_complex_value_t;
 
 
 typedef struct {
@@ -63,15 +64,15 @@ typedef size_t (*ngx_[% subsystem %]_lua_script_len_code_pt)
 
 
 typedef struct {
-    ngx_[% subsystem %]_lua_script_code_pt     code;
-    uintptr_t                       len;
-} ngx_[% subsystem %]_lua_script_copy_code_t;
+    ngx_[% subsys %]_lua_script_code_pt     code;
+    uintptr_t                               len;
+} ngx_[% subsys %]_lua_script_copy_code_t;
 
 
 typedef struct {
-    ngx_[% subsystem %]_lua_script_code_pt     code;
-    uintptr_t                       n;
-} ngx_[% subsystem %]_lua_script_capture_code_t;
+    ngx_[% subsys %]_lua_script_code_pt     code;
+    uintptr_t                               n;
+} ngx_[% subsys %]_lua_script_capture_code_t;
 
 
 ngx_int_t ngx_[% subsystem %]_lua_compile_complex_value(

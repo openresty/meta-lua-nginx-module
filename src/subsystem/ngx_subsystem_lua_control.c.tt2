@@ -58,11 +58,11 @@ ngx_[% subsystem %]_lua_inject_control_api(ngx_log_t *log, lua_State *L)
 
 [% IF http_subsys %]
 static int
-ngx_[% subsystem %]_lua_ngx_exec(lua_State *L)
+ngx_[% subsys %]_lua_ngx_exec(lua_State *L)
 {
     int                          n;
-    [% req_type %]          *r;
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
+    [% req_type %]              *r;
+    ngx_[% subsys %]_lua_ctx_t  *ctx;
     ngx_str_t                    uri;
     ngx_str_t                    args, user_args;
     ngx_uint_t                   flags;
@@ -77,7 +77,7 @@ ngx_[% subsystem %]_lua_ngx_exec(lua_State *L)
                           n);
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request object found");
     }
@@ -195,16 +195,16 @@ ngx_[% subsystem %]_lua_ngx_exec(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_redirect(lua_State *L)
+ngx_[% subsys %]_lua_ngx_redirect(lua_State *L)
 {
-    ngx_[% subsystem %]_lua_ctx_t          *ctx;
+    ngx_[% subsys %]_lua_ctx_t  *ctx;
     ngx_int_t                    rc;
     int                          n;
     u_char                      *p;
     u_char                      *uri;
     size_t                       len;
     ngx_table_elt_t             *h;
-    [% req_type %]          *r;
+    [% req_type %]              *r;
 
     n = lua_gettop(L);
 
@@ -302,7 +302,7 @@ ngx_[% subsystem %]_lua_ngx_redirect(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_ngx_exit(lua_State *L)
+ngx_[% subsys %]_lua_ngx_exit(lua_State *L)
 {
     ngx_int_t                    rc;
     [% req_type %]              *r;
@@ -312,17 +312,17 @@ ngx_[% subsystem %]_lua_ngx_exit(lua_State *L)
         return luaL_error(L, "expecting one argument");
     }
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request object found");
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
+    ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_CONTENT
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_TIMER
                                | NGX_[% subsystem FILTER upper %]_LUA_CONTEXT_BALANCER
 [% IF http_subsys -%]
@@ -419,24 +419,24 @@ ngx_[% subsystem %]_lua_ngx_exit(lua_State *L)
 
 
 static int
-ngx_[% subsystem %]_lua_on_abort(lua_State *L)
+ngx_[% subsys %]_lua_on_abort(lua_State *L)
 {
-    [% req_type %]           *r;
-    ngx_[% subsystem %]_lua_ctx_t           *ctx;
-    ngx_[% subsystem %]_lua_co_ctx_t        *coctx = NULL;
-    ngx_[% subsystem %]_lua_loc_conf_t      *llcf;
+    [% req_type %]                       *r;
+    ngx_[% subsys %]_lua_ctx_t           *ctx;
+    ngx_[% subsys %]_lua_co_ctx_t        *coctx = NULL;
+    ngx_[% subsys %]_lua_loc_conf_t      *llcf;
 
-    r = ngx_[% subsystem %]_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
 
-    ctx = ngx_[% req_subsystem %]_get_module_ctx(r, ngx_[% subsystem %]_lua_module);
+    ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no request ctx found");
     }
 
-    ngx_[% subsystem %]_lua_check_fake_request2(L, r, ctx);
+    ngx_[% subsys %]_lua_check_fake_request2(L, r, ctx);
 
     if (ctx->on_abort_co_ctx) {
         lua_pushnil(L);
