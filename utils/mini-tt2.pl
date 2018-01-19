@@ -12,6 +12,7 @@ use Getopt::Std qw( getopts );
 
 sub usage ($);
 sub replace_tt2_var ($$);
+sub is_prev_line ($);
 
 my $var_with_init_pat = qr/(\**) \b [a-z]\w* (?: :\d+ )? \s* (?: = \s* \w+ )?/x;
 
@@ -93,6 +94,7 @@ my ($continued_func_call, $func_name, $func_prefix_len_diff, $func_indent_len);
 my ($func_raw_prefix_len);
 my ($in_if, $in_else, $if_branch_hit);
 my ($in_block, $block, %blocks);
+my %ctl_cmds;
 
 while (<$in>) {
     if (/^ \s* \[\%\# .*? \%\] \s* $/x) {
@@ -158,6 +160,7 @@ while (<$in>) {
         }
 
         $in_if = $.;
+        $ctl_cmds{$.} = 1;
 
         $cond =~ s/\s+$//;
 
@@ -209,6 +212,8 @@ while (<$in>) {
                 "$in_else.\n";
         }
 
+        $ctl_cmds{$.} = 1;
+
         if ($if_branch_hit) {
             $skip = 1;
 
@@ -225,6 +230,8 @@ while (<$in>) {
             die "$infile: line $.: lingering END directive; no IF, ELSIF, ",
                 "ELSE, or BLOCK directive seen earlier.\n";
         }
+
+        $ctl_cmds{$.} = 1;
 
         if ($in_if) {
             undef $in_if;
@@ -248,6 +255,8 @@ while (<$in>) {
     if (/^ \s* \[\%-? \s* (?: SET \s* )? (\w+) \s* =
            \s* (?: (['"]) (.*?) \2 | (\d+) ) \s* -?\%\] \s* $/x)
     {
+        $ctl_cmds{$.} = 1;
+
         if ($in_block) {
             die "$infile: line $.: assignments not allowed inside BLOCK ",
                 "$block->{name} ",
@@ -349,8 +358,7 @@ while (<$in>) {
             #warn "line $.: raw var column: $raw_var_col (diff: $var_col_diff)";
         #}
 
-        # FIXME take into account skipped lines due to IF directives and etc.
-        if (defined $prev_var_decl && $prev_var_decl == $. - 1) {
+        if (defined $prev_var_decl && is_prev_line $prev_var_decl) {
             # check vertical alignment in the templates
             if ($prev_raw_var_col != $raw_var_col) {
                 die "$infile: $.: variable declaration or struct/enum ",
@@ -491,6 +499,21 @@ sub replace_tt2_var ($$) {
     }
 
     die "$infile: line $.: unknown tt2 variable or expression: $var\n";
+}
+
+sub is_prev_line ($) {
+    my $ln = shift;
+    my $diff = $. - $ln;
+    return 1 if $diff == 1;
+    return undef if $diff < 1;
+
+    while (++$ln != $.) {
+        if (!$ctl_cmds{$ln}) {
+            return undef;
+        }
+    }
+
+    return 1;
 }
 
 sub usage ($) {
