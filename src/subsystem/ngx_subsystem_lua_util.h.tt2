@@ -96,22 +96,21 @@ extern char ngx_[% subsys %]_lua_headers_metatable_key;
                                                  "ssl_session_fetch_by_lua*" \
      : "(unknown)")
 [% ELSIF stream_subsys %]
-#define ngx_stream_lua_context_name(c)                                         \
-    ((c) == NGX_STREAM_LUA_CONTEXT_CONTENT ? "content_by_lua*"                 \
-     : (c) == NGX_STREAM_LUA_CONTEXT_LOG ? "log_by_lua*"                       \
-     : (c) == NGX_STREAM_LUA_CONTEXT_TIMER ? "ngx.timer"                       \
-     : (c) == NGX_STREAM_LUA_CONTEXT_INIT_WORKER ? "init_worker_by_lua*"       \
-     : (c) == NGX_STREAM_LUA_CONTEXT_BALANCER ? "balancer_by_lua*"             \
-     : (c) == NGX_STREAM_LUA_CONTEXT_PREREAD ? "preread_by_lua*"               \
+#define ngx_stream_lua_context_name(c)                                       \
+    ((c) == NGX_STREAM_LUA_CONTEXT_CONTENT ? "content_by_lua*"               \
+     : (c) == NGX_STREAM_LUA_CONTEXT_LOG ? "log_by_lua*"                     \
+     : (c) == NGX_STREAM_LUA_CONTEXT_TIMER ? "ngx.timer"                     \
+     : (c) == NGX_STREAM_LUA_CONTEXT_INIT_WORKER ? "init_worker_by_lua*"     \
+     : (c) == NGX_STREAM_LUA_CONTEXT_BALANCER ? "balancer_by_lua*"           \
+     : (c) == NGX_STREAM_LUA_CONTEXT_PREREAD ? "preread_by_lua*"             \
      : "(unknown)")
 [% END %]
 
 
-#define ngx_[% subsys %]_lua_check_context(L, ctx, flags)                   \
-    if (!((ctx)->context & (flags))) {                                         \
-        return luaL_error(L, "API disabled in the context of %s",              \
-                          ngx_[% subsys %]_lua_context_name((ctx)           \
-                                                                   ->context));\
+#define ngx_[% subsys %]_lua_check_context(L, ctx, flags)                    \
+    if (!((ctx)->context & (flags))) {                                       \
+        return luaL_error(L, "API disabled in the context of %s",            \
+                          ngx_[% subsys %]_lua_context_name((ctx)->context));\
     }
 
 
@@ -134,20 +133,21 @@ ngx_[% subsys %]_lua_ffi_check_context(ngx_[% subsys %]_lua_ctx_t *ctx,
 #endif
 
 
-#define ngx_[% subsys %]_lua_check_fake_request(L, r)                                \
+#define ngx_[% subsys %]_lua_check_fake_request(L, r)                        \
     if ((r)->connection->fd == (ngx_socket_t) -1) {                          \
         return luaL_error(L, "API disabled in the current context");         \
     }
 
 
-#define ngx_[% subsys %]_lua_check_fake_request2(L, r, ctx)                          \
+#define ngx_[% subsys %]_lua_check_fake_request2(L, r, ctx)                  \
     if ((r)->connection->fd == (ngx_socket_t) -1) {                          \
         return luaL_error(L, "API disabled in the context of %s",            \
-                          ngx_[% subsys %]_lua_context_name((ctx)->context));        \
+                          ngx_[% subsys %]_lua_context_name((ctx)            \
+                          ->context));                                       \
     }
 
 
-#define ngx_[% subsys %]_lua_ssl_get_ctx(ssl_conn)                                   \
+#define ngx_[% subsys %]_lua_ssl_get_ctx(ssl_conn)                           \
     SSL_get_ex_data(ssl_conn, ngx_[% subsys %]_lua_ssl_ctx_index)
 
 
@@ -282,9 +282,9 @@ void ngx_[% subsys %]_lua_cleanup_free([% req_type %] *r,
     [% cleanup %]_pt *cleanup);
 
 
-#define ngx_[% subsys %]_lua_check_if_abortable(L, ctx)                             \
-    if ((ctx)->no_abort) {                                                  \
-        return luaL_error(L, "attempt to abort with pending subrequests");  \
+#define ngx_[% subsys %]_lua_check_if_abortable(L, ctx)                      \
+    if ((ctx)->no_abort) {                                                   \
+        return luaL_error(L, "attempt to abort with pending subrequests");   \
     }
 
 
@@ -461,7 +461,7 @@ ngx_[% subsys %]_lua_set_globals_table(lua_State *L)
 }
 
 
-#define ngx_[% subsys %]_lua_hash_literal(s)                                        \
+#define ngx_[% subsys %]_lua_hash_literal(s)                                 \
     ngx_[% subsys %]_lua_hash_str((u_char *) s, sizeof(s) - 1)
 
 

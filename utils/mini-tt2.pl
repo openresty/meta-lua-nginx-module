@@ -13,8 +13,10 @@ use Getopt::Std qw( getopts );
 sub usage ($);
 sub replace_tt2_var ($$);
 sub is_prev_line ($);
+sub check_line_continuer_in_macro_raw_line ($);
 
-my $var_with_init_pat = qr/(\**) \b [_a-zA-Z]\w* (?: :\d+ )? \s* (?: = \s* \w+ )?/x;
+my $var_with_init_pat = qr/(\**) \b [_a-zA-Z]\w* (?: :\d+ )? \s*
+                           (?: = \s* \w+ )?/x;
 
 my %opts;
 getopts "hs:d:", \%opts or usage(1);
@@ -94,7 +96,7 @@ my ($continued_func_call, $func_name, $func_prefix_len_diff, $func_indent_len);
 my ($func_raw_prefix_len);
 my ($in_if, $in_else, $if_branch_hit);
 my ($in_block, $block, %blocks);
-my %ctl_cmds;
+my (%ctl_cmds, $prev_continuing_macro_line);
 
 while (<$in>) {
     if (/^ \s* \[\%\# .*? \%\] \s* $/x) {
@@ -307,6 +309,35 @@ while (<$in>) {
 
     my $passthrough;
 
+    # check macro line continuers (\)
+
+    if (m{^ ( \# \s* define .*? (\s*) ) \\ \s* $}x) {
+        $prev_continuing_macro_line = 1;
+
+        my $prefix_len = length $1;
+        my $indent_len = length $2;
+
+        check_line_continuer_in_macro_raw_line($raw_line);
+
+        if ($prefix_len < 77) {
+        } elsif ($prefix_len == 77) {
+            #warn "HIT (prefix len: $prefix_len): $_";
+        }
+
+    } elsif (m{^ \s+ .* \\ \s* $}x) {
+        if ($prev_continuing_macro_line) {
+            check_line_continuer_in_macro_raw_line($raw_line);
+            #warn "HIT: $_";
+
+        } else {
+            die "$infile: line $.: unexpected continuing macro line: $_";
+            #undef $prev_continuing_macro_line;
+        }
+
+    } elsif (defined $prev_continuing_macro_line) {
+        undef $prev_continuing_macro_line;
+    }
+
     # check local variable declaration and struct member declaration alignment
 
     if (m{^ (\s+) ([_a-zA-Z]\w*) \b (\s*) $var_with_init_pat
@@ -516,6 +547,20 @@ sub is_prev_line ($) {
     }
 
     return 1;
+}
+
+sub check_line_continuer_in_macro_raw_line ($) {
+    my $raw_line = shift;
+    if ($raw_line =~ /(.*) \\ \s* $/x) {
+        my $raw_prefix_len = length $1;
+        if ($raw_prefix_len != 77) {
+            die "$infile: line $.: the line continuer \\ is not on the ",
+                "78th column: $_\n";
+        }
+
+    } else {
+        die "$infile: line $.: failed to find trailing \\ in raw line: $_";
+    }
 }
 
 sub usage ($) {
