@@ -93,20 +93,20 @@
 
 #define NGX_[% SUBSYS %]_LUA_INLINE_TAG "nhli_"
 
-#define NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN \
+#define NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN                                  \
     (sizeof(NGX_[% SUBSYS %]_LUA_INLINE_TAG) - 1)
 
-#define NGX_[% SUBSYS %]_LUA_INLINE_KEY_LEN \
+#define NGX_[% SUBSYS %]_LUA_INLINE_KEY_LEN                                  \
     (NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN + 2 * MD5_DIGEST_LENGTH)
 
 /* Nginx HTTP Lua File tag prefix */
 
 #define NGX_[% SUBSYS %]_LUA_FILE_TAG "nhlf_"
 
-#define NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN \
+#define NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN                                    \
     (sizeof(NGX_[% SUBSYS %]_LUA_FILE_TAG) - 1)
 
-#define NGX_[% SUBSYS %]_LUA_FILE_KEY_LEN \
+#define NGX_[% SUBSYS %]_LUA_FILE_KEY_LEN                                    \
     (NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN + 2 * MD5_DIGEST_LENGTH)
 
 

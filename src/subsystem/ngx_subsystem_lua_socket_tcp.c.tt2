@@ -155,7 +155,7 @@ enum {
 };
 
 
-#define ngx_[% subsys %]_lua_socket_check_busy_connecting(r, u, L)                   \
+#define ngx_[% subsys %]_lua_socket_check_busy_connecting(r, u, L)           \
     if ((u)->conn_waiting) {                                                 \
         lua_pushnil(L);                                                      \
         lua_pushliteral(L, "socket busy connecting");                        \
@@ -163,7 +163,7 @@ enum {
     }
 
 
-#define ngx_[% subsys %]_lua_socket_check_busy_reading(r, u, L)                      \
+#define ngx_[% subsys %]_lua_socket_check_busy_reading(r, u, L)              \
     if ((u)->read_waiting) {                                                 \
         lua_pushnil(L);                                                      \
         lua_pushliteral(L, "socket busy reading");                           \
@@ -172,7 +172,7 @@ enum {
 
 
 [% IF http_subsys %]
-#define ngx_[% subsys %]_lua_socket_check_busy_writing(r, u, L)                      \
+#define ngx_[% subsys %]_lua_socket_check_busy_writing(r, u, L)              \
     if ((u)->write_waiting) {                                                \
         lua_pushnil(L);                                                      \
         lua_pushliteral(L, "socket busy writing");                           \
@@ -187,7 +187,7 @@ enum {
     }
 
 [% ELSIF stream_subsys %]
-#define ngx_[% subsys %]_lua_socket_check_busy_writing(r, u, L)                      \
+#define ngx_[% subsys %]_lua_socket_check_busy_writing(r, u, L)              \
     if ((u)->write_waiting) {                                                \
         lua_pushnil(L);                                                      \
         lua_pushliteral(L, "socket busy writing");                           \

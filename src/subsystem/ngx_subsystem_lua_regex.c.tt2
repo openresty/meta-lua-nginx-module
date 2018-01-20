@@ -104,13 +104,14 @@ static void ngx_[% subsys %]_lua_re_collect_named_captures(lua_State *L,
     unsigned flags, ngx_str_t *subj);
 
 
-#define ngx_[% subsys %]_lua_regex_exec(re, e, s, start, captures, size, opts)       \
+#define ngx_[% subsys %]_lua_regex_exec(re, e, s, start, captures, size,     \
+                                        opts)                                \
     pcre_exec(re, e, (const char *) (s)->data, (s)->len, start, opts,        \
               captures, size)
 
 
-#define ngx_[% subsys %]_lua_regex_dfa_exec(re, e, s, start, captures, size, ws,     \
-                                    wscount, opts)                           \
+#define ngx_[% subsys %]_lua_regex_dfa_exec(re, e, s, start, captures, size, \
+                                            ws, wscount, opts)               \
     pcre_dfa_exec(re, e, (const char *) (s)->data, (s)->len, start, opts,    \
                   captures, size, ws, wscount)
 
