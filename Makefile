@@ -5,7 +5,7 @@ TEMPLATE_SOURCES=$(wildcard src/subsys/*.tt2)
 TEMPLATE_TARGETS=$(subst _subsys_,_$(SUBSYS)_, $(patsubst src/subsys/%.tt2, $(DESTDIR)/%, $(TEMPLATE_SOURCES)))
 API_TEMPLATE_SOURCES=$(wildcard src/subsys/api/*.tt2)
 API_TEMPLATE_TARGETS=$(subst _subsys_,_$(SUBSYS)_, $(patsubst src/subsys/%.tt2, $(DESTDIR)/%, $(API_TEMPLATE_SOURCES)))
-MINI_TT2=utils/mini-tt2.pl
+MINI_TT2=util/mini-tt2.pl
 
 .PHONY: all
 all: $(DESTDIR)/api $(TEMPLATE_TARGETS) $(API_TEMPLATE_TARGETS) $(SUBSYS_TARGETS)
