@@ -464,7 +464,12 @@ while (<$in>) {
                 $_ = (" " x -$func_prefix_len_diff) . $_;
             }
 
-            my $excess = length($_) - 80;
+            my $ln_len = length;
+            if (/\n$/) {
+                $ln_len--;
+            }
+
+            my $excess = $ln_len - 80;
             if ($excess > 0) {
                 #warn "line $.: line too long (len: ", length($_),
                 #     ", excess: $excess)";
