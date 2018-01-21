@@ -96,7 +96,8 @@ static int ngx_[% subsys %]_lua_ngx_re_sub(lua_State *L);
 static int ngx_[% subsys %]_lua_ngx_re_gsub(lua_State *L);
 static void ngx_[% subsys %]_lua_regex_free_study_data(ngx_pool_t *pool,
     pcre_extra *sd);
-static ngx_int_t ngx_[% subsys %]_lua_regex_compile(ngx_[% subsys %]_lua_regex_compile_t *rc);
+static ngx_int_t ngx_[% subsys %]_lua_regex_compile(
+    ngx_[% subsys %]_lua_regex_compile_t *rc);
 static void ngx_[% subsys %]_lua_ngx_re_gmatch_cleanup(void *data);
 static int ngx_[% subsys %]_lua_ngx_re_gmatch_gc(lua_State *L);
 static void ngx_[% subsys %]_lua_re_collect_named_captures(lua_State *L,
@@ -1197,8 +1198,8 @@ error:
 
 
 static ngx_uint_t
-ngx_[% subsys %]_lua_ngx_re_parse_opts(lua_State *L, ngx_[% subsys %]_lua_regex_compile_t *re,
-    ngx_str_t *opts, int narg)
+ngx_[% subsys %]_lua_ngx_re_parse_opts(lua_State *L,
+    ngx_[% subsys %]_lua_regex_compile_t *re, ngx_str_t *opts, int narg)
 {
     u_char          *p;
     const char      *msg;
@@ -1730,8 +1731,9 @@ exec:
 #endif /* LUA_HAVE_PCRE_DFA */
 
         } else {
-            rc = ngx_[% subsys %]_lua_regex_exec(re_comp.regex, sd, &subj, offset, cap,
-                                                 ovecsize, exec_opts);
+            rc = ngx_[% subsys %]_lua_regex_exec(re_comp.regex, sd, &subj,
+                                                 offset, cap, ovecsize,
+                                                 exec_opts);
         }
 
         if (rc == NGX_REGEX_NO_MATCHED) {
@@ -2044,7 +2046,7 @@ ngx_[% subsys %]_lua_regex_compile(ngx_[% subsys %]_lua_regex_compile_t *rc)
         if ((size_t) erroff == rc->pattern.len) {
             rc->err.len = ngx_snprintf(rc->err.data, rc->err.len,
                                        "pcre_compile() failed: %s in \"%V\"",
-                                      errstr, &rc->pattern)
+                                       errstr, &rc->pattern)
                          - rc->err.data;
 
         } else {

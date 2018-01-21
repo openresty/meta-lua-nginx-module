@@ -19,20 +19,23 @@ static size_t ngx_[% subsys %]_lua_script_copy_len_code(
 static void ngx_[% subsys %]_lua_script_copy_code(ngx_[% subsys %]_lua_script_engine_t *e);
 static ngx_int_t ngx_[% subsys %]_lua_script_add_copy_code(
     ngx_[% subsys %]_lua_script_compile_t *sc, ngx_str_t *value, ngx_uint_t last);
-static ngx_int_t ngx_[% subsys %]_lua_script_compile(ngx_[% subsys %]_lua_script_compile_t *sc);
+static ngx_int_t ngx_[% subsys %]_lua_script_compile(
+    ngx_[% subsys %]_lua_script_compile_t *sc);
 static ngx_int_t ngx_[% subsys %]_lua_script_add_capture_code(
     ngx_[% subsys %]_lua_script_compile_t *sc, ngx_uint_t n);
 static size_t ngx_[% subsys %]_lua_script_copy_capture_len_code(
     ngx_[% subsys %]_lua_script_engine_t *e);
 static void ngx_[% subsys %]_lua_script_copy_capture_code(
     ngx_[% subsys %]_lua_script_engine_t *e);
-static ngx_int_t ngx_[% subsys %]_lua_script_done(ngx_[% subsys %]_lua_script_compile_t *sc);
+static ngx_int_t ngx_[% subsys %]_lua_script_done(
+    ngx_[% subsys %]_lua_script_compile_t *sc);
 static ngx_int_t ngx_[% subsys %]_lua_script_init_arrays(
     ngx_[% subsys %]_lua_script_compile_t *sc);
 
 
 ngx_int_t
-ngx_[% subsys %]_lua_compile_complex_value(ngx_[% subsys %]_lua_compile_complex_value_t *ccv)
+ngx_[% subsys %]_lua_compile_complex_value(
+    ngx_[% subsys %]_lua_compile_complex_value_t *ccv)
 {
     ngx_str_t                  *v;
     ngx_uint_t                  i, n, nv;
@@ -188,7 +191,7 @@ ngx_[% subsys %]_lua_script_compile(ngx_[% subsys %]_lua_script_compile_t *sc)
                 name.len++;
 
                 if (ngx_[% subsys %]_lua_script_add_copy_code(sc, &name,
-                                                      (i == sc->source->len))
+                                                              i == sc->source->len)
                     != NGX_OK)
                 {
                     return NGX_ERROR;
@@ -296,7 +299,8 @@ ngx_[% subsys %]_lua_script_compile(ngx_[% subsys %]_lua_script_compile_t *sc)
             name.len++;
         }
 
-        if (ngx_[% subsys %]_lua_script_add_copy_code(sc, &name, (i == sc->source->len))
+        if (ngx_[% subsys %]_lua_script_add_copy_code(sc, &name,
+                                                      i == sc->source->len)
             != NGX_OK)
         {
             return NGX_ERROR;

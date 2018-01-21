@@ -324,6 +324,7 @@ while (<$in>) {
 
         check_line_continuer_in_macro_raw_line($raw_line);
         fix_line_continuer_in_macro_line($_, $prefix_len, $padding_len);
+        $passthrough = 1;
 
     } elsif (m{^ (\s+ .*? (\s*) ) \\ \s* $}x) {
 
@@ -333,6 +334,7 @@ while (<$in>) {
 
             check_line_continuer_in_macro_raw_line($raw_line);
             fix_line_continuer_in_macro_line($_, $prefix_len, $padding_len);
+            $passthrough = 1;
             #warn "HIT: $_";
 
         } else {
@@ -484,19 +486,19 @@ while (<$in>) {
         }
 
     } elsif (!$passthrough) {
-        if (/^ ( .*? \s ([_a-zA-Z]\w*) \( ) .*? [^\s\{;\\] \s* $/x) {
+        if (/^ ( (.*? \W) ([_a-zA-Z]\w*) \( ) .*? [^\s\{;\\] \s* $/x) {
             # found a function call
-            my ($prefix);
-            ($prefix, $func_name) = ($1, $2);
+            my ($prefix, $indent);
+            ($prefix, $indent, $func_name) = ($1, $2, $3);
             if ($prefix !~ /^\w+ /) {
                 my $len = length $prefix;
                 if ($raw_line =~ /^ (.*? \w \( ) /x) {
                     my $raw_len = length $1;
-                    if ($len != $raw_len) {
+                    if ($prefix !~ m{^ (?: \# | \s* /\* )}x && !m/\\$/) {
                         #warn "line $.: found continued func call: $_";
                         $continued_func_call = $.;
                         $func_prefix_len_diff = $raw_len - $len;
-                        $func_indent_len = $indent_len;
+                        $func_indent_len = length $indent;
                         $func_raw_prefix_len = $raw_len;
                     }
                 }

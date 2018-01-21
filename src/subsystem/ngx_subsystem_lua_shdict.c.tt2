@@ -71,7 +71,8 @@ enum {
 
 
 static ngx_inline ngx_queue_t *
-ngx_[% subsys %]_lua_shdict_get_list_head(ngx_[% subsys %]_lua_shdict_node_t *sd, size_t len)
+ngx_[% subsys %]_lua_shdict_get_list_head(ngx_[% subsys %]_lua_shdict_node_t *sd,
+    size_t len)
 {
     return (ngx_queue_t *) ngx_align_ptr(((u_char *) &sd->data + len),
                                          NGX_ALIGNMENT);
@@ -105,7 +106,8 @@ ngx_[% subsys %]_lua_shdict_init_zone(ngx_shm_zone_t *shm_zone, void *data)
         return NGX_OK;
     }
 
-    ctx->sh = ngx_slab_alloc(ctx->shpool, sizeof(ngx_[% subsys %]_lua_shdict_shctx_t));
+    ctx->sh = ngx_slab_alloc(ctx->shpool,
+                             sizeof(ngx_[% subsys %]_lua_shdict_shctx_t));
     if (ctx->sh == NULL) {
         return NGX_ERROR;
     }
@@ -293,7 +295,8 @@ ngx_[% subsys %]_lua_shdict_expire(ngx_[% subsys %]_lua_shdict_ctx_t *ctx, ngx_u
         }
 
         if (sd->value_type == SHDICT_TLIST) {
-            list_queue = ngx_[% subsys %]_lua_shdict_get_list_head(sd, sd->key_len);
+            list_queue = ngx_[% subsys %]_lua_shdict_get_list_head(sd,
+                                                                   sd->key_len);
 
             for (lq = ngx_queue_head(list_queue);
                  lq != ngx_queue_sentinel(list_queue);
@@ -738,13 +741,15 @@ ngx_[% subsys %]_lua_shdict_flush_expired(lua_State *L)
         if (sd->expires != 0 && sd->expires <= now) {
 
             if (sd->value_type == SHDICT_TLIST) {
-                list_queue = ngx_[% subsys %]_lua_shdict_get_list_head(sd, sd->key_len);
+                list_queue = ngx_[% subsys %]_lua_shdict_get_list_head(sd,
+                                                                       sd->key_len);
 
                 for (lq = ngx_queue_head(list_queue);
                      lq != ngx_queue_sentinel(list_queue);
                      lq = ngx_queue_next(lq))
                 {
-                    lnode = ngx_queue_data(lq, ngx_[% subsys %]_lua_shdict_list_node_t,
+                    lnode = ngx_queue_data(lq,
+                                           ngx_[% subsys %]_lua_shdict_list_node_t,
                                            queue);
 
                     ngx_slab_free_locked(ctx->shpool, lnode);
@@ -884,7 +889,8 @@ ngx_[% subsys %]_lua_shdict_add(lua_State *L)
 static int
 ngx_[% subsys %]_lua_shdict_safe_add(lua_State *L)
 {
-    return ngx_[% subsys %]_lua_shdict_set_helper(L, NGX_[% SUBSYS %]_LUA_SHDICT_ADD
+    return ngx_[% subsys %]_lua_shdict_set_helper(L,
+                                                  NGX_[% SUBSYS %]_LUA_SHDICT_ADD
                                                   |NGX_[% SUBSYS %]_LUA_SHDICT_SAFE_STORE);
 }
 
@@ -906,7 +912,8 @@ ngx_[% subsys %]_lua_shdict_set(lua_State *L)
 static int
 ngx_[% subsys %]_lua_shdict_safe_set(lua_State *L)
 {
-    return ngx_[% subsys %]_lua_shdict_set_helper(L, NGX_[% SUBSYS %]_LUA_SHDICT_SAFE_STORE);
+    return ngx_[% subsys %]_lua_shdict_set_helper(L,
+                                                  NGX_[% SUBSYS %]_LUA_SHDICT_SAFE_STORE);
 }
 
 

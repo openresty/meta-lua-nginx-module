@@ -416,8 +416,8 @@ ngx_[% subsys %]_lua_init_worker_by_inline(ngx_log_t *log,
 
 
 ngx_int_t
-ngx_[% subsys %]_lua_init_worker_by_file(ngx_log_t *log, ngx_[% subsys %]_lua_main_conf_t *lmcf,
-    lua_State *L)
+ngx_[% subsys %]_lua_init_worker_by_file(ngx_log_t *log,
+    ngx_[% subsys %]_lua_main_conf_t *lmcf, lua_State *L)
 {
     int         status;
 

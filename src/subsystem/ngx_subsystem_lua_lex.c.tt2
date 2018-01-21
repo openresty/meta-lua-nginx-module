@@ -37,8 +37,8 @@ enum {
 
 
 /*
- * ngx_[% subsys %]_lua_lex: the "ovec" array should be allocated by the caller with at
- * least 2 elements.
+ * ngx_[% subsys %]_lua_lex: the "ovec" array should be allocated by the
+ * caller with at least 2 elements.
  */
 int
 ngx_[% subsys %]_lua_lex(const u_char *const s, size_t len, int *const ovec)

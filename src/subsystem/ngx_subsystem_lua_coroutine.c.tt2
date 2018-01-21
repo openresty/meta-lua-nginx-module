@@ -63,8 +63,9 @@ ngx_[% subsys %]_lua_coroutine_create(lua_State *L)
 
 
 int
-ngx_[% subsys %]_lua_coroutine_create_helper(lua_State *L, [% req_type %] *r,
-    ngx_[% subsys %]_lua_ctx_t *ctx, ngx_[% subsys %]_lua_co_ctx_t **pcoctx)
+ngx_[% subsys %]_lua_coroutine_create_helper(lua_State *L,
+    [% req_type %] *r, ngx_[% subsys %]_lua_ctx_t *ctx,
+    ngx_[% subsys %]_lua_co_ctx_t **pcoctx)
 {
     lua_State                     *vm;  /* the Lua VM */
     lua_State                     *co;  /* new coroutine to be created */
@@ -246,7 +247,8 @@ ngx_[% subsys %]_lua_coroutine_yield(lua_State *L)
         dd("set coroutine to running");
         coctx->parent_co_ctx->co_status = NGX_[% SUBSYS %]_LUA_CO_RUNNING;
 
-        ngx_[% subsys %]_lua_probe_user_coroutine_yield(r, coctx->parent_co_ctx->co, L);
+        ngx_[% subsys %]_lua_probe_user_coroutine_yield(r,
+                                                        coctx->parent_co_ctx->co, L);
 
     } else {
         ngx_[% subsys %]_lua_probe_user_coroutine_yield(r, NULL, L);
@@ -394,8 +396,10 @@ ngx_[% subsys %]_lua_coroutine_status(lua_State *L)
     coctx = ngx_[% subsys %]_lua_get_co_ctx(co, ctx);
     if (coctx == NULL) {
         lua_pushlstring(L, (const char *)
-                        ngx_[% subsys %]_lua_co_status_names[NGX_[% SUBSYS %]_LUA_CO_DEAD].data,
-                        ngx_[% subsys %]_lua_co_status_names[NGX_[% SUBSYS %]_LUA_CO_DEAD].len);
+                        ngx_[% subsys %]_lua_co_status_names[NGX_[% SUBSYS %]_LUA_CO_DEAD]
+                        .data,
+                        ngx_[% subsys %]_lua_co_status_names[NGX_[% SUBSYS %]_LUA_CO_DEAD]
+                        .len);
         return 1;
     }
 

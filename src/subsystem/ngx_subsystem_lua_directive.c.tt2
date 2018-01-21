@@ -292,7 +292,8 @@ ngx_[% subsys %]_lua_set_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     filter_data->key = p;
 
-    p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG, NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
+    p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG,
+                 NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
     p = ngx_[% subsys %]_lua_digest_hex(p, value[2].data, value[2].len);
     *p = '\0';
 
@@ -342,7 +343,8 @@ ngx_[% subsys %]_lua_set_by_lua_file(ngx_conf_t *cf, ngx_command_t *cmd, void *c
 
     filter_data->key = p;
 
-    p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG, NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
+    p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG,
+                 NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
     p = ngx_[% subsys %]_lua_digest_hex(p, value[2].data, value[2].len);
     *p = '\0';
 
@@ -516,7 +518,8 @@ ngx_[% subsys %]_lua_rewrite_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *co
 
         llcf->rewrite_src_key = p;
 
-        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG, NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
+        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG,
+                     NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
         p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
         *p = '\0';
 
@@ -539,7 +542,8 @@ ngx_[% subsys %]_lua_rewrite_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *co
 
             llcf->rewrite_src_key = p;
 
-            p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG, NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
+            p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG,
+                         NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
             p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
             *p = '\0';
         }
@@ -628,7 +632,8 @@ ngx_[% subsys %]_lua_access_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *con
 
         llcf->access_src_key = p;
 
-        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG, NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
+        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG,
+                     NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
         p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
         *p = '\0';
 
@@ -651,7 +656,8 @@ ngx_[% subsys %]_lua_access_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *con
 
             llcf->access_src_key = p;
 
-            p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG, NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
+            p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG,
+                         NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
             p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
             *p = '\0';
         }
@@ -740,7 +746,8 @@ ngx_stream_lua_preread_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
         lscf->preread_src_key = p;
 
-        p = ngx_copy(p, NGX_STREAM_LUA_INLINE_TAG, NGX_STREAM_LUA_INLINE_TAG_LEN);
+        p = ngx_copy(p, NGX_STREAM_LUA_INLINE_TAG,
+                     NGX_STREAM_LUA_INLINE_TAG_LEN);
         p = ngx_stream_lua_digest_hex(p, value[1].data, value[1].len);
         *p = '\0';
 
@@ -763,7 +770,8 @@ ngx_stream_lua_preread_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
             lscf->preread_src_key = p;
 
-            p = ngx_copy(p, NGX_STREAM_LUA_FILE_TAG, NGX_STREAM_LUA_FILE_TAG_LEN);
+            p = ngx_copy(p, NGX_STREAM_LUA_FILE_TAG,
+                         NGX_STREAM_LUA_FILE_TAG_LEN);
             p = ngx_stream_lua_digest_hex(p, value[1].data, value[1].len);
             *p = '\0';
         }
@@ -890,7 +898,8 @@ ngx_[% subsys %]_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *co
 
             llcf->content_src_key = p;
 
-            p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG, NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
+            p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG,
+                         NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
             p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
             *p = '\0';
         }
@@ -988,7 +997,8 @@ ngx_[% subsys %]_lua_log_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
         llcf->log_src_key = p;
 
-        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG, NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
+        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG,
+                     NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
         p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
         *p = '\0';
 
@@ -1011,7 +1021,8 @@ ngx_[% subsys %]_lua_log_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
             llcf->log_src_key = p;
 
-            p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG, NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
+            p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG,
+                         NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
             p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
             *p = '\0';
         }
@@ -1089,7 +1100,8 @@ ngx_[% subsys %]_lua_header_filter_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 
         llcf->header_filter_src_key = p;
 
-        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG, NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
+        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG,
+                     NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
         p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
         *p = '\0';
 
@@ -1112,7 +1124,8 @@ ngx_[% subsys %]_lua_header_filter_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 
             llcf->header_filter_src_key = p;
 
-            p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG, NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
+            p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG,
+                         NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
             p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
             *p = '\0';
         }
@@ -1189,7 +1202,8 @@ ngx_[% subsys %]_lua_body_filter_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 
         llcf->body_filter_src_key = p;
 
-        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG, NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
+        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG,
+                     NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
         p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
         *p = '\0';
 
@@ -1212,7 +1226,8 @@ ngx_[% subsys %]_lua_body_filter_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 
             llcf->body_filter_src_key = p;
 
-            p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG, NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
+            p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG,
+                         NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
             p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
             *p = '\0';
         }
@@ -1430,7 +1445,7 @@ found:
 
     ngx_snprintf(out, len, "=%*s(%*s:%d)%Z",
                  tag_len, tag, cf->conf_file->file.name.data
-                               + cf->conf_file->file.name.len - p,
+                 + cf->conf_file->file.name.len - p,
                  p, cf->conf_file->line);
 
     return out;

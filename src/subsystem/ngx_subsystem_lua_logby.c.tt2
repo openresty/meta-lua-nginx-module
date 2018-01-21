@@ -25,7 +25,8 @@
 #endif
 
 
-static ngx_int_t ngx_[% subsys %]_lua_log_by_chunk(lua_State *L, [% req_type %] *r);
+static ngx_int_t ngx_[% subsys %]_lua_log_by_chunk(lua_State *L,
+    [% req_type %] *r);
 
 
 static void
@@ -187,7 +188,9 @@ ngx_[% subsys %]_lua_log_handler_file([% req_type %] *r)
 [% IF http_subsys -%]
     if (ngx_http_complex_value(r, &llcf->log_src, &eval_src) != NGX_OK) {
 [% ELSIF stream_subsys -%]
-    if (ngx_stream_complex_value(r->session, &llcf->log_src, &eval_src) != NGX_OK) {
+    if (ngx_stream_complex_value(r->session, &llcf->log_src, &eval_src)
+        != NGX_OK)
+    {
 [% END -%]
         return NGX_ERROR;
     }
