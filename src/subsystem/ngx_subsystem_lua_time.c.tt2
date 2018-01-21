@@ -197,7 +197,8 @@ ngx_[% subsys %]_lua_ngx_req_start_time(lua_State *L)
 [% IF http_subsys %]
     lua_pushnumber(L, (lua_Number) (r->start_sec + r->start_msec / 1000.0L));
 [% ELSIF stream_subsys %]
-    lua_pushnumber(L, (lua_Number) (r->session->start_sec + r->session->start_msec / 1000.0L));
+    lua_pushnumber(L, (lua_Number) (r->session->start_sec
+                   + r->session->start_msec / 1000.0L));
 [% END %]
 
     return 1;

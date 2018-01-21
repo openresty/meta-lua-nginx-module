@@ -267,13 +267,6 @@ ngx_[% subsys %]_lua_ngx_redirect(lua_State *L)
 
     h->hash = ngx_[% subsys %]_lua_location_hash;
 
-#if 0
-    dd("location hash: %lu == %lu",
-       (unsigned long) h->hash,
-       (unsigned long) ngx_hash_key_lc((u_char *) "Location",
-                                       sizeof("Location") - 1));
-#endif
-
     h->value.len = len;
     h->value.data = uri;
     ngx_str_set(&h->key, "Location");
@@ -488,15 +481,15 @@ ngx_[% subsys %]_lua_ffi_exit([% req_type %] *r, int status, u_char *err,
     }
 
     if (ngx_[% subsys %]_lua_ffi_check_context(ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_HEADER_FILTER
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_BALANCER
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH,
-                                       err, errlen)
+                                               | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
+                                               | NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
+                                               | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
+                                               | NGX_[% SUBSYS %]_LUA_CONTEXT_HEADER_FILTER
+                                               | NGX_[% SUBSYS %]_LUA_CONTEXT_BALANCER
+                                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
+                                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE
+                                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH,
+                                               err, errlen)
         != NGX_OK)
     {
         return NGX_ERROR;

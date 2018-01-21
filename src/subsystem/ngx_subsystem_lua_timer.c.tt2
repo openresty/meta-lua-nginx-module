@@ -45,7 +45,8 @@ static int ngx_[% subsys %]_lua_ngx_timer_every(lua_State *L);
 static int ngx_[% subsys %]_lua_ngx_timer_helper(lua_State *L, int every);
 static int ngx_[% subsys %]_lua_ngx_timer_running_count(lua_State *L);
 static int ngx_[% subsys %]_lua_ngx_timer_pending_count(lua_State *L);
-static ngx_int_t ngx_[% subsys %]_lua_timer_copy(ngx_[% subsys %]_lua_timer_ctx_t *old_tctx);
+static ngx_int_t ngx_[% subsys %]_lua_timer_copy(
+    ngx_[% subsys %]_lua_timer_ctx_t *old_tctx);
 static void ngx_[% subsys %]_lua_timer_handler(ngx_event_t *ev);
 static u_char *ngx_[% subsys %]_lua_log_timer_error(ngx_log_t *log, u_char *buf,
     size_t len);
@@ -932,8 +933,8 @@ ngx_[% subsys %]_lua_abort_pending_timers(ngx_event_t *ev)
     ngx_event_timer_rbtree.root->parent = temp;
 
     ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], ngx_cycle->log, 0,
-                   "[% log_prefix %]lua found %i pending timers to be aborted prematurely",
-                   n);
+                   "[% log_prefix %]lua found %i pending timers to be "
+                   "aborted prematurely", n);
 
     for (i = 0; i < n; i++) {
         ev = events[i];

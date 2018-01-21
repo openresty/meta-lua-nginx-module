@@ -14,8 +14,9 @@
 
 void ngx_[% subsys %]_lua_inject_coroutine_api(ngx_log_t *log, lua_State *L);
 
-int ngx_[% subsys %]_lua_coroutine_create_helper(lua_State *L, [% req_type %] *r,
-    ngx_[% subsys %]_lua_ctx_t *ctx, ngx_[% subsys %]_lua_co_ctx_t **pcoctx);
+int ngx_[% subsys %]_lua_coroutine_create_helper(lua_State *L,
+    [% req_type %] *r, ngx_[% subsys %]_lua_ctx_t *ctx,
+    ngx_[% subsys %]_lua_co_ctx_t **pcoctx);
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_COROUTINE_H_INCLUDED_ */

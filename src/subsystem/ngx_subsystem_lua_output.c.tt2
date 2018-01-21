@@ -351,7 +351,8 @@ ngx_[% subsys %]_lua_calc_strlen_in_table(lua_State *L, int index, int arg_i,
 
             case LUA_TTABLE:
 
-                size += ngx_[% subsys %]_lua_calc_strlen_in_table(L, -1, arg_i, strict);
+                size += ngx_[% subsys %]_lua_calc_strlen_in_table(L, -1, arg_i,
+                                                                  strict);
                 break;
 
             case LUA_TLIGHTUSERDATA:
@@ -789,7 +790,8 @@ ngx_http_lua_ngx_send_headers(lua_State *L)
 
 
 ngx_int_t
-ngx_[% subsys %]_lua_flush_resume_helper([% req_type %] *r, ngx_[% subsys %]_lua_ctx_t *ctx)
+ngx_[% subsys %]_lua_flush_resume_helper([% req_type %] *r,
+    ngx_[% subsys %]_lua_ctx_t *ctx)
 {
     int                          n;
     lua_State                   *vm;

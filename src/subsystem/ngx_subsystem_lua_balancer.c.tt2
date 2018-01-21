@@ -185,7 +185,8 @@ ngx_[% subsys %]_lua_balancer_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 
         lscf->balancer.src_key = p;
 
-        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG, NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
+        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_FILE_TAG,
+                     NGX_[% SUBSYS %]_LUA_FILE_TAG_LEN);
         p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
         *p = '\0';
 
@@ -201,7 +202,8 @@ ngx_[% subsys %]_lua_balancer_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 
         lscf->balancer.src_key = p;
 
-        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG, NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
+        p = ngx_copy(p, NGX_[% SUBSYS %]_LUA_INLINE_TAG,
+                     NGX_[% SUBSYS %]_LUA_INLINE_TAG_LEN);
         p = ngx_[% subsys %]_lua_digest_hex(p, value[1].data, value[1].len);
         *p = '\0';
     }

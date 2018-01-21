@@ -235,7 +235,8 @@ ngx_[% subsys %]_lua_var_set(lua_State *L)
 
             dd("set variables with set_handler");
 
-            vv = ngx_palloc([% pool %], sizeof(ngx_[% subsys %]_variable_value_t));
+            vv = ngx_palloc([% pool %],
+                            sizeof(ngx_[% subsys %]_variable_value_t));
             if (vv == NULL) {
                 return luaL_error(L, "no memory");
             }
@@ -438,7 +439,8 @@ ngx_[% subsys %]_lua_ffi_var_set([% req_type %] *r, u_char *name_data,
             dd("set variables with set_handler");
 
             if (value != NULL && value_len) {
-                vv = ngx_palloc([% pool %], sizeof(ngx_[% subsys %]_variable_value_t)
+                vv = ngx_palloc([% pool %],
+                                sizeof(ngx_[% subsys %]_variable_value_t)
                                 + value_len);
                 if (vv == NULL) {
                     goto nomem;
@@ -449,7 +451,8 @@ ngx_[% subsys %]_lua_ffi_var_set([% req_type %] *r, u_char *name_data,
                 value = p;
 
             } else {
-                vv = ngx_palloc([% pool %], sizeof(ngx_[% subsys %]_variable_value_t));
+                vv = ngx_palloc([% pool %],
+                                sizeof(ngx_[% subsys %]_variable_value_t));
                 if (vv == NULL) {
                     goto nomem;
                 }

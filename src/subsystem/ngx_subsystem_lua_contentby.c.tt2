@@ -230,7 +230,7 @@ ngx_http_lua_content_handler(ngx_http_request_t *r)
         r->request_body_in_clean_file = 1;
 
         rc = ngx_http_read_client_request_body(r,
-                                        ngx_http_lua_content_phase_post_read);
+                                               ngx_http_lua_content_phase_post_read);
 
         if (rc == NGX_ERROR || rc >= NGX_HTTP_SPECIAL_RESPONSE) {
 #if (nginx_version < 1002006) ||                                             \
@@ -303,7 +303,8 @@ ngx_stream_lua_content_handler(ngx_stream_session_t *s)
     ctx->entered_content_phase = 1;
 
     dd("calling content handler");
-    ngx_stream_lua_finalize_request(ctx->request, lscf->content_handler(ctx->request));
+    ngx_stream_lua_finalize_request(ctx->request,
+                                    lscf->content_handler(ctx->request));
 
     return;
 }
@@ -352,7 +353,9 @@ ngx_[% subsys %]_lua_content_handler_file([% req_type %] *r)
 [% ELSIF stream_subsys %]
     llcf = ngx_stream_lua_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
-    if (ngx_stream_complex_value(r->session, &llcf->content_src, &eval_src) != NGX_OK) {
+    if (ngx_stream_complex_value(r->session, &llcf->content_src, &eval_src)
+        != NGX_OK)
+    {
         return NGX_ERROR;
     }
 [% END %]
@@ -423,8 +426,8 @@ ngx_[% subsys %]_lua_content_handler_inline([% req_type %] *r)
 
 
 ngx_int_t
-ngx_[% subsys %]_lua_content_run_posted_threads(lua_State *L, [% req_type %] *r,
-    ngx_[% subsys %]_lua_ctx_t *ctx, int n)
+ngx_[% subsys %]_lua_content_run_posted_threads(lua_State *L,
+    [% req_type %] *r, ngx_[% subsys %]_lua_ctx_t *ctx, int n)
 {
     ngx_int_t                        rc;
 
