@@ -885,7 +885,7 @@ static int
 ngx_[% subsys %]_lua_shdict_safe_add(lua_State *L)
 {
     return ngx_[% subsys %]_lua_shdict_set_helper(L, NGX_[% SUBSYS %]_LUA_SHDICT_ADD
-                                          |NGX_[% SUBSYS %]_LUA_SHDICT_SAFE_STORE);
+                                                  |NGX_[% SUBSYS %]_LUA_SHDICT_SAFE_STORE);
 }
 
 

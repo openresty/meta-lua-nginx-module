@@ -484,7 +484,7 @@ while (<$in>) {
         }
 
     } elsif (!$passthrough) {
-        if (/^ ( .*? \s ([_a-zA-Z]\w*) \( ) .*? , \s* $/x) {
+        if (/^ ( .*? \s ([_a-zA-Z]\w*) \( ) .*? [^\s\{;\\] \s* $/x) {
             # found a function call
             my ($prefix);
             ($prefix, $func_name) = ($1, $2);

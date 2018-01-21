@@ -1985,7 +1985,7 @@ ngx_stream_lua_add_variable(ngx_conf_t *cf, ngx_command_t *cmd,
     value[1].data++;
 
     var = ngx_stream_add_variable(cf, value + 1, NGX_STREAM_VAR_CHANGEABLE
-                                                 |NGX_STREAM_VAR_WEAK);
+                                  |NGX_STREAM_VAR_WEAK);
     if (var == NULL) {
         return NGX_CONF_ERROR;
     }
