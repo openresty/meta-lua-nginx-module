@@ -81,7 +81,7 @@ if (!-d $outdir) {
 
 (my $outfile = $infile) =~ s/\.tt2$//i;
 $outfile =~ s{.*[/\\]}{}g;
-$outfile =~ s/^ngx_subsys(?:tem)?_/ngx_${subsys}_/g;
+$outfile =~ s/^ngx_subsys_/ngx_${subsys}_/g;
 $outfile = File::Spec->catfile($outdir, $outfile);
 
 #warn "outfile: $outfile";
@@ -534,7 +534,7 @@ sub replace_tt2_var ($$) {
 
     $var =~ s/\s+$//;
 
-    if ($var =~ /^ (?: subsys(?:tem)? \s* (?: \bFILTER\b | \| )
+    if ($var =~ /^ (?: subsys \s* (?: \bFILTER\b | \| )
                    \s* upper | SUBSYS ) $/x)
     {
         return $tt2_vars{SUBSYS};
