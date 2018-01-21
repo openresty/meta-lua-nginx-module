@@ -1069,7 +1069,7 @@ ngx_[% subsys %]_lua_run_thread(lua_State *L, [% req_type %] *r,
 #endif
 
             ngx_[% subsys %]_lua_assert(orig_coctx->co_top + nrets
-                                == lua_gettop(orig_coctx->co));
+                                        == lua_gettop(orig_coctx->co));
 
             rv = lua_resume(orig_coctx->co, nrets);
 
@@ -3073,7 +3073,7 @@ ngx_[% subsys %]_lua_param_get(lua_State *L)
     }
 
     ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_SET
-                               | NGX_[% SUBSYS %]_LUA_CONTEXT_BODY_FILTER);
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_BODY_FILTER);
 
     if (ctx->context & (NGX_[% SUBSYS %]_LUA_CONTEXT_SET)) {
         return ngx_[% subsys %]_lua_setby_param_get(L);
