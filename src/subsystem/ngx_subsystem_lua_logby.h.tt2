@@ -11,11 +11,11 @@
 #include "ngx_[% subsys %]_lua_common.h"
 
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
 ngx_int_t ngx_http_lua_log_handler(ngx_http_request_t *r);
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
 ngx_int_t ngx_stream_lua_log_handler(ngx_stream_session_t *r);
-[% END -%]
+[% END %]
 
 ngx_int_t ngx_[% subsys %]_lua_log_handler_inline([% req_type %] *r);
 ngx_int_t ngx_[% subsys %]_lua_log_handler_file([% req_type %] *r);

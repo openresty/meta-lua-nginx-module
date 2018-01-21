@@ -21,7 +21,7 @@
 #include "ngx_[% subsys %]_lua_logby.h"
 
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
 #include "ngx_[% subsys %]_lua_semaphore.h"
 #include "ngx_[% subsys %]_lua_ssl_certby.h"
 #include "ngx_[% subsys %]_lua_ssl_session_storeby.h"
@@ -33,9 +33,9 @@
 #include "ngx_[% subsys %]_lua_headerfilterby.h"
 #include "ngx_[% subsys %]_lua_bodyfilterby.h"
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
 #include "ngx_[% subsys %]_lua_prereadby.h"
-[% END -%]
+[% END %]
 
 
 static void *ngx_[% subsys %]_lua_create_main_conf(ngx_conf_t *cf);
@@ -239,7 +239,7 @@ static ngx_command_t ngx_[% subsys %]_lua_cmds[] = {
       0,
       (void *) ngx_[% subsys %]_lua_init_worker_by_file },
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
 #if defined(NDK) && NDK
     /* set_by_lua $res { inline Lua code } [$arg1 [$arg2 [...]]] */
     { ngx_string("set_by_lua_block"),
@@ -305,7 +305,7 @@ static ngx_command_t ngx_[% subsys %]_lua_cmds[] = {
       0,
       (void *) ngx_[% subsys %]_lua_access_handler_inline },
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     /* preread_by_lua_file rel/or/abs/path/to/script */
     { ngx_string("preread_by_lua_file"),
       NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF|NGX_CONF_TAKE1,
@@ -321,7 +321,7 @@ static ngx_command_t ngx_[% subsys %]_lua_cmds[] = {
       NGX_STREAM_SRV_CONF_OFFSET,
       0,
       (void *) ngx_stream_lua_preread_handler_inline },
-[% END -%]
+[% END %]
 
 [% IF http_subsys %]
     [% content_by_lua_flags = 'NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF' %]
@@ -355,15 +355,15 @@ static ngx_command_t ngx_[% subsys %]_lua_cmds[] = {
       0,
       (void *) ngx_[% subsys %]_lua_content_handler_file },
 
-[% IF http_subsys -%]
-    [%- log_by_lua_flags = 'NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF' -%]
-    [%- log_by_lua_offset = 'NGX_HTTP_LOC_CONF_OFFSET' -%]
-[% ELSIF stream_subsys -%]
-    [%- log_by_lua_flags = 'NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF' -%]
-    [%- log_by_lua_offset = 'NGX_STREAM_SRV_CONF_OFFSET' -%]
-[% END -%]
+[% IF http_subsys %]
+    [% log_by_lua_flags = 'NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF' %]
+    [% log_by_lua_offset = 'NGX_HTTP_LOC_CONF_OFFSET' %]
+[% ELSIF stream_subsys %]
+    [% log_by_lua_flags = 'NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF' %]
+    [% log_by_lua_offset = 'NGX_STREAM_SRV_CONF_OFFSET' %]
+[% END %]
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     /* log_by_lua <inline script> */
     { ngx_string("log_by_lua"),
       [% log_by_lua_flags %]
@@ -372,7 +372,7 @@ static ngx_command_t ngx_[% subsys %]_lua_cmds[] = {
       [% log_by_lua_offset %],
       0,
       (void *) ngx_[% subsys %]_lua_log_handler_inline },
-[% END -%]
+[% END %]
 
     /* log_by_lua_block { <inline script> } */
     { ngx_string("log_by_lua_block"),
@@ -391,7 +391,7 @@ static ngx_command_t ngx_[% subsys %]_lua_cmds[] = {
       0,
       (void *) ngx_[% subsys %]_lua_log_handler_file },
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     { ngx_string("rewrite_by_lua_file"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
@@ -473,14 +473,14 @@ static ngx_command_t ngx_[% subsys %]_lua_cmds[] = {
       0,
       (void *) ngx_[% subsys %]_lua_body_filter_file },
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     { ngx_string("preread_by_lua_no_postpone"),
       NGX_STREAM_MAIN_CONF|NGX_CONF_FLAG,
       ngx_conf_set_flag_slot,
       NGX_STREAM_MAIN_CONF_OFFSET,
       offsetof(ngx_stream_lua_main_conf_t, postponed_to_preread_phase_end),
       NULL },
-[% END -%]
+[% END %]
 
     { ngx_string("balancer_by_lua_block"),
       NGX_[% SUBSYS %]_UPS_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
@@ -692,14 +692,14 @@ static ngx_command_t ngx_[% subsys %]_lua_cmds[] = {
       0,
       NULL },
 
-[% IF stream_subsys -%]
+[% IF stream_subsys %]
      { ngx_string("lua_add_variable"),
       NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_stream_lua_add_variable,
       0,
       0,
       NULL },
-[% END -%]
+[% END %]
 
     ngx_null_command
 };
@@ -759,7 +759,7 @@ ngx_[% subsys %]_lua_init(ngx_conf_t *cf)
     lmcf = ngx_[% subsys %]_conf_get_module_main_conf(cf,
                                                       ngx_[% subsys %]_lua_module);
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     if (ngx_[% subsys %]_lua_prev_cycle != ngx_cycle) {
         ngx_[% subsys %]_lua_prev_cycle = ngx_cycle;
         multi_http_blocks = 0;
@@ -782,11 +782,11 @@ ngx_[% subsys %]_lua_init(ngx_conf_t *cf)
     if (lmcf->postponed_to_access_phase_end == NGX_CONF_UNSET) {
         lmcf->postponed_to_access_phase_end = 0;
     }
-[% END # http -%]
+[% END # http %]
 
     cmcf = ngx_[% subsys %]_conf_get_module_main_conf(cf, ngx_[% subsys %]_core_module);
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     if (lmcf->requires_rewrite) {
         h = ngx_array_push(&cmcf->phases[NGX_HTTP_REWRITE_PHASE].handlers);
         if (h == NULL) {
@@ -804,7 +804,7 @@ ngx_[% subsys %]_lua_init(ngx_conf_t *cf)
 
         *h = ngx_[% subsys %]_lua_access_handler;
     }
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     if (lmcf->requires_preread) {
         h = ngx_array_push(&cmcf->phases[NGX_STREAM_PREREAD_PHASE].handlers);
         if (h == NULL) {
@@ -817,7 +817,7 @@ ngx_[% subsys %]_lua_init(ngx_conf_t *cf)
     if (lmcf->postponed_to_preread_phase_end == NGX_CONF_UNSET) {
         lmcf->postponed_to_preread_phase_end = 0;
     }
-[% END # http -%]
+[% END # http %]
 
     dd("requires log: %d", (int) lmcf->requires_log);
 
@@ -995,13 +995,13 @@ ngx_[% subsys %]_lua_create_main_conf(ngx_conf_t *cf)
     lmcf->regex_match_limit = NGX_CONF_UNSET;
 #endif
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     lmcf->postponed_to_rewrite_phase_end = NGX_CONF_UNSET;
     lmcf->postponed_to_access_phase_end = NGX_CONF_UNSET;
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     lmcf->postponed_to_preread_phase_end = NGX_CONF_UNSET;
-[% END -%]
+[% END %]
 
 #if (NGX_[% SUBSYS %]_LUA_HAVE_MALLOC_TRIM)
     lmcf->malloc_trim_cycle = NGX_CONF_UNSET_UINT;

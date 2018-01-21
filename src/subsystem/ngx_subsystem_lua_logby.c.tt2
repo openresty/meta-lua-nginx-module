@@ -62,11 +62,11 @@ ngx_[% subsys %]_lua_log_by_lua_env(lua_State *L, [% req_type %] *r)
 
 
 ngx_int_t
-[% IF http_subsys -%]
+[% IF http_subsys %]
 ngx_http_lua_log_handler(ngx_http_request_t *r)
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
 ngx_stream_lua_log_handler(ngx_stream_session_t *r)
-[% END -%]
+[% END %]
 {
 #if (NGX_[% SUBSYS %]_LUA_HAVE_MALLOC_TRIM)
     ngx_uint_t                           trim_cycle, trim_nreq;
@@ -105,31 +105,31 @@ ngx_stream_lua_log_handler(ngx_stream_session_t *r)
 #   endif
 #endif
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     ngx_log_debug2(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
                    "lua log handler, uri:\"%V\" c:%ud", &r->uri,
                    r->main->count);
 
     llcf = ngx_http_get_module_loc_conf(r, ngx_http_lua_module);
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     ngx_log_debug0(NGX_LOG_DEBUG_STREAM, r->connection->log, 0,
                    "lua log handler");
 
     llcf = ngx_stream_get_module_srv_conf(r, ngx_stream_lua_module);
-[% END -%]
+[% END %]
 
     if (llcf->log_handler == NULL) {
         dd("no log handler found");
         return NGX_DECLINED;
     }
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     ctx = ngx_http_get_module_ctx(r, ngx_http_lua_module);
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     ctx = ngx_stream_get_module_ctx(r, ngx_stream_lua_module);
-[% END -%]
+[% END %]
 
     dd("ctx = %p", ctx);
 
@@ -185,13 +185,13 @@ ngx_[% subsys %]_lua_log_handler_file([% req_type %] *r)
 
     llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     if (ngx_http_complex_value(r, &llcf->log_src, &eval_src) != NGX_OK) {
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     if (ngx_stream_complex_value(r->session, &llcf->log_src, &eval_src)
         != NGX_OK)
     {
-[% END -%]
+[% END %]
         return NGX_ERROR;
     }
 

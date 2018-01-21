@@ -355,11 +355,11 @@ ngx_stream_lua_create_ctx(ngx_stream_session_t *r)
 
         dd("lmcf: %p", lmcf);
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
         L = ngx_http_lua_init_vm(lmcf->lua, lmcf->cycle, r->pool, lmcf,
                                  r->connection->log, &cln);
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
         /*
          * caveats: we need to move the vm cleanup hook to the list end
          * to ensure it will be executed *after* the request cleanup
@@ -379,7 +379,7 @@ ngx_stream_lua_create_ctx(ngx_stream_session_t *r)
         cln = sreq->pool->cleanup;
         sreq->pool->cleanup = cln->next;
         cln->next = NULL;
-[% END -%]
+[% END %]
 
         if (L == NULL) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
