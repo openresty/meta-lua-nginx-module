@@ -1123,7 +1123,8 @@ ngx_[% subsys %]_lua_run_thread(lua_State *L, [% req_type %] *r,
                  * check if coroutine.resume or coroutine.yield called
                  * lua_yield()
                  */
-                switch(ctx->co_op) {
+                switch (ctx->co_op) {
+
                 case NGX_[% SUBSYS %]_LUA_USER_CORO_NOP:
                     dd("hit! it is the API yield");
 
@@ -2286,8 +2287,7 @@ ngx_[% subsys %]_lua_handle_exec(lua_State *L, [% req_type %] *r,
 #endif
 
         rc = ngx_http_named_location(r, &ctx->exec_uri);
-        if (rc == NGX_ERROR || rc >= NGX_HTTP_SPECIAL_RESPONSE)
-        {
+        if (rc == NGX_ERROR || rc >= NGX_HTTP_SPECIAL_RESPONSE) {
             return rc;
         }
 
@@ -4348,8 +4348,7 @@ ngx_[% subsys %]_lua_cleanup_free([% req_type %] *r,
 [% END %]
 
     cln = (ngx_[% req_subsys %]_cleanup_t *)
-              ((u_char *) cleanup
-              - offsetof(ngx_[% req_subsys %]_cleanup_t, handler));
+          ((u_char *) cleanup - offsetof(ngx_[% req_subsys %]_cleanup_t, handler));
 
     dd("cln: %p, cln->handler: %p, &cln->handler: %p",
        cln, cln->handler, &cln->handler);

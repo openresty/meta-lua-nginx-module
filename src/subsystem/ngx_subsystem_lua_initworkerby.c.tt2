@@ -81,7 +81,7 @@ ngx_[% subsys %]_lua_init_worker(ngx_cycle_t *cycle)
     }
 
     if (lmcf->init_worker_handler == NULL) {
-         return NGX_OK;
+        return NGX_OK;
     }
 
     conf_ctx = (ngx_[% subsys %]_conf_ctx_t *)
@@ -234,8 +234,7 @@ ngx_[% subsys %]_lua_init_worker(ngx_cycle_t *cycle)
             [% subsys %]_ctx.srv_conf[modules[i]->ctx_index] = cur;
 
 [% IF stream_subsys %]
-            if (modules[i]->ctx_index == ngx_stream_core_module.ctx_index)
-            {
+            if (modules[i]->ctx_index == ngx_stream_core_module.ctx_index) {
                 clcf = cur;
                 /* just to silence the error in
                  * ngx_stream_core_merge_srv_conf */

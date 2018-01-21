@@ -69,7 +69,8 @@ ngx_[% subsys %]_lua_coroutine_create_helper(lua_State *L, [% req_type %] *r,
     lua_State                     *vm;  /* the Lua VM */
     lua_State                     *co;  /* new coroutine to be created */
 
-    ngx_[% subsys %]_lua_co_ctx_t         *coctx; /* co ctx for the new coroutine */
+    /* co ctx for the new coroutine */
+    ngx_[% subsys %]_lua_co_ctx_t         *coctx;
 
     luaL_argcheck(L, lua_isfunction(L, 1) && !lua_iscfunction(L, 1), 1,
                   "Lua function expected");
