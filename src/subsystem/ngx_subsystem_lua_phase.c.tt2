@@ -44,7 +44,7 @@ ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L)
         lua_pushliteral(L, "init_worker");
         break;
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     case NGX_[% SUBSYS %]_LUA_CONTEXT_SET:
         lua_pushliteral(L, "set");
         break;
@@ -81,11 +81,11 @@ ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L)
         lua_pushliteral(L, "ssl_session_fetch");
         break;
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     case NGX_STREAM_LUA_CONTEXT_PREREAD:
         lua_pushliteral(L, "preread");
         break;
-[% END -%]
+[% END %]
 
     case NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT:
         lua_pushliteral(L, "content");

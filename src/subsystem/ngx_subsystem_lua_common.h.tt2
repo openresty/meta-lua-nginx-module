@@ -230,13 +230,13 @@ struct ngx_[% subsys %]_lua_main_conf_s {
 
     ngx_array_t         *preload_hooks; /* of ngx_[% subsys %]_lua_preload_hook_t */
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     ngx_flag_t           postponed_to_rewrite_phase_end;
     ngx_flag_t           postponed_to_access_phase_end;
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     ngx_flag_t           postponed_to_preread_phase_end;
-[% END -%]
+[% END %]
 
     ngx_[% subsys %]_lua_main_conf_handler_pt    init_handler;
     ngx_str_t                                    init_src;
@@ -266,16 +266,16 @@ struct ngx_[% subsys %]_lua_main_conf_s {
 #endif
 [% END %]
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     unsigned             requires_header_filter:1;
     unsigned             requires_body_filter:1;
     unsigned             requires_capture_filter:1;
     unsigned             requires_rewrite:1;
     unsigned             requires_access:1;
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     unsigned             requires_preread:1;
-[% END -%]
+[% END %]
 
     unsigned             requires_log:1;
     unsigned             requires_shm:1;
@@ -340,9 +340,9 @@ struct ngx_stream_lua_srv_conf_s {
     ngx_http_handler_pt     rewrite_handler;
     ngx_http_handler_pt     access_handler;
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     ngx_[% req_subsys %]_handler_pt     preread_handler;
-[% END -%]
+[% END %]
 
     ngx_[% req_subsys %]_handler_pt     content_handler;
     ngx_[% req_subsys %]_handler_pt     log_handler;
@@ -365,7 +365,7 @@ struct ngx_stream_lua_srv_conf_s {
                                                 file path */
 
     u_char                  *access_src_key; /* cached key for access_src */
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     u_char                      *preread_chunkname;
     ngx_stream_complex_value_t   preread_src;     /* access_by_lua
                                                 inline script/script
@@ -425,14 +425,14 @@ struct ngx_stream_lua_srv_conf_s {
     ngx_flag_t                       use_default_type;
 [% END %]
 
-[%- IF stream_subsys -%]
+[% IF stream_subsys %]
     struct {
         ngx_str_t           src;
         u_char             *src_key;
 
         ngx_[% subsys %]_lua_srv_conf_handler_pt  handler;
     } balancer;
-[% END -%]
+[% END %]
 
 [% IF http_subsys %]
 } ngx_http_lua_loc_conf_t;
@@ -657,7 +657,7 @@ typedef struct ngx_[% subsys %]_lua_ctx_s {
 
 [% ELSIF stream_subsys %]
     unsigned         entered_preread_phase:1;
-[% END -%]
+[% END %]
 
     unsigned         entered_content_phase:1;
 

@@ -66,15 +66,15 @@ ngx_[% subsys %]_lua_ngx_echo(lua_State *L, unsigned newline)
         return luaL_error(L, "no request ctx found");
     }
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     ngx_http_lua_check_context(L, ctx, NGX_HTTP_LUA_CONTEXT_REWRITE
                                | NGX_HTTP_LUA_CONTEXT_ACCESS
                                | NGX_HTTP_LUA_CONTEXT_CONTENT);
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT
                                  | NGX_STREAM_LUA_CONTEXT_PREREAD);
-[% END -%]
+[% END %]
 
 [% IF http_subsys %]
     if (ctx->acquired_raw_req_socket) {

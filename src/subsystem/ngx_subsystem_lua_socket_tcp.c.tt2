@@ -307,10 +307,10 @@ ngx_[% subsys %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
     lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_settimeouts);
     lua_setfield(L, -2, "settimeouts"); /* ngx socket mt */
 
-[% IF stream_subsys -%]
+[% IF stream_subsys %]
     lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_shutdown);
     lua_setfield(L, -2, "shutdown");
-[% END -%]
+[% END %]
 
     lua_pushvalue(L, -1);
     lua_setfield(L, -2, "__index");
@@ -443,14 +443,14 @@ ngx_[% subsys %]_lua_socket_tcp(lua_State *L)
     }
 
     ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
-[% IF http_subsys -%]
+[% IF http_subsys %]
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
                                        | NGX_STREAM_LUA_CONTEXT_PREREAD
-[% END -%]
+[% END %]
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER);
 
     lua_createtable(L, 5 /* narr */, 1 /* nrec */);
@@ -520,9 +520,9 @@ ngx_[% subsys %]_lua_socket_tcp_connect(lua_State *L)
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
                                | NGX_STREAM_LUA_CONTEXT_PREREAD
-[% END -%]
+[% END %]
 
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER);
 
@@ -2249,7 +2249,7 @@ ngx_[% subsys %]_lua_socket_tcp_read([% req_type %] *r,
                                (int) u->eof);
 [% END %]
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
                 if (u->body_downstream
                     && b->last == b->pos
                     && r->request_body->rest == 0)
@@ -2277,7 +2277,7 @@ ngx_[% subsys %]_lua_socket_tcp_read([% req_type %] *r,
                         return NGX_ERROR;
                     }
                 }
-[% END -%]
+[% END %]
 
 #if 1
                 if (ngx_handle_read_event(rev, 0) != NGX_OK) {
@@ -2287,9 +2287,9 @@ ngx_[% subsys %]_lua_socket_tcp_read([% req_type %] *r,
                 }
 #endif
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
 success:
-[% END -%]
+[% END %]
 
                 ngx_[% subsys %]_lua_socket_handle_read_success(r, u);
                 return NGX_OK;
@@ -2306,13 +2306,13 @@ success:
 
             /* rc == NGX_AGAIN */
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
             if (u->body_downstream
                 && r->request_body->rest == 0)
             {
                 u->eof = 1;
             }
-[% END -%]
+[% END %]
 
             continue;
         }
@@ -2338,14 +2338,14 @@ success:
         }
 
         if (u->raw_downstream) {
-[% IF http_subsys -%]
+[% IF http_subsys %]
             preread = r->header_in->last - r->header_in->pos;
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
             if (r->connection->buffer != NULL) {
                 preread = ngx_buf_size(r->connection->buffer);
             }
-[% END -%]
+[% END %]
 
             if (preread) {
 
@@ -2354,25 +2354,25 @@ success:
                 }
 
                 ngx_[% subsys %]_lua_probe_req_socket_consume_preread(r,
-[% IF http_subsys -%]
+[% IF http_subsys %]
                                                                       r->header_in->pos,
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
                                                                       r->connection->buffer->pos,
-[% END -%]
+[% END %]
                                                                       size);
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
                 b->last = ngx_copy(b->last, r->header_in->pos, size);
                 r->header_in->pos += size;
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
                 b->last = ngx_copy(b->last, r->connection->buffer->pos, size);
                 r->connection->buffer->pos += size;
-[% END -%]
+[% END %]
                 continue;
             }
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
         } else if (u->body_downstream) {
 
             if (r->request_body->rest == 0) {
@@ -2426,7 +2426,7 @@ success:
                 size = (size_t) r->request_body->rest;
             }
 
-[% END -%]
+[% END %]
         }
 
 #if 1
@@ -2910,9 +2910,9 @@ ngx_[% subsys %]_lua_socket_tcp_shutdown(lua_State *L)
     ngx_[% subsys %]_lua_socket_tcp_upstream_t  *u;
     ngx_str_t                                    direction;
     char                                        *p;
-[%- IF stream_subsys -%]
+[% IF stream_subsys %]
     ngx_[% subsys %]_lua_ctx_t                  *ctx;
-[% END -%]
+[% END %]
 
     if (lua_gettop(L) != 2) {
         return luaL_error(L, "expecting 2 arguments "
@@ -2930,7 +2930,7 @@ ngx_[% subsys %]_lua_socket_tcp_shutdown(lua_State *L)
         return luaL_error(L, "no request found");
     }
 
-[% IF stream_subsys -%]
+[% IF stream_subsys %]
     ctx = ngx_[% req_subsys %]_get_module_ctx(r, ngx_[% subsys %]_lua_module);
     if (ctx == NULL) {
         ngx_[% subsys %]_lua_socket_handle_write_error(r, u,
@@ -2957,7 +2957,7 @@ ngx_[% subsys %]_lua_socket_tcp_shutdown(lua_State *L)
         /* prevent all further output attempt */
         ctx->eof = 1;
     }
-[% END -%]
+[% END %]
 
     if (u == NULL
         || u->peer.connection == NULL
@@ -3128,16 +3128,16 @@ ngx_[% subsys %]_lua_socket_tcp_handler(ngx_event_t *ev)
     [% req_type %]                                 *r;
     ngx_[% subsys %]_lua_socket_tcp_upstream_t     *u;
     ngx_connection_t                               *c;
-[% IF http_subsys -%]
+[% IF http_subsys %]
     ngx_http_log_ctx_t                             *ctx;
-[% END -%]
+[% END %]
 
     c = ev->data;
     u = c->data;
     r = u->request;
     c = r->connection;
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     if (c->fd != (ngx_socket_t) -1) {  /* not a fake connection */
         ctx = c->log->data;
         ctx->current_request = r;
@@ -3147,10 +3147,10 @@ ngx_[% subsys %]_lua_socket_tcp_handler(ngx_event_t *ev)
                    "lua tcp socket handler for \"%V?%V\", wev %d", &r->uri,
                    &r->args, (int) ev->write);
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     ngx_log_debug1(NGX_LOG_DEBUG_STREAM, c->log, 0,
                    "stream lua tcp socket handler: wev %d", (int) ev->write);
-[% END -%]
+[% END %]
 
     if (ev->write) {
         u->write_event_handler(r, u);
@@ -3159,9 +3159,9 @@ ngx_[% subsys %]_lua_socket_tcp_handler(ngx_event_t *ev)
         u->read_event_handler(r, u);
     }
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     ngx_http_run_posted_requests(c);
-[% END -%]
+[% END %]
 }
 
 
@@ -4548,7 +4548,7 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
 
     n = lua_gettop(L);
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     if (n == 0) {
         raw = 0;
 
@@ -4561,7 +4561,7 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
                           lua_gettop(L));
     }
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     if (n != 0 && n != 1) {
         return luaL_error(L, "expecting zero arguments, but got %d",
                           lua_gettop(L));
@@ -4572,7 +4572,7 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
     }
 
     raw = 1;
-[% END -%]
+[% END %]
 
     r = ngx_[% subsys %]_lua_get_req(L);
 
@@ -4608,15 +4608,15 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
         return luaL_error(L, "no ctx found");
     }
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
     ngx_http_lua_check_context(L, ctx, NGX_HTTP_LUA_CONTEXT_REWRITE
                                | NGX_HTTP_LUA_CONTEXT_ACCESS
                                | NGX_HTTP_LUA_CONTEXT_CONTENT);
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT
                                  |NGX_STREAM_LUA_CONTEXT_PREREAD);
-[% END -%]
+[% END %]
 
     c = r->connection;
 

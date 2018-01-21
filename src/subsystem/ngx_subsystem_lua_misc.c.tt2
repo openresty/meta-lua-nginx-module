@@ -92,7 +92,7 @@ ngx_[% subsys %]_lua_ngx_get(lua_State *L)
     {
         ngx_[% subsys %]_lua_check_fake_request(L, r);
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
         if (r->err_status) {
             status = r->err_status;
 
@@ -106,11 +106,11 @@ ngx_[% subsys %]_lua_ngx_get(lua_State *L)
             status = 0;
         }
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
     /* same as $status */
 
     status = r->session->status;
-[% END -%]
+[% END %]
 
         lua_pushinteger(L, status);
         return 1;

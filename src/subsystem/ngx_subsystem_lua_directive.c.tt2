@@ -23,7 +23,7 @@
 #include "ngx_[% subsys %]_lua_lex.h"
 #include "api/ngx_[% subsys %]_lua_api.h"
 
-[% IF http_subsys -%]
+[% IF http_subsys %]
 #include "ngx_http_lua_accessby.h"
 #include "ngx_http_lua_rewriteby.h"
 #include "ngx_http_lua_headerfilterby.h"
@@ -32,9 +32,9 @@
 #include "ngx_http_lua_log.h"
 #include "ngx_http_lua_ssl_certby.h"
 
-[% ELSIF stream_subsys -%]
+[% ELSIF stream_subsys %]
 #include "ngx_stream_lua_prereadby.h"
-[% END -%]
+[% END %]
 
 
 typedef struct ngx_[% subsys %]_lua_block_parser_ctx_s
@@ -1969,7 +1969,7 @@ ngx_[% subsys %]_lua_strlstrn(u_char *s1, u_char *last, u_char *s2, size_t n)
 }
 
 
-[% IF stream_subsys -%]
+[% IF stream_subsys %]
 static ngx_int_t
 ngx_stream_lua_undefined_var(ngx_stream_session_t *s,
     ngx_stream_variable_value_t *v, uintptr_t data)
@@ -2016,7 +2016,7 @@ ngx_stream_lua_add_variable(ngx_conf_t *cf, ngx_command_t *cmd,
 
     return NGX_CONF_OK;
 }
-[% END -%]
+[% END %]
 
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */
