@@ -11,16 +11,16 @@ MINI_TT2=utils/mini-tt2.pl
 all: $(DESTDIR)/api $(TEMPLATE_TARGETS) $(API_TEMPLATE_TARGETS) $(SUBSYS_TARGETS)
 	cp src/$(SUBSYS)/* $(DESTDIR)
 
-$(DESTDIR)/api/ngx_http_%: src/subsystem/api/ngx_subsystem_%.tt2
+$(DESTDIR)/api/ngx_http_%: src/subsystem/api/ngx_subsys_%.tt2
 	$(MINI_TT2) -d $(DESTDIR)/api -s http $<
 
-$(DESTDIR)/ngx_http_%: src/subsystem/ngx_subsystem_%.tt2
+$(DESTDIR)/ngx_http_%: src/subsystem/ngx_subsys_%.tt2
 	$(MINI_TT2) -d $(DESTDIR) -s $(SUBSYS) $<
 
-$(DESTDIR)/api/ngx_stream_%: src/subsystem/api/ngx_subsystem_%.tt2
+$(DESTDIR)/api/ngx_stream_%: src/subsystem/api/ngx_subsys_%.tt2
 	$(MINI_TT2) -d $(DESTDIR)/api -s stream $<
 
-$(DESTDIR)/ngx_stream_%: src/subsystem/ngx_subsystem_%.tt2
+$(DESTDIR)/ngx_stream_%: src/subsystem/ngx_subsys_%.tt2
 	$(MINI_TT2) -d $(DESTDIR) -s $(SUBSYS) $<
 
 $(DESTDIR)/%: src/subsystem/%.tt2
