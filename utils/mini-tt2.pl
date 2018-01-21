@@ -104,13 +104,18 @@ while (<$in>) {
         die "$infile: line $.: unexpected line-trailing spaces found: $_";
     }
 
+    if (m{\[\%-|-\%\]}) {
+        die "$infile: line $.: - modifier not supported; we manage ",
+            "whitespaces automatically anyway.\n";
+    }
+
     if (/^ \s* \[\%\# .*? \%\] \s* $/x) {
         next;
     }
 
     my $raw_line = $_;
 
-    if (/^ \s* \[\%-? \s* BLOCK \s+ (\w+) \s* -?\%\] \s* $/x) {
+    if (/^ \s* \[\% \s* BLOCK \s+ (\w+) \s* \%\] \s* $/x) {
         my $block_name = $1;
 
         #die "BLOCK name: $block_name";
@@ -150,7 +155,7 @@ while (<$in>) {
         next;
     }
 
-    if (/^ \s* \[\%-? \s* ((?:ELS)?IF) \s+ (.*?) -?\%\] \s* $/x) {
+    if (/^ \s* \[\% \s* ((?:ELS)?IF) \s+ (.*?) \%\] \s* $/x) {
         my $keywd = $1;
         my $cond = $2;
 
@@ -213,7 +218,7 @@ while (<$in>) {
         next;
     }
 
-    if (/^ \s* \[\%-? \s* ELSE \s* (?:\# .*?) -?\%\] \s* $/x) {
+    if (/^ \s* \[\% \s* ELSE \s* (?:\# .*?) \%\] \s* $/x) {
         if ($in_else) {
             die "$infile: line $.: already seen ELSE directive on line ",
                 "$in_else.\n";
@@ -232,7 +237,7 @@ while (<$in>) {
         next;
     }
 
-    if (/^ \s* \[\%-? \s* END \s* (?:\# .*?)? -?\%\] \s* $/x) {
+    if (/^ \s* \[\% \s* END \s* (?:\# .*?)? \%\] \s* $/x) {
         if (!$in_if && !$in_else && !$in_block) {
             die "$infile: line $.: lingering END directive; no IF, ELSIF, ",
                 "ELSE, or BLOCK directive seen earlier.\n";
@@ -259,8 +264,8 @@ while (<$in>) {
 
     next if $skip;
 
-    if (/^ \s* \[\%-? \s* (?: SET \s* )? (\w+) \s* =
-           \s* (?: (['"]) (.*?) \2 | (\d+) ) \s* -?\%\] \s* $/x)
+    if (/^ \s* \[\% \s* (?: SET \s* )? (\w+) \s* =
+           \s* (?: (['"]) (.*?) \2 | (\d+) ) \s* \%\] \s* $/x)
     {
         $ctl_cmds{$.} = 1;
 
@@ -275,7 +280,7 @@ while (<$in>) {
         next;
     }
 
-    if (/^ \s* \[\%-? \s* (INCLUDE|PROCESS) \s+ (\w+) \s* -?\%\] \s*$/x) {
+    if (/^ \s* \[\% \s* (INCLUDE|PROCESS) \s+ (\w+) \s* \%\] \s*$/x) {
         my ($cmd, $block_name) = ($1, $2);
 
         if ($in_block) {
@@ -295,8 +300,8 @@ while (<$in>) {
         next;
     }
 
-    s/\[%-? \s* (['"]) (.*?) \1 \s* -?\%\]/$2/egx;
-    s/\[%-? \s* (.*?) -?\%\]/replace_tt2_var($1, $.)/egx;
+    s/\[\% \s* (['"]) (.*?) \1 \s* \%\]/$2/egx;
+    s/\[\% \s* (.*?) \%\]/replace_tt2_var($1, $.)/egx;
 
     my $indent_len = 0;
 
