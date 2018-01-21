@@ -14,6 +14,7 @@ sub usage ($);
 sub replace_tt2_var ($$);
 sub is_prev_line ($);
 sub check_line_continuer_in_macro_raw_line ($);
+sub fix_line_continuer_in_macro_line ($$$);
 
 my $var_with_init_pat = qr/(\**) \b [_a-zA-Z]\w* (?: :\d+ )? \s*
                            (?: = \s* \w+ )?/x;
@@ -99,6 +100,10 @@ my ($in_block, $block, %blocks);
 my (%ctl_cmds, $prev_continuing_macro_line);
 
 while (<$in>) {
+    if (/\s+\n$/) {
+        die "$infile: line $.: unexpected line-trailing spaces found: $_";
+    }
+
     if (/^ \s* \[\%\# .*? \%\] \s* $/x) {
         next;
     }
@@ -311,22 +316,23 @@ while (<$in>) {
 
     # check macro line continuers (\)
 
-    if (m{^ ( \# \s* define .*? (\s*) ) \\ \s* $}x) {
+    if (m{^ ( \# \s* [a-z]\w* .*? (\s*) ) \\ \s* $}x) {
         $prev_continuing_macro_line = 1;
 
         my $prefix_len = length $1;
-        my $indent_len = length $2;
+        my $padding_len = length $2;
 
         check_line_continuer_in_macro_raw_line($raw_line);
+        fix_line_continuer_in_macro_line($_, $prefix_len, $padding_len);
 
-        if ($prefix_len < 77) {
-        } elsif ($prefix_len == 77) {
-            #warn "HIT (prefix len: $prefix_len): $_";
-        }
+    } elsif (m{^ (\s+ .*? (\s*) ) \\ \s* $}x) {
 
-    } elsif (m{^ \s+ .* \\ \s* $}x) {
         if ($prev_continuing_macro_line) {
+            my $prefix_len = length $1;
+            my $padding_len = length $2;
+
             check_line_continuer_in_macro_raw_line($raw_line);
+            fix_line_continuer_in_macro_line($_, $prefix_len, $padding_len);
             #warn "HIT: $_";
 
         } else {
@@ -374,7 +380,7 @@ while (<$in>) {
 
             my $diff = -$var_col_diff;
             if ($diff >= $padding_len) {
-                die "$infile: line $.: existing padding ($padding_len bytes) ",
+                die "$infile: line $.: existing padding ($padding_len spaces) ",
                     "not enough to compensate the variable name alignment ",
                     "requirement ($diff difference).\n";
             }
@@ -560,6 +566,35 @@ sub check_line_continuer_in_macro_raw_line ($) {
 
     } else {
         die "$infile: line $.: failed to find trailing \\ in raw line: $_";
+    }
+}
+
+sub fix_line_continuer_in_macro_line ($$$) {
+    my ($line, $prefix_len, $padding_len) = @_;
+
+    if ($prefix_len < 77) {
+        # add more space padding
+
+        my $diff = 77 - $prefix_len;
+        if ($_[0] !~ s/\\\n$/(' ' x $diff) . "\\\n"/e) {
+            die "Cannot happen";
+        }
+
+    } elsif ($prefix_len > 77) {
+        my $diff = $prefix_len - 77;
+        if ($diff >= $padding_len) {
+            if ($_[0] !~ s/ {$diff}\\\n?$/\\\n/) {
+                die "Cannot happen";
+            }
+
+        } else {
+            die "$infile: $.: existing padding ($padding_len spaces) ",
+                "not enough to compensate the macro line continuer ",
+                "alignment on the 78th column.\n";
+        }
+
+    } else {
+        #warn "HIT (prefix len: $prefix_len): $_";
     }
 }
 
