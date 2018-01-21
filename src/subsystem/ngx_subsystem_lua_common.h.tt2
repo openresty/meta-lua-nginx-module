@@ -172,7 +172,7 @@ typedef struct ngx_[% subsys %]_lua_main_conf_s  ngx_[% subsys %]_lua_main_conf_
 [% IF http_subsys %]
 typedef union ngx_http_lua_srv_conf_u  ngx_http_lua_srv_conf_t;
 [% ELSIF stream_subsys %]
-typedef struct ngx_stream_lua_srv_conf_s ngx_stream_lua_srv_conf_t;
+typedef struct ngx_stream_lua_srv_conf_s  ngx_stream_lua_srv_conf_t;
 [% END %]
 
 
@@ -553,7 +553,8 @@ typedef struct ngx_[% subsys %]_lua_ctx_s {
     [% req_type %]                      *request;
     ngx_[% req_subsys %]_handler_pt      resume_handler;
 
-    ngx_[% subsys %]_lua_co_ctx_t       *cur_co_ctx; /* co ctx for the current coroutine */
+    ngx_[% subsys %]_lua_co_ctx_t       *cur_co_ctx;
+                                    /* co ctx for the current coroutine */
 
     /* FIXME: we should use rbtree here to prevent O(n) lookup overhead */
     ngx_list_t              *user_co_ctx; /* coroutine contexts for user

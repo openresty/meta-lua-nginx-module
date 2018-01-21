@@ -52,10 +52,10 @@ typedef struct {
 
 
 struct ngx_[% subsys %]_lua_socket_tcp_upstream_s {
-    ngx_[% subsys %]_lua_socket_tcp_retval_handler          read_prepare_retvals;
-    ngx_[% subsys %]_lua_socket_tcp_retval_handler          write_prepare_retvals;
-    ngx_[% subsys %]_lua_socket_tcp_upstream_handler_pt     read_event_handler;
-    ngx_[% subsys %]_lua_socket_tcp_upstream_handler_pt     write_event_handler;
+    ngx_[% subsys %]_lua_socket_tcp_retval_handler      read_prepare_retvals;
+    ngx_[% subsys %]_lua_socket_tcp_retval_handler      write_prepare_retvals;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_handler_pt read_event_handler;
+    ngx_[% subsys %]_lua_socket_tcp_upstream_handler_pt write_event_handler;
 
     ngx_[% subsys %]_lua_socket_pool_t      *socket_pool;
 
