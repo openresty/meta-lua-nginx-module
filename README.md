@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/openresty/meta-lua-nginx-module.svg?branch=master)](https://travis-ci.org/openresty/meta-lua-nginx-module)
+
 # Name
 
 meta-lua-nginx-module - templates and toolchains for generating
