@@ -1,0 +1,24 @@
+language: perl
+sudo: false
+dist: trusty
+
+os: linux
+
+addons:
+  apt:
+    packages:
+      - ack-grep
+
+env:
+  matrix:
+    - SUBSYS=http
+    - SUBSYS=stream
+
+install:
+  - git clone https://github.com/openresty/openresty-devel-utils.git
+
+script:
+  - export PATH=$PWD/openresty-devel-utils:$PATH
+  - ln -s `which ack-grep` $PWD/openresty-devel-utils/ack
+  - make -j`nproc`
+  - ngx-releng build/src
