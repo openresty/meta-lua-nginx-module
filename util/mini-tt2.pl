@@ -614,7 +614,7 @@ sub usage ($) {
     my $rc = shift;
     my $msg = <<_EOC_;
 Usage:
-    $0 -s SUBSYSTEM TT2-FILE
+    $0 -s SUBSYSTEM -d DIR TT2-FILE
 
 Options:
     -d DIR              Specify the output directory.
