@@ -286,7 +286,7 @@ ngx_[% subsys %]_lua_set_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     filter_data->size = filter.size;
 
     p = ngx_palloc(cf->pool,
-                   sizeof("set_by_lua") + NGX_[% SUBSYS %]_LUA_INLINE_KEY_LEN + 1);
+                   sizeof("set_by_lua") + NGX_[% SUBSYS %]_LUA_INLINE_KEY_LEN);
     if (p == NULL) {
         return NGX_CONF_ERROR;
     }
@@ -1116,7 +1116,7 @@ ngx_http_lua_header_filter_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 
         p = ngx_palloc(cf->pool,
                        sizeof("header_filter_by_lua") +
-                       NGX_HTTP_LUA_INLINE_KEY_LEN + 1);
+                       NGX_HTTP_LUA_INLINE_KEY_LEN);
         if (p == NULL) {
             return NGX_CONF_ERROR;
         }
@@ -1222,7 +1222,7 @@ ngx_http_lua_body_filter_by_lua(ngx_conf_t *cf, ngx_command_t *cmd,
 
         p = ngx_palloc(cf->pool,
                        sizeof("body_filter_by_lua") +
-                       NGX_HTTP_LUA_INLINE_KEY_LEN + 1);
+                       NGX_HTTP_LUA_INLINE_KEY_LEN);
         if (p == NULL) {
             return NGX_CONF_ERROR;
         }
