@@ -319,38 +319,6 @@ while (<$in>) {
 
     my $passthrough;
 
-    # check macro line continuers (\)
-
-    if (m{^ ( \# \s* [a-z]\w* .*? (\s*) ) \\ \s* $}x) {
-        $prev_continuing_macro_line = 1;
-
-        my $prefix_len = length $1;
-        my $padding_len = length $2;
-
-        check_line_continuer_in_macro_raw_line($raw_line);
-        fix_line_continuer_in_macro_line($_, $prefix_len, $padding_len);
-        $passthrough = 1;
-
-    } elsif (m{^ (\s+ .*? (\s*) ) \\ \s* $}x) {
-
-        if ($prev_continuing_macro_line) {
-            my $prefix_len = length $1;
-            my $padding_len = length $2;
-
-            check_line_continuer_in_macro_raw_line($raw_line);
-            fix_line_continuer_in_macro_line($_, $prefix_len, $padding_len);
-            $passthrough = 1;
-            #warn "HIT: $_";
-
-        } else {
-            die "$infile: line $.: unexpected continuing macro line: $_";
-            #undef $prev_continuing_macro_line;
-        }
-
-    } elsif (defined $prev_continuing_macro_line) {
-        undef $prev_continuing_macro_line;
-    }
-
     # check local variable declaration and struct member declaration alignment
 
     if (m{^ (\s+) ([_a-zA-Z]\w*) \b (\s*) $var_with_init_pat
@@ -491,7 +459,7 @@ while (<$in>) {
         }
 
     } elsif (!$passthrough) {
-        if (/^ ( (.*? \W) ([_a-zA-Z]\w*) \( ) .*? [^\s\{;\\] \s* $/x) {
+        if (/^ ( (.*? \W) ([_a-zA-Z]\w*) \( ) .*? [^\s\{;] \s* $/x) {
             # found a function call
             my ($prefix, $indent);
             ($prefix, $indent, $func_name) = ($1, $2, $3);
@@ -499,7 +467,7 @@ while (<$in>) {
                 my $len = length $prefix;
                 if ($raw_line =~ /^ (.*? \w \( ) /x) {
                     my $raw_len = length $1;
-                    if ($prefix !~ m{^ (?: \# | \s* /\* )}x && !m/\\$/) {
+                    if ($prefix !~ m{^ (?: \# \s*(?!:define) | \s* /\* )}x) {
                         #warn "line $.: found continued func call: $_";
                         $continued_func_call = $.;
                         $func_prefix_len_diff = $raw_len - $len;
@@ -509,6 +477,36 @@ while (<$in>) {
                 }
             }
         }
+    }
+
+    # check macro line continuers (\)
+
+    if (m{^ ( \# \s* [a-z]\w* .*? (\s*) ) \\ \s* $}x) {
+        $prev_continuing_macro_line = 1;
+
+        my $prefix_len = length $1;
+        my $padding_len = length $2;
+
+        check_line_continuer_in_macro_raw_line($raw_line);
+        fix_line_continuer_in_macro_line($_, $prefix_len, $padding_len);
+
+    } elsif (m{^ (\s+ .*? (\s*) ) \\ \s* $}x) {
+
+        if ($prev_continuing_macro_line) {
+            my $prefix_len = length $1;
+            my $padding_len = length $2;
+
+            check_line_continuer_in_macro_raw_line($raw_line);
+            fix_line_continuer_in_macro_line($_, $prefix_len, $padding_len);
+            #warn "HIT: $_";
+
+        } else {
+            die "$infile: line $.: unexpected continuing macro line: $_";
+            #undef $prev_continuing_macro_line;
+        }
+
+    } elsif (defined $prev_continuing_macro_line) {
+        undef $prev_continuing_macro_line;
     }
 
     if ($in_block) {
