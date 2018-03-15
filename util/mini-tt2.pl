@@ -467,7 +467,7 @@ while (<$in>) {
                 my $len = length $prefix;
                 if ($raw_line =~ /^ (.*? \w \( ) /x) {
                     my $raw_len = length $1;
-                    if ($prefix !~ m{^ (?: \# \s*(?!:define) | \s* /\* )}x) {
+                    if ($prefix !~ m{^ (?: \# \s*(?!define) | \s* /\* )}x) {
                         #warn "line $.: found continued func call: $_";
                         $continued_func_call = $.;
                         $func_prefix_len_diff = $raw_len - $len;
