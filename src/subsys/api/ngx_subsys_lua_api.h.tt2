@@ -39,6 +39,15 @@ typedef struct {
 } ngx_[% subsys %]_lua_value_t;
 
 
+#ifndef NGX_LUA_NO_FFI_API
+typedef struct {
+    int          len;
+    /* this padding hole on 64-bit systems is expected */
+    u_char      *data;
+} ngx_[% subsys %]_lua_ffi_str_t;
+#endif /* NGX_LUA_NO_FFI_API */
+
+
 lua_State *ngx_[% subsys %]_lua_get_global_state(ngx_conf_t *cf);
 
 [% req_type %] *ngx_[% subsys %]_lua_get_request(lua_State *L);

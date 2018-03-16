@@ -10,6 +10,7 @@
 
 
 #include "ngx_[% subsys %]_lua_common.h"
+#include "api/ngx_[% subsys %]_lua_api.h"
 
 
 #ifndef NGX_UNESCAPE_URI_COMPONENT
@@ -18,13 +19,6 @@
 
 
 #ifndef NGX_LUA_NO_FFI_API
-typedef struct {
-    int          len;
-    /* this padding hole on 64-bit systems is expected */
-    u_char      *data;
-} ngx_[% subsys %]_lua_ffi_str_t;
-
-
 typedef struct {
     ngx_[% subsys %]_lua_ffi_str_t   key;
     ngx_[% subsys %]_lua_ffi_str_t   value;
