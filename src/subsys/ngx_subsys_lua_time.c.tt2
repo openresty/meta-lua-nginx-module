@@ -20,9 +20,11 @@ static int ngx_[% subsys %]_lua_ngx_time(lua_State *L);
 static int ngx_[% subsys %]_lua_ngx_now(lua_State *L);
 static int ngx_[% subsys %]_lua_ngx_localtime(lua_State *L);
 static int ngx_[% subsys %]_lua_ngx_utctime(lua_State *L);
+[% IF http_subsys %]
 static int ngx_[% subsys %]_lua_ngx_cookie_time(lua_State *L);
 static int ngx_[% subsys %]_lua_ngx_http_time(lua_State *L);
 static int ngx_[% subsys %]_lua_ngx_parse_http_time(lua_State *L);
+[% END %]
 static int ngx_[% subsys %]_lua_ngx_update_time(lua_State *L);
 static int ngx_[% subsys %]_lua_ngx_req_start_time(lua_State *L);
 
@@ -113,6 +115,7 @@ ngx_[% subsys %]_lua_ngx_utctime(lua_State *L)
 }
 
 
+[% IF http_subsys %]
 static int
 ngx_[% subsys %]_lua_ngx_cookie_time(lua_State *L)
 {
@@ -182,6 +185,7 @@ ngx_[% subsys %]_lua_ngx_parse_http_time(lua_State *L)
 
     return 1;
 }
+[% END # http %]
 
 
 static int
@@ -235,6 +239,7 @@ ngx_[% subsys %]_lua_inject_time_api(lua_State *L)
     lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_today);
     lua_setfield(L, -2, "today");
 
+[% IF http_subsys %]
     lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_cookie_time);
     lua_setfield(L, -2, "cookie_time");
 
@@ -243,6 +248,7 @@ ngx_[% subsys %]_lua_inject_time_api(lua_State *L)
 
     lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_parse_http_time);
     lua_setfield(L, -2, "parse_http_time");
+[% END %]
 }
 
 
@@ -282,6 +288,79 @@ ngx_[% subsys %]_lua_ffi_time(void)
 {
     return (long) ngx_time();
 }
+
+
+void
+ngx_[% subsys %]_lua_ffi_update_time(void)
+{
+    ngx_time_update();
+}
+
+
+void
+ngx_[% subsys %]_lua_ffi_today(u_char *buf)
+{
+    ngx_tm_t                 tm;
+
+    ngx_gmtime(ngx_time() + ngx_cached_time->gmtoff * 60, &tm);
+
+    ngx_sprintf(buf, "%04d-%02d-%02d", tm.ngx_tm_year, tm.ngx_tm_mon,
+                tm.ngx_tm_mday);
+}
+
+
+void
+ngx_[% subsys %]_lua_ffi_localtime(u_char *buf)
+{
+    ngx_tm_t                 tm;
+
+    ngx_gmtime(ngx_time() + ngx_cached_time->gmtoff * 60, &tm);
+
+    ngx_sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d", tm.ngx_tm_year,
+                tm.ngx_tm_mon, tm.ngx_tm_mday, tm.ngx_tm_hour, tm.ngx_tm_min,
+                tm.ngx_tm_sec);
+}
+
+
+void
+ngx_[% subsys %]_lua_ffi_utctime(u_char *buf)
+{
+    ngx_tm_t       tm;
+
+    ngx_gmtime(ngx_time(), &tm);
+
+    ngx_sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d", tm.ngx_tm_year,
+                tm.ngx_tm_mon, tm.ngx_tm_mday, tm.ngx_tm_hour, tm.ngx_tm_min,
+                tm.ngx_tm_sec);
+}
+
+
+[% IF http_subsys %]
+int
+ngx_[% subsys %]_lua_ffi_cookie_time(u_char *buf, long t)
+{
+    u_char                              *p;
+
+    p = ngx_http_cookie_time(buf, t);
+    return p - buf;
+}
+
+
+void
+ngx_[% subsys %]_lua_ffi_http_time(u_char *buf, long t)
+{
+    ngx_http_time(buf, t);
+}
+
+
+void
+ngx_[% subsys %]_lua_ffi_parse_http_time(const u_char *str, size_t len,
+    long *time)
+{
+    /* ngx_http_parse_time doesn't modify 'str' actually */
+    *time = ngx_http_parse_time((u_char *) str, len);
+}
+[% END # http %]
 #endif /* NGX_LUA_NO_FFI_API */
 
 
