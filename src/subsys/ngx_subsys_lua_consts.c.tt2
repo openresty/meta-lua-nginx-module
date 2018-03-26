@@ -21,8 +21,14 @@ ngx_[% subsys %]_lua_inject_core_consts(lua_State *L)
     lua_pushinteger(L, NGX_OK);
     lua_setfield(L, -2, "OK");
 
+    lua_pushinteger(L, NGX_ERROR);
+    lua_setfield(L, -2, "ERROR");
+
     lua_pushinteger(L, NGX_AGAIN);
     lua_setfield(L, -2, "AGAIN");
+
+    lua_pushinteger(L, NGX_BUSY);
+    lua_setfield(L, -2, "BUSY");
 
     lua_pushinteger(L, NGX_DONE);
     lua_setfield(L, -2, "DONE");
@@ -30,8 +36,8 @@ ngx_[% subsys %]_lua_inject_core_consts(lua_State *L)
     lua_pushinteger(L, NGX_DECLINED);
     lua_setfield(L, -2, "DECLINED");
 
-    lua_pushinteger(L, NGX_ERROR);
-    lua_setfield(L, -2, "ERROR");
+    lua_pushinteger(L, NGX_ABORT);
+    lua_setfield(L, -2, "ABORT");
 
     lua_pushlightuserdata(L, NULL);
     lua_setfield(L, -2, "null");
