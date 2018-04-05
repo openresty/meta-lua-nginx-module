@@ -1749,7 +1749,7 @@ ngx_[% subsys %]_lua_udp_socket_cleanup(void *data)
 
 [% IF stream_subsys %]
 int
-ngx_stream_lua_udp_req_socket(lua_State *L)
+ngx_stream_lua_req_socket_udp(lua_State *L)
 {
     ngx_stream_lua_udp_connection_t                *pc;
     ngx_stream_lua_srv_conf_t                      *lscf;

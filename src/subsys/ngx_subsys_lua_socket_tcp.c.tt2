@@ -4521,7 +4521,7 @@ ngx_[% subsys %]_lua_socket_cleanup_compiled_pattern(lua_State *L)
 
 
 int
-ngx_[% subsys %]_lua_tcp_req_socket(lua_State *L)
+ngx_[% subsys %]_lua_req_socket(lua_State *L)
 {
     int                              n, raw;
     ngx_peer_connection_t           *pc;

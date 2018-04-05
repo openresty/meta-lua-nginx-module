@@ -2231,7 +2231,7 @@ ngx_[% subsys%]_lua_req_socket(lua_State *L)
 [% END %]
 
 [% IF http_subsys %]
-    return ngx_http_lua_tcp_req_socket(L);
+    return ngx_http_lua_req_socket(L);
 [% ELSIF stream_subsys %]
     r = ngx_stream_lua_get_req(L);
 
@@ -2244,9 +2244,10 @@ ngx_[% subsys%]_lua_req_socket(lua_State *L)
 
     switch (r->connection->type) {
     case SOCK_STREAM:
-        return ngx_stream_lua_tcp_req_socket(L);
+        return ngx_stream_lua_req_socket(L);
+
     case SOCK_DGRAM:
-        return ngx_stream_lua_udp_req_socket(L);
+        return ngx_stream_lua_req_socket_udp(L);
     }
 
     /* shouldn't happen */

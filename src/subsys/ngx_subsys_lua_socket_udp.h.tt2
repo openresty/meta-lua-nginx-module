@@ -60,7 +60,7 @@ struct ngx_[% subsys %]_lua_socket_udp_upstream_s {
 
 void ngx_[% subsys %]_lua_inject_socket_udp_api(ngx_log_t *log, lua_State *L);
 [% IF stream_subsys %]
-int ngx_stream_lua_udp_req_socket(lua_State *L);
+int ngx_stream_lua_req_socket_udp(lua_State *L);
 [% END %]
 
 
