@@ -101,7 +101,6 @@ static int ngx_[% subsys %]_lua_socket_receiveuntil_iterator(lua_State *L);
 static ngx_int_t ngx_[% subsys %]_lua_socket_compile_pattern(u_char *data, size_t len,
     ngx_[% subsys %]_lua_socket_compiled_pattern_t *cp, ngx_log_t *log);
 static int ngx_[% subsys %]_lua_socket_cleanup_compiled_pattern(lua_State *L);
-static int ngx_[% subsys %]_lua_req_socket(lua_State *L);
 static void ngx_[% subsys %]_lua_req_socket_rev_handler([% req_type %] *r);
 static int ngx_[% subsys %]_lua_socket_tcp_getreusedtimes(lua_State *L);
 static int ngx_[% subsys %]_lua_socket_tcp_setkeepalive(lua_State *L);
@@ -410,14 +409,6 @@ ngx_[% subsys %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
     /* }}} */
 
 #endif
-}
-
-
-void
-ngx_[% subsys %]_lua_inject_req_socket_api(lua_State *L)
-{
-    lua_pushcfunction(L, ngx_[% subsys %]_lua_req_socket);
-    lua_setfield(L, -2, "socket");
 }
 
 
@@ -4529,8 +4520,8 @@ ngx_[% subsys %]_lua_socket_cleanup_compiled_pattern(lua_State *L)
 }
 
 
-static int
-ngx_[% subsys %]_lua_req_socket(lua_State *L)
+int
+ngx_[% subsys %]_lua_tcp_req_socket(lua_State *L)
 {
     int                              n, raw;
     ngx_peer_connection_t           *pc;
@@ -4740,7 +4731,7 @@ ngx_[% subsys %]_lua_req_socket(lua_State *L)
 
     } else {
 [% IF http_subsys %]
-        lua_pushlightuserdata(L, &ngx_[% subsys %]_lua_req_socket_metatable_key);
+        lua_pushlightuserdata(L, &ngx_http_lua_req_socket_metatable_key);
 [% END # http %]
     }
 

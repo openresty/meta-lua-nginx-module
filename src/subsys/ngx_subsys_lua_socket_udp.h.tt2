@@ -42,22 +42,26 @@ struct ngx_[% subsys %]_lua_socket_udp_upstream_s {
     [% req_type %]                          *request;
     ngx_[% subsys %]_lua_udp_connection_t    udp_connection;
 
-    ngx_msec_t                       read_timeout;
+    ngx_msec_t                               read_timeout;
 
     ngx_[% subsys %]_upstream_resolved_t    *resolved;
 
-    ngx_uint_t                       ft_type;
-    ngx_err_t                        socket_errno;
-    size_t                           received; /* for receive */
-    size_t                           recv_buf_size;
+    ngx_uint_t                               ft_type;
+    ngx_err_t                                socket_errno;
+    size_t                                   received; /* for receive */
+    size_t                                   recv_buf_size;
 
     ngx_[% subsys %]_lua_co_ctx_t           *co_ctx;
 
-    unsigned                         waiting; /* :1 */
+    unsigned                                 waiting:1;
+    unsigned                                 raw_downstream:1;
 };
 
 
 void ngx_[% subsys %]_lua_inject_socket_udp_api(ngx_log_t *log, lua_State *L);
+[% IF stream_subsys %]
+int ngx_stream_lua_udp_req_socket(lua_State *L);
+[% END %]
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_SOCKET_UDP_H_INCLUDED_ */

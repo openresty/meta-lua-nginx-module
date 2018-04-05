@@ -72,6 +72,10 @@ ngx_[% subsys %]_lua_ngx_echo(lua_State *L, unsigned newline)
                                | NGX_HTTP_LUA_CONTEXT_CONTENT);
 
 [% ELSIF stream_subsys %]
+    if (r->connection->type == SOCK_DGRAM) {
+        return luaL_error(L, "API disabled in the current context");
+    }
+
     ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT
                                  | NGX_STREAM_LUA_CONTEXT_PREREAD);
 [% END %]
@@ -517,6 +521,10 @@ ngx_[% subsys %]_lua_ngx_flush(lua_State *L)
                                | NGX_HTTP_LUA_CONTEXT_CONTENT);
 
 [% ELSIF stream_subsys %]
+    if (r->connection->type == SOCK_DGRAM) {
+        return luaL_error(L, "API disabled in the current context");
+    }
+
     ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT
                                  | NGX_STREAM_LUA_CONTEXT_PREREAD);
 [% END %]
@@ -698,6 +706,10 @@ ngx_[% subsys %]_lua_ngx_eof(lua_State *L)
                                | NGX_HTTP_LUA_CONTEXT_CONTENT);
 
 [% ELSIF stream_subsys %]
+    if (r->connection->type == SOCK_DGRAM) {
+        return luaL_error(L, "API disabled in the current context");
+    }
+
     ngx_stream_lua_check_context(L, ctx, NGX_STREAM_LUA_CONTEXT_CONTENT
                                  | NGX_STREAM_LUA_CONTEXT_PREREAD);
 [% END %]
