@@ -105,8 +105,7 @@ print $out <<"EOF";
  * !!! DO NOT EDIT DIRECTLY !!!
  * This file was automatically generated from the following template:
  *
- * File: $infile
- * Modified: $modified
+ * $infile
  */
 EOF
 
