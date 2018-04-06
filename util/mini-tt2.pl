@@ -98,16 +98,17 @@ my ($func_raw_prefix_len);
 my ($in_if, $in_else, $if_branch_hit);
 my ($in_block, $block, %blocks);
 my (%ctl_cmds, $prev_continuing_macro_line);
-my $modified = localtime((stat($infile))[9]);
 
-print $out <<"EOF";
+print $out <<_EOC_;
+
 /*
  * !!! DO NOT EDIT DIRECTLY !!!
  * This file was automatically generated from the following template:
  *
  * $infile
  */
-EOF
+
+_EOC_
 
 while (<$in>) {
     if (/\s+\n$/) {
