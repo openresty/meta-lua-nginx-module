@@ -8,6 +8,9 @@
 #define DDEBUG 0
 #endif
 #include "ddebug.h"
+[% IF stream_subsys %]
+[% log_prefix = 'stream ' %]
+[% END %]
 
 
 #include "ngx_[% subsys %]_lua_socket_udp.h"
@@ -25,11 +28,6 @@
 
 
 #define UDP_MAX_DATAGRAM_SIZE 8192
-
-
-[% IF stream_subsys %]
-[% log_prefix = 'stream ' %]
-[% END %]
 
 
 static int ngx_[% subsys %]_lua_socket_udp(lua_State *L);
