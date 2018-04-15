@@ -1085,7 +1085,6 @@ ngx_[% subsys %]_lua_socket_udp_receive(lua_State *L)
     } else {
         rc = ngx_stream_lua_socket_udp_read(r, u);
     }
-
 [% ELSIF http_subsys %]
     rc = ngx_http_lua_socket_udp_read(r, u);
 [% END %]
