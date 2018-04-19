@@ -19,10 +19,10 @@
 #include "ngx_[% subsys %]_lua_probe.h"
 #include "ngx_[% subsys %]_lua_balancer.h"
 #include "ngx_[% subsys %]_lua_logby.h"
+#include "ngx_[% subsys %]_lua_semaphore.h"
 
 
 [% IF http_subsys %]
-#include "ngx_[% subsys %]_lua_semaphore.h"
 #include "ngx_[% subsys %]_lua_ssl_certby.h"
 #include "ngx_[% subsys %]_lua_ssl_session_storeby.h"
 #include "ngx_[% subsys %]_lua_ssl_session_fetchby.h"
@@ -753,7 +753,9 @@ ngx_[% subsys %]_lua_init(ngx_conf_t *cf)
 
 [% IF http_subsys %]
 #if !defined(NGX_LUA_NO_FFI_API) || nginx_version >= 1011011
+[% END %]
     ngx_pool_cleanup_t         *cln;
+[% IF http_subsys %]
 #endif
 
     int                         multi_http_blocks;
@@ -862,7 +864,9 @@ ngx_[% subsys %]_lua_init(ngx_conf_t *cf)
     }
 [% END # http %]
 
+[% IF http_subsys %]
 #ifndef NGX_LUA_NO_FFI_API
+[% END %]
     /* add the cleanup of semaphores after the lua_close */
     cln = ngx_pool_cleanup_add(cf->pool, 0);
     if (cln == NULL) {
@@ -871,7 +875,9 @@ ngx_[% subsys %]_lua_init(ngx_conf_t *cf)
 
     cln->data = lmcf;
     cln->handler = ngx_[% subsys %]_lua_sema_mm_cleanup;
+[% IF http_subsys %]
 #endif
+[% END %]
 
 [% IF http_subsys %]
 #if nginx_version >= 1011011
@@ -955,9 +961,13 @@ ngx_[% subsys %]_lua_lowat_check(ngx_conf_t *cf, void *post, void *data)
 static void *
 ngx_[% subsys %]_lua_create_main_conf(ngx_conf_t *cf)
 {
+[% IF http_subsys %]
 #ifndef NGX_LUA_NO_FFI_API
+[% END %]
     ngx_int_t       rc;
+[% IF http_subsys %]
 #endif
+[% END %]
 
     ngx_[% subsys %]_lua_main_conf_t    *lmcf;
 
@@ -1010,14 +1020,18 @@ ngx_[% subsys %]_lua_create_main_conf(ngx_conf_t *cf)
     lmcf->malloc_trim_cycle = NGX_CONF_UNSET_UINT;
 #endif
 
+[% IF http_subsys %]
 #ifndef NGX_LUA_NO_FFI_API
+[% END %]
     rc = ngx_[% subsys %]_lua_sema_mm_init(cf, lmcf);
     if (rc != NGX_OK) {
         return NULL;
     }
 
     dd("nginx Lua module main config structure initialized!");
+[% IF http_subsys %]
 #endif
+[% END %]
 
     return lmcf;
 }
