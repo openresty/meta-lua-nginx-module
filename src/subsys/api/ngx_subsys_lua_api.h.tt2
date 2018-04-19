@@ -24,7 +24,11 @@
 /* Public API for other Nginx modules */
 
 
-#define ngx_[% subsys %]_lua_version  10012
+[% IF http_subsys %]
+#define ngx_http_lua_version    10012
+[% ELSIF stream_subsys %]
+#define ngx_stream_lua_version  4
+[% END %]
 
 
 typedef struct {
