@@ -99,6 +99,17 @@ my ($in_if, $in_else, $if_branch_hit);
 my ($in_block, $block, %blocks);
 my (%ctl_cmds, $prev_continuing_macro_line);
 
+print $out <<_EOC_;
+
+/*
+ * !!! DO NOT EDIT DIRECTLY !!!
+ * This file was automatically generated from the following template:
+ *
+ * $infile
+ */
+
+_EOC_
+
 while (<$in>) {
     if (/\s+\n$/) {
         die "$infile: line $.: unexpected line-trailing spaces found: $_";
