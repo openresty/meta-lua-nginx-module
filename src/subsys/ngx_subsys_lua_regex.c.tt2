@@ -15,7 +15,6 @@
 #include "ngx_[% subsys %]_lua_regex.h"
 #include "ngx_[% subsys %]_lua_pcrefix.h"
 #include "ngx_[% subsys %]_lua_script.h"
-#include "ngx_[% subsys %]_lua_pcrefix.h"
 #include "ngx_[% subsys %]_lua_util.h"
 
 
