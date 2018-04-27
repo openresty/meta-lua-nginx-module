@@ -114,7 +114,9 @@ extern char ngx_[% subsys %]_lua_headers_metatable_key;
     }
 
 
+[% IF http_subsys %]
 #ifndef NGX_LUA_NO_FFI_API
+[% END %]
 static ngx_inline ngx_int_t
 ngx_[% subsys %]_lua_ffi_check_context(ngx_[% subsys %]_lua_ctx_t *ctx,
     unsigned flags, u_char *err, size_t *errlen)
@@ -130,7 +132,9 @@ ngx_[% subsys %]_lua_ffi_check_context(ngx_[% subsys %]_lua_ctx_t *ctx,
 
     return NGX_OK;
 }
+[% IF http_subsys %]
 #endif
+[% END %]
 
 
 #define ngx_[% subsys %]_lua_check_fake_request(L, r)                        \
