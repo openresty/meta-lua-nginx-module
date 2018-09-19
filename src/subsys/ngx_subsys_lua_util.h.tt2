@@ -10,6 +10,7 @@
 
 
 #include "ngx_[% subsys %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_api.h"
 
 
 #ifndef NGX_UNESCAPE_URI_COMPONENT
@@ -212,7 +213,9 @@ ngx_int_t ngx_[% subsys %]_lua_open_and_stat_file(u_char *name,
 ngx_chain_t *ngx_[% subsys %]_lua_chain_get_free_buf(ngx_log_t *log, ngx_pool_t *p,
     ngx_chain_t **free, size_t len);
 
+#ifndef OPENRESTY_LUAJIT
 void ngx_[% subsys %]_lua_create_new_globals_table(lua_State *L, int narr, int nrec);
+#endif
 
 int ngx_[% subsys %]_lua_traceback(lua_State *L);
 
@@ -434,6 +437,9 @@ ngx_[% subsys %]_lua_get_lua_vm([% req_type %] *r,
 static ngx_inline [% req_type %] *
 ngx_[% subsys %]_lua_get_req(lua_State *L)
 {
+#ifdef OPENRESTY_LUAJIT
+    return lua_getexdata(L);
+#else
     [% req_type %]              *r;
 
     lua_getglobal(L, ngx_[% subsys %]_lua_req_key);
@@ -441,14 +447,19 @@ ngx_[% subsys %]_lua_get_req(lua_State *L)
     lua_pop(L, 1);
 
     return r;
+#endif
 }
 
 
 static ngx_inline void
 ngx_[% subsys %]_lua_set_req(lua_State *L, [% req_type %] *r)
 {
+#ifdef OPENRESTY_LUAJIT
+    lua_setexdata(L, (void *) r);
+#else
     lua_pushlightuserdata(L, r);
     lua_setglobal(L, ngx_[% subsys %]_lua_req_key);
+#endif
 }
 
 

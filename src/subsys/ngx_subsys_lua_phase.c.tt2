@@ -57,10 +57,6 @@ ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L)
         lua_pushliteral(L, "access");
         break;
 
-    case NGX_[% SUBSYS %]_LUA_CONTEXT_LOG:
-        lua_pushliteral(L, "log");
-        break;
-
     case NGX_[% SUBSYS %]_LUA_CONTEXT_HEADER_FILTER:
         lua_pushliteral(L, "header_filter");
         break;
@@ -89,6 +85,10 @@ ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L)
 
     case NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT:
         lua_pushliteral(L, "content");
+        break;
+
+    case NGX_[% SUBSYS %]_LUA_CONTEXT_LOG:
+        lua_pushliteral(L, "log");
         break;
 
     case NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER:

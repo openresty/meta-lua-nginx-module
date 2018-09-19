@@ -439,7 +439,8 @@ ngx_http_lua_ngx_req_get_headers(lua_State *L)
     lua_createtable(L, 0, count);
 
     if (!raw) {
-        lua_pushlightuserdata(L, &ngx_http_lua_headers_metatable_key);
+        lua_pushlightuserdata(L, ngx_http_lua_lightudata_mask(
+                              headers_metatable_key));
         lua_rawget(L, LUA_REGISTRYINDEX);
         lua_setmetatable(L, -2);
     }
@@ -562,7 +563,8 @@ ngx_http_lua_ngx_resp_get_headers(lua_State *L)
     lua_createtable(L, 0, count);
 
     if (!raw) {
-        lua_pushlightuserdata(L, &ngx_http_lua_headers_metatable_key);
+        lua_pushlightuserdata(L, ngx_http_lua_lightudata_mask(
+                              headers_metatable_key));
         lua_rawget(L, LUA_REGISTRYINDEX);
         lua_setmetatable(L, -2);
     }
@@ -1060,7 +1062,8 @@ ngx_http_lua_create_headers_metatable(ngx_log_t *log, lua_State *L)
         "local new_key = string.gsub(string.lower(key), '_', '-')\n"
         "if new_key ~= key then return tb[new_key] else return nil end";
 
-    lua_pushlightuserdata(L, &ngx_http_lua_headers_metatable_key);
+    lua_pushlightuserdata(L, ngx_http_lua_lightudata_mask(
+                          headers_metatable_key));
 
     /* metatable for ngx.req.get_headers(_, true) and
      * ngx.resp.get_headers(_, true) */
