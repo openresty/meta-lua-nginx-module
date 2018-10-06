@@ -21,6 +21,8 @@
 #include "ngx_[% subsys %]_lua_initworkerby.h"
 #include "ngx_[% subsys %]_lua_shdict.h"
 #include "ngx_[% subsys %]_lua_lex.h"
+#include "ngx_[% subsys %]_lua_log.h"
+#include "ngx_[% subsys %]_lua_log_ringbuf.h"
 #include "api/ngx_[% subsys %]_lua_api.h"
 
 [% IF http_subsys %]
@@ -28,8 +30,6 @@
 #include "ngx_http_lua_rewriteby.h"
 #include "ngx_http_lua_headerfilterby.h"
 #include "ngx_http_lua_bodyfilterby.h"
-#include "ngx_http_lua_log_ringbuf.h"
-#include "ngx_http_lua_log.h"
 #include "ngx_http_lua_ssl_certby.h"
 
 [% ELSIF stream_subsys %]
@@ -1897,7 +1897,6 @@ ngx_[% subsys %]_lua_conf_read_lua_token(ngx_conf_t *cf,
 }
 
 
-[% IF http_subsys %]
 char *
 ngx_[% subsys %]_lua_capture_error_log(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf)
@@ -1962,7 +1961,6 @@ ngx_[% subsys %]_lua_capture_error_log(ngx_conf_t *cf, ngx_command_t *cmd,
     return NGX_CONF_OK;
 #endif
 }
-[% END %]
 
 
 /*
