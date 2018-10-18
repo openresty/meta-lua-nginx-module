@@ -298,7 +298,7 @@ ngx_[% subsys %]_lua_ssl_cert_handler(ngx_ssl_conn_t *ssl_conn, void *data)
 [% IF http_subsys %]
     ngx_http_set_connection_log(fc, clcf->error_log);
 [% ELSIF stream_subsys %]
-#   error "stream ssl_cery_by_lua only supports nginx >= 1.13.0"
+#   error "stream ssl_cert_by_lua only supports nginx >= 1.13.0"
 [% END %]
 
 #   endif
@@ -312,7 +312,7 @@ ngx_[% subsys %]_lua_ssl_cert_handler(ngx_ssl_conn_t *ssl_conn, void *data)
         fc->log->log_level = clcf->error_log->log_level;
     }
 [% ELSIF stream_subsys %]
-#   error "stream ssl_cery_by_lua only supports nginx >= 1.13.0"
+#   error "stream ssl_cert_by_lua only supports nginx >= 1.13.0"
 [% END %]
 
 #endif
