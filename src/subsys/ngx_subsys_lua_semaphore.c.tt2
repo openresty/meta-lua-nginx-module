@@ -384,10 +384,10 @@ ngx_[% subsys %]_lua_ffi_sema_wait([% req_type %] *r,
 [% IF http_subsys %]
                                                 | NGX_HTTP_LUA_CONTEXT_REWRITE
                                                 | NGX_HTTP_LUA_CONTEXT_ACCESS
-                                                | NGX_HTTP_LUA_CONTEXT_SSL_CERT
 [% ELSIF stream_subsys %]
                                                 | NGX_STREAM_LUA_CONTEXT_PREREAD
 [% END %]
+                                                | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                                                 | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER,
                                                 err, errlen);
 
