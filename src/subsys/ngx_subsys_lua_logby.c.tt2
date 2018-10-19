@@ -59,7 +59,7 @@ ngx_[% subsys %]_lua_log_by_lua_env(lua_State *L, [% req_type %] *r)
     /*  }}} */
 
     lua_setfenv(L, -2);    /*  set new running env for the code closure */
-#endif
+#endif /* OPENRESTY_LUAJIT */
 }
 
 

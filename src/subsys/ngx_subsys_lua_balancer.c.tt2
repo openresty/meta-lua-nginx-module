@@ -453,7 +453,7 @@ ngx_[% subsys %]_lua_balancer_by_chunk(lua_State *L, [% req_type %] *r)
     /*  }}} */
 
     lua_setfenv(L, -2);    /*  set new running env for the code closure */
-#endif
+#endif /* OPENRESTY_LUAJIT */
 
     lua_pushcfunction(L, ngx_[% subsys %]_lua_traceback);
     lua_insert(L, 1);  /* put it under chunk and args */
