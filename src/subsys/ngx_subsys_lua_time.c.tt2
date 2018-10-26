@@ -260,7 +260,6 @@ ngx_[% subsys %]_lua_inject_req_time_api(lua_State *L)
 }
 
 
-#ifndef NGX_LUA_NO_FFI_API
 double
 ngx_[% subsys %]_lua_ffi_now(void)
 {
@@ -360,8 +359,7 @@ ngx_[% subsys %]_lua_ffi_parse_http_time(const u_char *str, size_t len,
     /* ngx_http_parse_time doesn't modify 'str' actually */
     *time = ngx_http_parse_time((u_char *) str, len);
 }
+
+
 [% END # http %]
-#endif /* NGX_LUA_NO_FFI_API */
-
-
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

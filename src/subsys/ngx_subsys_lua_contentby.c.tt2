@@ -78,9 +78,11 @@ ngx_[% subsys %]_lua_content_by_chunk(lua_State *L, [% req_type %] *r)
     /*  move code closure to new coroutine */
     lua_xmove(L, co, 1);
 
+#ifndef OPENRESTY_LUAJIT
     /*  set closure's env table to new coroutine's globals table */
     ngx_[% subsys %]_lua_get_globals_table(co);
     lua_setfenv(co, -2);
+#endif
 
     /*  save nginx request in coroutine globals table */
     ngx_[% subsys %]_lua_set_req(co, r);

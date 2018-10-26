@@ -441,6 +441,8 @@ ngx_[% subsys %]_lua_balancer_by_chunk(lua_State *L, [% req_type %] *r)
 
     /* init nginx context in Lua VM */
     ngx_[% subsys %]_lua_set_req(L, r);
+
+#ifndef OPENRESTY_LUAJIT
     ngx_[% subsys %]_lua_create_new_globals_table(L, 0 /* narr */, 1 /* nrec */);
 
     /*  {{{ make new env inheriting main thread's globals table */
@@ -451,6 +453,7 @@ ngx_[% subsys %]_lua_balancer_by_chunk(lua_State *L, [% req_type %] *r)
     /*  }}} */
 
     lua_setfenv(L, -2);    /*  set new running env for the code closure */
+#endif /* OPENRESTY_LUAJIT */
 
     lua_pushcfunction(L, ngx_[% subsys %]_lua_traceback);
     lua_insert(L, 1);  /* put it under chunk and args */
