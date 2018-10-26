@@ -445,11 +445,11 @@ ngx_[% subsys %]_lua_socket_tcp(lua_State *L)
 [% IF http_subsys %]
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 [% ELSIF stream_subsys %]
                                        | NGX_STREAM_LUA_CONTEXT_PREREAD
 [% END %]
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER);
 
     lua_createtable(L, 5 /* narr */, 1 /* nrec */);
@@ -517,13 +517,13 @@ ngx_[% subsys %]_lua_socket_tcp_connect(lua_State *L)
 [% IF http_subsys %]
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
-                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 
 [% ELSIF stream_subsys %]
                                | NGX_STREAM_LUA_CONTEXT_PREREAD
 [% END %]
 
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER);
 
     luaL_checktype(L, 1, LUA_TTABLE);

@@ -78,10 +78,10 @@ ngx_[% subsys %]_lua_coroutine_create_helper(lua_State *L,
 
     ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
 [% IF http_subsys %]
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 
 [% ELSIF stream_subsys %]
@@ -165,10 +165,10 @@ ngx_[% subsys %]_lua_coroutine_resume(lua_State *L)
 
     ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
 [% IF http_subsys %]
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 [% ELSIF stream_subsys %]
                                        | NGX_STREAM_LUA_CONTEXT_PREREAD
@@ -231,10 +231,10 @@ ngx_[% subsys %]_lua_coroutine_yield(lua_State *L)
 
     ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
 [% IF http_subsys %]
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 [% ELSIF stream_subsys %]
                                        | NGX_STREAM_LUA_CONTEXT_PREREAD
@@ -399,10 +399,10 @@ ngx_[% subsys %]_lua_coroutine_status(lua_State *L)
 
     ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
 [% IF http_subsys %]
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 [% ELSIF stream_subsys %]
                                        | NGX_STREAM_LUA_CONTEXT_PREREAD

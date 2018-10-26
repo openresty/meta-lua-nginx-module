@@ -320,11 +320,11 @@ ngx_[% subsys %]_lua_ngx_exit(lua_State *L)
     ngx_[% subsys %]_lua_check_context(L, ctx, NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_TIMER
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_BALANCER
+                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
 [% IF http_subsys %]
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_HEADER_FILTER
-                                       | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE
                                        | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 [% ELSIF stream_subsys %]
@@ -338,6 +338,9 @@ ngx_[% subsys %]_lua_ngx_exit(lua_State *L)
     if (ctx->context & (NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_CERT
                         | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE
                         | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH))
+[% ELSIF stream_subsys %]
+    if (ctx->context & NGX_STREAM_LUA_CONTEXT_SSL_CERT)
+[% END # http %]
     {
 
 #if (NGX_[% SUBSYS %]_SSL)
@@ -348,9 +351,11 @@ ngx_[% subsys %]_lua_ngx_exit(lua_State *L)
         ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                        "lua exit with code %i", rc);
 
+[% IF http_subsys %]
         if (ctx->context == NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE) {
             return 0;
         }
+[% END %]
 
         return lua_yield(L, 0);
 
@@ -361,6 +366,7 @@ ngx_[% subsys %]_lua_ngx_exit(lua_State *L)
 #endif
     }
 
+[% IF http_subsys %]
     if (ctx->no_abort
         && rc != NGX_ERROR
         && rc != NGX_HTTP_CLOSE

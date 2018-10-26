@@ -20,10 +20,10 @@
 #include "ngx_[% subsys %]_lua_balancer.h"
 #include "ngx_[% subsys %]_lua_logby.h"
 #include "ngx_[% subsys %]_lua_semaphore.h"
+#include "ngx_[% subsys %]_lua_ssl_certby.h"
 
 
 [% IF http_subsys %]
-#include "ngx_[% subsys %]_lua_ssl_certby.h"
 #include "ngx_[% subsys %]_lua_ssl_session_storeby.h"
 #include "ngx_[% subsys %]_lua_ssl_session_fetchby.h"
 #include "ngx_[% subsys %]_lua_headers.h"
@@ -621,21 +621,21 @@ static ngx_command_t ngx_[% subsys %]_lua_cmds[] = {
       offsetof([% lua_ssl_conf_t %], ssl_ciphers),
       NULL },
 
-[% IF http_subsys %]
     { ngx_string("ssl_certificate_by_lua_block"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_[% SUBSYS %]_SRV_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
       ngx_[% subsys %]_lua_ssl_cert_by_lua_block,
-      NGX_HTTP_SRV_CONF_OFFSET,
+      NGX_[% SUBSYS %]_SRV_CONF_OFFSET,
       0,
       (void *) ngx_[% subsys %]_lua_ssl_cert_handler_inline },
 
     { ngx_string("ssl_certificate_by_lua_file"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1,
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_[% SUBSYS %]_SRV_CONF|NGX_CONF_TAKE1,
       ngx_[% subsys %]_lua_ssl_cert_by_lua,
-      NGX_HTTP_SRV_CONF_OFFSET,
+      NGX_[% SUBSYS %]_SRV_CONF_OFFSET,
       0,
       (void *) ngx_[% subsys %]_lua_ssl_cert_handler_file },
 
+[% IF http_subsys %]
     { ngx_string("ssl_session_store_by_lua_block"),
       NGX_HTTP_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
       ngx_[% subsys %]_lua_ssl_sess_store_by_lua_block,
@@ -1186,11 +1186,14 @@ ngx_[% subsys %]_lua_create_srv_conf(ngx_conf_t *cf)
 static char *
 ngx_[% subsys %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
 {
-[% IF http_subsys %]
-#if (NGX_[% SUBSYS %]_SSL)
     ngx_[% subsys %]_lua_srv_conf_t *prev = parent;
     ngx_[% subsys %]_lua_srv_conf_t *conf = child;
+#if (NGX_[% SUBSYS %]_SSL)
+[% IF http_subsys %]
     ngx_http_ssl_srv_conf_t         *sscf;
+[% ELSIF stream_subsys %]
+    ngx_stream_ssl_conf_t           *sscf;
+[% END %]
 
     dd("merge srv conf");
 
@@ -1201,7 +1204,7 @@ ngx_[% subsys %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
     }
 
     if (conf->srv.ssl_cert_src.len) {
-        sscf = ngx_http_conf_get_module_srv_conf(cf, ngx_http_ssl_module);
+        sscf = ngx_[% subsys %]_conf_get_module_srv_conf(cf, ngx_[% subsys %]_ssl_module);
         if (sscf == NULL || sscf->ssl.ctx == NULL) {
             ngx_log_error(NGX_LOG_EMERG, cf->log, 0,
                           "no ssl configured for the server");
@@ -1212,7 +1215,7 @@ ngx_[% subsys %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
 #ifdef LIBRESSL_VERSION_NUMBER
 
         ngx_log_error(NGX_LOG_EMERG, cf->log, 0,
-                      "LibreSSL does not support ssl_certificate_by_lua*");
+                      "LibreSSL is not supported by ssl_certificate_by_lua*");
         return NGX_CONF_ERROR;
 
 #else
@@ -1232,6 +1235,7 @@ ngx_[% subsys %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
 #endif
     }
 
+[% IF http_subsys %]
     if (conf->srv.ssl_sess_store_src.len == 0) {
         conf->srv.ssl_sess_store_src = prev->srv.ssl_sess_store_src;
         conf->srv.ssl_sess_store_src_key = prev->srv.ssl_sess_store_src_key;
@@ -1275,13 +1279,11 @@ ngx_[% subsys %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
 #endif
         }
     }
+[% END # http %]
 
 #endif  /* NGX_[% SUBSYS %]_SSL */
 
-[% ELSIF stream_subsys %]
-    ngx_[% subsys %]_lua_srv_conf_t *prev = parent;
-    ngx_[% subsys %]_lua_srv_conf_t *conf = child;
-
+[% IF stream_subsys %]
     [% INCLUDE merge_common_conf %]
 
     if (conf->preread_src.value.len == 0) {
