@@ -5,32 +5,32 @@
 #include "ddebug.h"
 
 
-#include "ngx_http_lua_common.h"
-#include "ngx_http_lua_log_ringbuf.h"
+#include "ngx_[% subsys %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_log_ringbuf.h"
 
 
 typedef struct {
     double      time;
     unsigned    len;
     unsigned    log_level;
-} ngx_http_lua_log_ringbuf_header_t;
+} ngx_[% subsys %]_lua_log_ringbuf_header_t;
 
 
 enum {
-    HEADER_LEN = sizeof(ngx_http_lua_log_ringbuf_header_t)
+    HEADER_LEN = sizeof(ngx_[% subsys %]_lua_log_ringbuf_header_t)
 };
 
 
-static void *ngx_http_lua_log_ringbuf_next_header(
-    ngx_http_lua_log_ringbuf_t *rb);
-static void ngx_http_lua_log_ringbuf_append(
-    ngx_http_lua_log_ringbuf_t *rb, int log_level, void *buf, int n);
-static size_t ngx_http_lua_log_ringbuf_free_spaces(
-    ngx_http_lua_log_ringbuf_t *rb);
+static void *ngx_[% subsys %]_lua_log_ringbuf_next_header(
+    ngx_[% subsys %]_lua_log_ringbuf_t *rb);
+static void ngx_[% subsys %]_lua_log_ringbuf_append(
+    ngx_[% subsys %]_lua_log_ringbuf_t *rb, int log_level, void *buf, int n);
+static size_t ngx_[% subsys %]_lua_log_ringbuf_free_spaces(
+    ngx_[% subsys %]_lua_log_ringbuf_t *rb);
 
 
 void
-ngx_http_lua_log_ringbuf_init(ngx_http_lua_log_ringbuf_t *rb, void *buf,
+ngx_[% subsys %]_lua_log_ringbuf_init(ngx_[% subsys %]_lua_log_ringbuf_t *rb, void *buf,
     size_t len)
 {
     rb->data = buf;
@@ -47,7 +47,7 @@ ngx_http_lua_log_ringbuf_init(ngx_http_lua_log_ringbuf_t *rb, void *buf,
 
 
 void
-ngx_http_lua_log_ringbuf_reset(ngx_http_lua_log_ringbuf_t *rb)
+ngx_[% subsys %]_lua_log_ringbuf_reset(ngx_[% subsys %]_lua_log_ringbuf_t *rb)
 {
     rb->tail = rb->data;
     rb->head = rb->data;
@@ -63,7 +63,7 @@ ngx_http_lua_log_ringbuf_reset(ngx_http_lua_log_ringbuf_t *rb)
  * placehold data
  */
 static void *
-ngx_http_lua_log_ringbuf_next_header(ngx_http_lua_log_ringbuf_t *rb)
+ngx_[% subsys %]_lua_log_ringbuf_next_header(ngx_[% subsys %]_lua_log_ringbuf_t *rb)
 {
     /* useless data */
     if (rb->size - (rb->head - rb->data) < HEADER_LEN)
@@ -82,13 +82,13 @@ ngx_http_lua_log_ringbuf_next_header(ngx_http_lua_log_ringbuf_t *rb)
 
 /* append data to ring buffer directly */
 static void
-ngx_http_lua_log_ringbuf_append(ngx_http_lua_log_ringbuf_t *rb,
+ngx_[% subsys %]_lua_log_ringbuf_append(ngx_[% subsys %]_lua_log_ringbuf_t *rb,
     int log_level, void *buf, int n)
 {
-    ngx_http_lua_log_ringbuf_header_t        *head;
-    ngx_time_t                               *tp;
+    ngx_[% subsys %]_lua_log_ringbuf_header_t        *head;
+    ngx_time_t                                       *tp;
 
-    head = (ngx_http_lua_log_ringbuf_header_t *) rb->tail;
+    head = (ngx_[% subsys %]_lua_log_ringbuf_header_t *) rb->tail;
     head->len = n;
     head->log_level = log_level;
 
@@ -110,24 +110,24 @@ ngx_http_lua_log_ringbuf_append(ngx_http_lua_log_ringbuf_t *rb,
 
 /* throw away data at head */
 static void
-ngx_http_lua_log_ringbuf_throw_away(ngx_http_lua_log_ringbuf_t *rb)
+ngx_[% subsys %]_lua_log_ringbuf_throw_away(ngx_[% subsys %]_lua_log_ringbuf_t *rb)
 {
-    ngx_http_lua_log_ringbuf_header_t       *head;
+    ngx_[% subsys %]_lua_log_ringbuf_header_t       *head;
 
     if (rb->count == 0) {
         return;
     }
 
-    head = (ngx_http_lua_log_ringbuf_header_t *) rb->head;
+    head = (ngx_[% subsys %]_lua_log_ringbuf_header_t *) rb->head;
 
     rb->head += HEADER_LEN + head->len;
     rb->count--;
 
     if (rb->count == 0) {
-        ngx_http_lua_log_ringbuf_reset(rb);
+        ngx_[% subsys %]_lua_log_ringbuf_reset(rb);
     }
 
-    rb->head = ngx_http_lua_log_ringbuf_next_header(rb);
+    rb->head = ngx_[% subsys %]_lua_log_ringbuf_next_header(rb);
 
     return;
 }
@@ -135,7 +135,7 @@ ngx_http_lua_log_ringbuf_throw_away(ngx_http_lua_log_ringbuf_t *rb)
 
 /* size of free spaces */
 static size_t
-ngx_http_lua_log_ringbuf_free_spaces(ngx_http_lua_log_ringbuf_t *rb)
+ngx_[% subsys %]_lua_log_ringbuf_free_spaces(ngx_[% subsys %]_lua_log_ringbuf_t *rb)
 {
     if (rb->count == 0) {
         return rb->size;
@@ -154,33 +154,33 @@ ngx_http_lua_log_ringbuf_free_spaces(ngx_http_lua_log_ringbuf_t *rb)
  * if there was not enough free spaces.
  */
 ngx_int_t
-ngx_http_lua_log_ringbuf_write(ngx_http_lua_log_ringbuf_t *rb, int log_level,
-    void *buf, size_t n)
+ngx_[% subsys %]_lua_log_ringbuf_write(ngx_[% subsys %]_lua_log_ringbuf_t *rb,
+    int log_level, void *buf, size_t n)
 {
     if (n + HEADER_LEN > rb->size) {
         return NGX_ERROR;
     }
 
-    if (ngx_http_lua_log_ringbuf_free_spaces(rb) < n + HEADER_LEN) {
+    if (ngx_[% subsys %]_lua_log_ringbuf_free_spaces(rb) < n + HEADER_LEN) {
         /* if the right space is not enough, mark it as placehold data */
         if ((size_t)(rb->data + rb->size - rb->tail) < n + HEADER_LEN) {
 
             while (rb->head >= rb->tail && rb->count) {
                 /* head is after tail, so we will throw away all data between
                  * head and sentinel */
-                ngx_http_lua_log_ringbuf_throw_away(rb);
+                ngx_[% subsys %]_lua_log_ringbuf_throw_away(rb);
             }
 
             rb->sentinel = rb->tail;
             rb->tail = rb->data;
         }
 
-        while (ngx_http_lua_log_ringbuf_free_spaces(rb) < n + HEADER_LEN) {
-            ngx_http_lua_log_ringbuf_throw_away(rb);
+        while (ngx_[% subsys %]_lua_log_ringbuf_free_spaces(rb) < n + HEADER_LEN) {
+            ngx_[% subsys %]_lua_log_ringbuf_throw_away(rb);
         }
     }
 
-    ngx_http_lua_log_ringbuf_append(rb, log_level, buf, n);
+    ngx_[% subsys %]_lua_log_ringbuf_append(rb, log_level, buf, n);
 
     return NGX_OK;
 }
@@ -188,16 +188,16 @@ ngx_http_lua_log_ringbuf_write(ngx_http_lua_log_ringbuf_t *rb, int log_level,
 
 /* read log from ring buffer, do reset if all of the logs were readed. */
 ngx_int_t
-ngx_http_lua_log_ringbuf_read(ngx_http_lua_log_ringbuf_t *rb, int *log_level,
-    void **buf, size_t *n, double *log_time)
+ngx_[% subsys %]_lua_log_ringbuf_read(ngx_[% subsys %]_lua_log_ringbuf_t *rb,
+    int *log_level, void **buf, size_t *n, double *log_time)
 {
-    ngx_http_lua_log_ringbuf_header_t       *head;
+    ngx_[% subsys %]_lua_log_ringbuf_header_t       *head;
 
     if (rb->count == 0) {
         return NGX_ERROR;
     }
 
-    head = (ngx_http_lua_log_ringbuf_header_t *) rb->head;
+    head = (ngx_[% subsys %]_lua_log_ringbuf_header_t *) rb->head;
 
     if (rb->head >= rb->sentinel) {
         return NGX_ERROR;
@@ -216,10 +216,13 @@ ngx_http_lua_log_ringbuf_read(ngx_http_lua_log_ringbuf_t *rb, int *log_level,
     rb->count--;
 
     if (rb->count == 0) {
-        ngx_http_lua_log_ringbuf_reset(rb);
+        ngx_[% subsys %]_lua_log_ringbuf_reset(rb);
     }
 
-    rb->head = ngx_http_lua_log_ringbuf_next_header(rb);
+    rb->head = ngx_[% subsys %]_lua_log_ringbuf_next_header(rb);
 
     return NGX_OK;
 }
+
+
+/* vi:set ft=c ts=4 sw=4 et fdm=marker: */
