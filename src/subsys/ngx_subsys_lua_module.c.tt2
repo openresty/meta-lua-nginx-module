@@ -119,6 +119,13 @@ static ngx_command_t ngx_[% subsys %]_lua_cmds[] = {
       0,
       NULL },
 
+    { ngx_string("lua_sa_restart"),
+      NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_FLAG,
+      ngx_conf_set_flag_slot,
+      NGX_[% SUBSYS %]_MAIN_CONF_OFFSET,
+      offsetof(ngx_[% subsys %]_lua_main_conf_t, set_sa_restart),
+      NULL },
+
     { ngx_string("lua_capture_error_log"),
       NGX_[% SUBSYS %]_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_[% subsys %]_lua_capture_error_log,
@@ -1027,6 +1034,8 @@ ngx_[% subsys %]_lua_create_main_conf(ngx_conf_t *cf)
     lmcf->postponed_to_preread_phase_end = NGX_CONF_UNSET;
 [% END %]
 
+    lmcf->set_sa_restart = NGX_CONF_UNSET;
+
 #if (NGX_[% SUBSYS %]_LUA_HAVE_MALLOC_TRIM)
     lmcf->malloc_trim_cycle = NGX_CONF_UNSET_UINT;
 #endif
@@ -1070,6 +1079,12 @@ ngx_[% subsys %]_lua_init_main_conf(ngx_conf_t *cf, void *conf)
     if (lmcf->max_running_timers == NGX_CONF_UNSET) {
         lmcf->max_running_timers = 256;
     }
+
+#if (NGX_[% SUBSYS %]_LUA_HAVE_SA_RESTART)
+    if (lmcf->set_sa_restart == NGX_CONF_UNSET) {
+        lmcf->set_sa_restart = 1;
+    }
+#endif
 
 #if (NGX_[% SUBSYS %]_LUA_HAVE_MALLOC_TRIM)
     if (lmcf->malloc_trim_cycle == NGX_CONF_UNSET_UINT) {
