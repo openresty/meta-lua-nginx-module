@@ -9,6 +9,11 @@
 #define _NGX_[% SUBSYS %]_LUA_UTIL_H_INCLUDED_
 
 
+#ifdef DDEBUG
+#include "ddebug.h"
+#endif
+
+
 #include "ngx_[% subsys %]_lua_common.h"
 #include "ngx_[% subsys %]_lua_api.h"
 
@@ -361,7 +366,9 @@ ngx_stream_lua_create_ctx(ngx_stream_session_t *r)
     if (!llcf->enable_code_cache && r->connection->fd != (ngx_socket_t) -1) {
         lmcf = ngx_[% subsys %]_get_module_main_conf(r, ngx_[% subsys %]_lua_module);
 
+#ifdef DDEBUG
         dd("lmcf: %p", lmcf);
+#endif
 
 [% IF http_subsys %]
         L = ngx_http_lua_init_vm(lmcf->lua, lmcf->cycle, r->pool, lmcf,
@@ -427,7 +434,11 @@ ngx_[% subsys %]_lua_get_lua_vm([% req_type %] *r,
     }
 
     lmcf = ngx_[% req_subsys %]_get_module_main_conf(r, ngx_[% subsys %]_lua_module);
+
+#ifdef DDEBUG
     dd("lmcf->lua: %p", lmcf->lua);
+#endif
+
     return lmcf->lua;
 }
 
