@@ -294,6 +294,9 @@ int ngx_[% subsys %]_lua_do_call(ngx_log_t *log, lua_State *L);
 void ngx_[% subsys %]_lua_cleanup_free([% req_type %] *r,
     [% cleanup %]_pt *cleanup);
 
+#if (NGX_[% SUBSYS %]_LUA_HAVE_SA_RESTART)
+void ngx_[% subsys %]_lua_set_sa_restart(ngx_log_t *log);
+#endif
 
 #define ngx_[% subsys %]_lua_check_if_abortable(L, ctx)                      \
     if ((ctx)->no_abort) {                                                   \

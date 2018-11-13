@@ -307,6 +307,8 @@ struct ngx_[% subsys %]_lua_main_conf_s {
 #endif
 [% END %]
 
+    ngx_flag_t           set_sa_restart;
+
 [% IF http_subsys %]
     unsigned             requires_header_filter:1;
     unsigned             requires_body_filter:1;
