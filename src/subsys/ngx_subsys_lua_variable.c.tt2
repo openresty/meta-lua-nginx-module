@@ -317,11 +317,13 @@ ngx_[% subsys %]_lua_ffi_var_get([% req_type %] *r, u_char *name_data,
 {
     ngx_uint_t                   hash;
     ngx_str_t                    name;
+[% IF http_subsys %]
 #if (NGX_PCRE)
     u_char                      *p;
     ngx_uint_t                   n;
     int                         *cap;
 #endif
+[% END %]
 
     ngx_[% subsys %]_variable_value_t   *vv;
 
@@ -335,6 +337,7 @@ ngx_[% subsys %]_lua_ffi_var_get([% req_type %] *r, u_char *name_data,
         return NGX_ERROR;
     }
 
+[% IF http_subsys %]
 #if (NGX_PCRE)
     if (name_data == 0) {
         if (capture_id <= 0) {
@@ -365,6 +368,7 @@ ngx_[% subsys %]_lua_ffi_var_get([% req_type %] *r, u_char *name_data,
         return NGX_OK;
     }
 #endif
+[% END %]
 
     hash = ngx_hash_strlow(lowcase_buf, name_data, name_len);
 
@@ -474,12 +478,20 @@ ngx_[% subsys %]_lua_ffi_var_set([% req_type %] *r, u_char *name_data,
                 vv->len = value_len;
             }
 
+[% IF http_subsys %]
             v->set_handler(r, vv, v->data);
+[% ELSIF stream_subsys %]
+            v->set_handler(r->session, vv, v->data);
+[% END %]
             return NGX_OK;
         }
 
         if (v->flags & NGX_[% SUBSYS %]_VAR_INDEXED) {
+[% IF http_subsys %]
             vv = &r->variables[v->index];
+[% ELSIF stream_subsys %]
+            vv = &r->session->variables[v->index];
+[% END %]
 
             dd("set indexed variable");
 

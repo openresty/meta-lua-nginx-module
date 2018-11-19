@@ -9,13 +9,6 @@
 #define _NGX_[% SUBSYS %]_LUA_COMMON_H_INCLUDED_
 
 
-[% IF stream_subsys %]
-#ifndef NGX_LUA_NO_FFI_API
-#define NGX_LUA_NO_FFI_API
-#endif
-[% END %]
-
-
 #include <nginx.h>
 #include <ngx_core.h>
 #include <ngx_[% subsys %].h>
