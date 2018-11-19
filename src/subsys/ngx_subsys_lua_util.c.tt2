@@ -2343,13 +2343,13 @@ ngx_[% subsys %]_lua_inject_req_api(ngx_log_t *log, lua_State *L)
     lua_pushcfunction(L, ngx_[% subsys %]_lua_req_socket);
     lua_setfield(L, -2, "socket");
 
+    ngx_[% subsys %]_lua_inject_req_time_api(L);
 [% IF http_subsys %]
     ngx_[% subsys %]_lua_inject_req_header_api(L);
     ngx_[% subsys %]_lua_inject_req_uri_api(log, L);
     ngx_[% subsys %]_lua_inject_req_args_api(L);
     ngx_[% subsys %]_lua_inject_req_body_api(L);
     ngx_[% subsys %]_lua_inject_req_method_api(L);
-    ngx_[% subsys %]_lua_inject_req_time_api(L);
     ngx_[% subsys %]_lua_inject_req_misc_api(L);
 [% END %]
 
