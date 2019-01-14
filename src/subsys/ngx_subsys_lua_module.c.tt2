@@ -766,6 +766,10 @@ ngx_[% subsys %]_lua_init(ngx_conf_t *cf)
     int                         multi_http_blocks;
 [% END %]
 
+    if (ngx_process == NGX_PROCESS_SIGNALLER || ngx_test_config) {
+        return NGX_OK;
+    }
+
     lmcf = ngx_[% subsys %]_conf_get_module_main_conf(cf,
                                                       ngx_[% subsys %]_lua_module);
 
