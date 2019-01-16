@@ -704,6 +704,10 @@ typedef struct ngx_[% subsys %]_lua_ctx_s {
 
     unsigned         headers_set:1; /* whether the user has set custom
                                        response headers */
+[% IF http_subsys %]
+    unsigned         mime_set:1;    /* whether the user has set Content-Type
+                                       response header */
+[% END %]
 
 [% IF http_subsys %]
     unsigned         entered_rewrite_phase:1;

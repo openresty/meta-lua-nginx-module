@@ -497,7 +497,6 @@ ngx_http_lua_ngx_resp_get_headers(lua_State *L)
     ngx_table_elt_t    *header;
     ngx_http_request_t *r;
     ngx_http_lua_ctx_t *ctx;
-    ngx_int_t           rc;
     u_char             *lowcase_key = NULL;
     size_t              lowcase_key_sz = 0;
     ngx_uint_t          i;
@@ -532,17 +531,6 @@ ngx_http_lua_ngx_resp_get_headers(lua_State *L)
     ctx = ngx_http_get_module_ctx(r, ngx_http_lua_module);
     if (ctx == NULL) {
         return luaL_error(L, "no ctx found");
-    }
-
-    if (!ctx->headers_set) {
-        rc = ngx_http_lua_set_content_type(r);
-        if (rc != NGX_OK) {
-            return luaL_error(L,
-                              "failed to set default content type: %d",
-                              (int) rc);
-        }
-
-        ctx->headers_set = 1;
     }
 
     ngx_http_lua_check_fake_request(L, r);
@@ -675,7 +663,6 @@ ngx_http_lua_ngx_header_get(lua_State *L)
     size_t                       len;
     ngx_http_lua_loc_conf_t     *llcf;
     ngx_http_lua_ctx_t          *ctx;
-    ngx_int_t                    rc;
 
     r = ngx_http_lua_get_req(L);
     if (r == NULL) {
@@ -718,18 +705,7 @@ ngx_http_lua_ngx_header_get(lua_State *L)
 
     key.len = len;
 
-    if (!ctx->headers_set) {
-        rc = ngx_http_lua_set_content_type(r);
-        if (rc != NGX_OK) {
-            return luaL_error(L,
-                              "failed to set default content type: %d",
-                              (int) rc);
-        }
-
-        ctx->headers_set = 1;
-    }
-
-    return ngx_http_lua_get_output_header(L, r, &key);
+    return ngx_http_lua_get_output_header(L, r, ctx, &key);
 }
 
 
@@ -792,16 +768,7 @@ ngx_http_lua_ngx_header_set(lua_State *L)
         }
     }
 
-    if (!ctx->headers_set) {
-        rc = ngx_http_lua_set_content_type(r);
-        if (rc != NGX_OK) {
-            return luaL_error(L,
-                              "failed to set default content type: %d",
-                              (int) rc);
-        }
-
-        ctx->headers_set = 1;
-    }
+    ctx->headers_set = 1;
 
     if (lua_type(L, 3) == LUA_TNIL) {
         ngx_str_null(&value);
@@ -826,7 +793,7 @@ ngx_http_lua_ngx_header_set(lua_State *L)
                 ngx_memcpy(value.data, p, len);
                 value.len = len;
 
-                rc = ngx_http_lua_set_output_header(r, key, value,
+                rc = ngx_http_lua_set_output_header(r, ctx, key, value,
                                                     i == 1 /* override */);
 
                 if (rc == NGX_ERROR) {
@@ -853,7 +820,7 @@ ngx_http_lua_ngx_header_set(lua_State *L)
     dd("key: %.*s, value: %.*s",
        (int) key.len, key.data, (int) value.len, value.data);
 
-    rc = ngx_http_lua_set_output_header(r, key, value, 1 /* override */);
+    rc = ngx_http_lua_set_output_header(r, ctx, key, value, 1 /* override */);
 
     if (rc == NGX_ERROR) {
         return luaL_error(L, "failed to set header %s (error: %d)",
@@ -1169,7 +1136,8 @@ ngx_http_lua_ffi_req_get_headers(ngx_http_request_t *r,
 int
 ngx_http_lua_ffi_set_resp_header(ngx_http_request_t *r, const u_char *key_data,
     size_t key_len, int is_nil, const u_char *sval, size_t sval_len,
-    ngx_http_lua_ffi_str_t *mvals, size_t mvals_len, char **errmsg)
+    ngx_http_lua_ffi_str_t *mvals, size_t mvals_len, int override,
+    char **errmsg)
 {
     u_char                      *p;
     ngx_str_t                    value, key;
@@ -1216,15 +1184,7 @@ ngx_http_lua_ffi_set_resp_header(ngx_http_request_t *r, const u_char *key_data,
         }
     }
 
-    if (!ctx->headers_set) {
-        rc = ngx_http_lua_set_content_type(r);
-        if (rc != NGX_OK) {
-            *errmsg = "failed to set default content type";
-            return NGX_ERROR;
-        }
-
-        ctx->headers_set = 1;
-    }
+    ctx->headers_set = 1;
 
     if (is_nil) {
         value.data = NULL;
@@ -1251,8 +1211,8 @@ ngx_http_lua_ffi_set_resp_header(ngx_http_request_t *r, const u_char *key_data,
                 ngx_memcpy(value.data, p, len);
                 value.len = len;
 
-                rc = ngx_http_lua_set_output_header(r, key, value,
-                                                    i == 0 /* override */);
+                rc = ngx_http_lua_set_output_header(r, ctx, key, value,
+                                                    override && i == 0);
 
                 if (rc == NGX_ERROR) {
                     *errmsg = "failed to set header";
@@ -1277,7 +1237,7 @@ ngx_http_lua_ffi_set_resp_header(ngx_http_request_t *r, const u_char *key_data,
     dd("key: %.*s, value: %.*s",
        (int) key.len, key.data, (int) value.len, value.data);
 
-    rc = ngx_http_lua_set_output_header(r, key, value, 1 /* override */);
+    rc = ngx_http_lua_set_output_header(r, ctx, key, value, override);
 
     if (rc == NGX_ERROR) {
         *errmsg = "failed to set header";
@@ -1345,7 +1305,8 @@ ngx_http_lua_ffi_req_header_set_single_value(ngx_http_request_t *r,
 int
 ngx_http_lua_ffi_get_resp_header(ngx_http_request_t *r,
     const u_char *key, size_t key_len,
-    u_char *key_buf, ngx_http_lua_ffi_str_t *values, int max_nvalues)
+    u_char *key_buf, ngx_http_lua_ffi_str_t *values, int max_nvalues,
+    char **errmsg)
 {
     int                  found;
     u_char               c, *p;
@@ -1362,17 +1323,8 @@ ngx_http_lua_ffi_get_resp_header(ngx_http_request_t *r,
 
     ctx = ngx_http_get_module_ctx(r, ngx_http_lua_module);
     if (ctx == NULL) {
-        /* *errmsg = "no ctx found"; */
+        *errmsg = "no ctx found";
         return NGX_ERROR;
-    }
-
-    if (!ctx->headers_set) {
-        if (ngx_http_lua_set_content_type(r) != NGX_OK) {
-            /* *errmsg = "failed to set default content type"; */
-            return NGX_ERROR;
-        }
-
-        ctx->headers_set = 1;
     }
 
     llcf = ngx_http_get_module_loc_conf(r, ngx_http_lua_module);
@@ -1400,6 +1352,7 @@ ngx_http_lua_ffi_get_resp_header(ngx_http_request_t *r,
         {
             p = ngx_palloc(r->pool, NGX_OFF_T_LEN);
             if (p == NULL) {
+                *errmsg = "no memory";
                 return NGX_ERROR;
             }
 
@@ -1413,8 +1366,8 @@ ngx_http_lua_ffi_get_resp_header(ngx_http_request_t *r,
         break;
 
     case 12:
-        if (r->headers_out.content_type.len
-            && ngx_strncasecmp(key_buf, (u_char *) "Content-Type", 12) == 0)
+        if (ngx_strncasecmp(key_buf, (u_char *) "Content-Type", 12) == 0
+            && r->headers_out.content_type.len)
         {
             values[0].data = r->headers_out.content_type.data;
             values[0].len = r->headers_out.content_type.len;
