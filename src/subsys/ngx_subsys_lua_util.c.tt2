@@ -449,7 +449,9 @@ ngx_[% subsys %]_lua_send_header_if_needed([% req_type %] *r,
             r->headers_out.status = NGX_HTTP_OK;
         }
 
-        if (!ctx->headers_set && ngx_[% subsys %]_lua_set_content_type(r) != NGX_OK) {
+        if (!ctx->mime_set
+            && ngx_[% subsys %]_lua_set_content_type(r, ctx) != NGX_OK)
+        {
             return NGX_ERROR;
         }
 
