@@ -47,6 +47,7 @@ ngx_[% subsys %]_lua_init_worker(ngx_cycle_t *cycle)
 [% END %]
 
 [% IF http_subsys %]
+    ngx_conf_file_t                cf_file;
     ngx_http_core_loc_conf_t      *clcf, *top_clcf;
     ngx_http_lua_loc_conf_t       *top_llcf;
 
@@ -208,6 +209,10 @@ ngx_[% subsys %]_lua_init_worker(ngx_cycle_t *cycle)
     conf.log = cycle->log;
 
 [% IF http_subsys %]
+    ngx_memzero(&cf_file, sizeof(cf_file));
+    cf_file.file.name = cycle->conf_file;
+    conf.conf_file = &cf_file;
+
     http_ctx.loc_conf = ngx_pcalloc(conf.pool,
                                     sizeof(void *) * ngx_http_max_module);
     if (http_ctx.loc_conf == NULL) {
