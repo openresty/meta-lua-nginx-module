@@ -770,6 +770,7 @@ ngx_[% subsys %]_lua_init(ngx_conf_t *cf)
 [% IF http_subsys %]
 #endif
 
+    ngx_str_t                   name = ngx_string("host");
     int                         multi_http_blocks;
 [% END %]
 
@@ -781,6 +782,11 @@ ngx_[% subsys %]_lua_init(ngx_conf_t *cf)
                                                       ngx_[% subsys %]_lua_module);
 
 [% IF http_subsys %]
+    lmcf->host_var_index = ngx_[% subsys %]_get_variable_index(cf, &name);
+    if (lmcf->host_var_index == NGX_ERROR) {
+        return NGX_ERROR;
+    }
+
     if (ngx_[% subsys %]_lua_prev_cycle != ngx_cycle) {
         ngx_[% subsys %]_lua_prev_cycle = ngx_cycle;
         multi_http_blocks = 0;

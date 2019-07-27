@@ -313,6 +313,8 @@ struct ngx_[% subsys %]_lua_main_conf_s {
     ngx_buf_t          **busy_buf_ptrs;
     ngx_int_t            busy_buf_ptr_count;
 #endif
+
+    ngx_int_t            host_var_index;
 [% END %]
 
     ngx_flag_t           set_sa_restart;
