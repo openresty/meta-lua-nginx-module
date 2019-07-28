@@ -803,7 +803,7 @@ ngx_[% subsys %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
 [% ELSIF stream_subsys %]
 #if (HAS_NGX_STREAM_PROXY_GET_NEXT_UPSTREAM_TRIES_PATCH)
 [% END %]
-    ngx_uint_t                                     max_tries, total;
+    ngx_uint_t                                  max_tries, total;
 #endif
     ngx_[% subsys %]_lua_ctx_t                 *ctx;
     ngx_[% subsys %]_upstream_t                *u;
