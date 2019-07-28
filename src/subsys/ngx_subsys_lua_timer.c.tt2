@@ -363,6 +363,10 @@ ngx_[% subsys %]_lua_ngx_timer_helper(lua_State *L, int every)
 
     ngx_add_timer(ev, delay);
 
+    ngx_log_debug2(NGX_LOG_DEBUG_[% SUBSYS %], ngx_cycle->log, 0,
+                   "[% log_prefix %]created timer (co: %p delay: %M ms)",
+                   tctx->co, delay);
+
     lua_pushinteger(L, 1);
     return 1;
 
@@ -523,6 +527,10 @@ ngx_[% subsys %]_lua_timer_copy(ngx_[% subsys %]_lua_timer_ctx_t *old_tctx)
 
     ngx_add_timer(ev, tctx->delay);
 
+    ngx_log_debug2(NGX_LOG_DEBUG_[% SUBSYS %], ngx_cycle->log, 0,
+                   "[% log_prefix %]created next timer (co: %p delay: %M ms)",
+                   tctx->co, tctx->delay);
+
     return NGX_OK;
 
 nomem:
@@ -607,6 +615,9 @@ ngx_[% subsys %]_lua_timer_handler(ngx_event_t *ev)
 
     c = ngx_[% subsys %]_lua_create_fake_connection(tctx.pool);
     if (c == NULL) {
+        ngx_log_error(NGX_LOG_ALERT, ngx_cycle->log, 0,
+                      "[% log_prefix %]failed to create fake connection to "
+                      "run timer (co: %p)", tctx.co);
         goto failed;
     }
 
@@ -619,13 +630,18 @@ ngx_[% subsys %]_lua_timer_handler(ngx_event_t *ev)
 [% IF stream_subsys %]
     s = ngx_stream_lua_create_fake_session(c);
     if (s == NULL) {
+        ngx_log_error(NGX_LOG_ALERT, ngx_cycle->log, 0,
+                      "stream lua failed to create fake session to run timer "
+                      "(co: %p)", tctx.co);
         goto failed;
     }
-[% END %]
 
-[% IF http_subsys %]
+[% ELSIF http_subsys %]
     r = ngx_http_lua_create_fake_request(c);
     if (r == NULL) {
+        ngx_log_error(NGX_LOG_ALERT, ngx_cycle->log, 0,
+                      "failed to create fake request to run timer (co: %p)",
+                      tctx.co);
         goto failed;
     }
 [% END %]
@@ -682,6 +698,9 @@ ngx_[% subsys %]_lua_timer_handler(ngx_event_t *ev)
     ctx = ngx_stream_lua_create_ctx(s);
 [% END %]
     if (ctx == NULL) {
+        ngx_log_error(NGX_LOG_ALERT, ngx_cycle->log, 0,
+                      "[% log_prefix %]failed to create ctx to run timer "
+                      "(co: %p)", tctx.co);
         goto failed;
     }
 
@@ -694,6 +713,9 @@ ngx_[% subsys %]_lua_timer_handler(ngx_event_t *ev)
 
         pcln = ngx_pool_cleanup_add(r->pool, 0);
         if (pcln == NULL) {
+            ngx_log_error(NGX_LOG_ALERT, ngx_cycle->log, 0,
+                          "[% log_prefix %]failed to add vm cleanup to run "
+                          "timer (co: %p)", tctx.co);
             goto failed;
         }
 
@@ -707,6 +729,9 @@ ngx_[% subsys %]_lua_timer_handler(ngx_event_t *ev)
 
     cln = ngx_[% req_subsys %]_cleanup_add(r, 0);
     if (cln == NULL) {
+        ngx_log_error(NGX_LOG_ALERT, ngx_cycle->log, 0,
+                      "[% log_prefix %]failed to add request cleanup to run "
+                      "timer (co: %p)", tctx.co);
         goto failed;
     }
 
