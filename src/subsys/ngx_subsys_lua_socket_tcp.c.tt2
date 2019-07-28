@@ -1929,12 +1929,12 @@ new_ssl_name:
 
         c->ssl->handler = ngx_[% subsys %]_lua_ssl_handshake_handler;
 
-    if (ctx->entered_content_phase) {
-        r->write_event_handler = ngx_[% subsys %]_lua_content_wev_handler;
+        if (ctx->entered_content_phase) {
+            r->write_event_handler = ngx_[% subsys %]_lua_content_wev_handler;
 
-    } else {
-        r->write_event_handler = ngx_[% req_subsys %]_core_run_phases;
-    }
+        } else {
+            r->write_event_handler = ngx_[% req_subsys %]_core_run_phases;
+        }
 
         return lua_yield(L, 0);
     }
@@ -2864,9 +2864,7 @@ success:
             /* rc == NGX_AGAIN */
 
 [% IF http_subsys %]
-            if (u->body_downstream
-                && r->request_body->rest == 0)
-            {
+            if (u->body_downstream && r->request_body->rest == 0) {
                 u->eof = 1;
             }
 [% END %]

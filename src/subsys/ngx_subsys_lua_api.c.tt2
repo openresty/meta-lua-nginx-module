@@ -85,8 +85,8 @@ ngx_[% subsys %]_lua_add_package_preload(ngx_conf_t *cf, const char *package,
 
 
 ngx_shm_zone_t *
-ngx_[% subsys %]_lua_shared_memory_add(ngx_conf_t *cf, ngx_str_t *name, size_t size,
-    void *tag)
+ngx_[% subsys %]_lua_shared_memory_add(ngx_conf_t *cf, ngx_str_t *name,
+    size_t size, void *tag)
 {
     ngx_[% subsys %]_lua_main_conf_t     *lmcf;
     ngx_[% subsys %]_lua_shm_zone_ctx_t  *ctx;
