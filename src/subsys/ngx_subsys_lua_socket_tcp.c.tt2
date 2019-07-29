@@ -332,11 +332,11 @@ ngx_[% subsys %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
     /* {{{raw req socket object metatable */
     lua_pushlightuserdata(L, ngx_[% subsys %]_lua_lightudata_mask(
                           raw_req_socket_metatable_key));
-    lua_createtable(L, 0 /* narr */, 7 /* nrec */);
+[% IF http_subsys %]
+    lua_createtable(L, 0 /* narr */, 6 /* nrec */);
 
-[% IF stream_subsys %]
-    lua_pushcfunction(L, ngx_stream_lua_socket_tcp_peek);
-    lua_setfield(L, -2, "peek");
+[% ELSIF stream_subsys %]
+    lua_createtable(L, 0 /* narr */, 8 /* nrec */);
 [% END %]
 
     lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_receive);
@@ -355,6 +355,9 @@ ngx_[% subsys %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
     lua_setfield(L, -2, "settimeouts"); /* ngx socket mt */
 
 [% IF stream_subsys %]
+    lua_pushcfunction(L, ngx_stream_lua_socket_tcp_peek);
+    lua_setfield(L, -2, "peek");
+
     lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_shutdown);
     lua_setfield(L, -2, "shutdown");
 [% END %]
