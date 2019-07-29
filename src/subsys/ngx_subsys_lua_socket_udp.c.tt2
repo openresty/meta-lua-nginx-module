@@ -1209,11 +1209,16 @@ ngx_[% subsys %]_lua_socket_udp_finalize([% req_type %] *r,
         u->resolved->ctx = NULL;
     }
 
+[% IF stream_subsys %]
     /*
      * do not close if it is a downstream connection as that will
      * be handled by stream subsystem itself
      */
     if (u->udp_connection.connection && !u->raw_downstream) {
+
+[% ELSIF http_subsys %]
+    if (u->udp_connection.connection) {
+[% END %]
         ngx_log_debug0(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                        "lua close socket connection");
 
