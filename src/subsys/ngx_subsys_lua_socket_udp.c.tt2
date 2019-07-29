@@ -970,9 +970,16 @@ ngx_[% subsys %]_lua_socket_udp_send(lua_State *L)
 
     dd("sending query %.*s", (int) query.len, query.data);
 
-    n = ngx_udp_send(u->udp_connection.connection, query.data, query.len);
+[% IF http_subsys %]
+    n = ngx_send(u->udp_connection.connection, query.data, query.len);
 
     dd("ngx_send returns %d (query len %d)", (int) n, (int) query.len);
+
+[% ELSIF stream_subsys %]
+    n = ngx_udp_send(u->udp_connection.connection, query.data, query.len);
+
+    dd("ngx_udp_send returns %d (query len %d)", (int) n, (int) query.len);
+[% END %]
 
     if (n == NGX_ERROR || n == NGX_AGAIN) {
         u->socket_errno = ngx_socket_errno;
