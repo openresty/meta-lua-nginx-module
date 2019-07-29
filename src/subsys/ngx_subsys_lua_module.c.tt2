@@ -1228,9 +1228,10 @@ ngx_[% subsys %]_lua_create_srv_conf(ngx_conf_t *cf)
 static char *
 ngx_[% subsys %]_lua_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
 {
+#if (NGX_[% SUBSYS %]_SSL)
     ngx_[% subsys %]_lua_srv_conf_t *prev = parent;
     ngx_[% subsys %]_lua_srv_conf_t *conf = child;
-#if (NGX_[% SUBSYS %]_SSL)
+
 [% IF http_subsys %]
     ngx_http_ssl_srv_conf_t         *sscf;
 [% ELSIF stream_subsys %]
