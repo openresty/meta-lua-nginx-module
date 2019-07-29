@@ -54,7 +54,10 @@ struct ngx_[% subsys %]_lua_socket_udp_upstream_s {
     ngx_[% subsys %]_lua_co_ctx_t           *co_ctx;
 
     unsigned                                 waiting:1;
+
+[% IF stream_subsys %]
     unsigned                                 raw_downstream:1;
+[% END %]
 };
 
 
