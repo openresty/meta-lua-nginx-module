@@ -764,6 +764,22 @@ ngx_[% subsys %]_lua_ffi_escape_uri(const u_char *src, size_t len, u_char *dst)
                                     NGX_ESCAPE_URI_COMPONENT);
 }
 
+
+[% IF http_subsys %]
+void
+ngx_[% subsys %]_lua_ffi_str_replace_char(u_char *buf, size_t len,
+    const u_char find, const u_char replace)
+{
+    while (len) {
+        if (*buf == find) {
+            *buf = replace;
+        }
+
+        buf++;
+        len--;
+    }
+}
+[% END %]
 #endif
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */
