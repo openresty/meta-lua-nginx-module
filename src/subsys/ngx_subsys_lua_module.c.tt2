@@ -32,6 +32,7 @@
 #include "ngx_[% subsys %]_lua_accessby.h"
 #include "ngx_[% subsys %]_lua_headerfilterby.h"
 #include "ngx_[% subsys %]_lua_bodyfilterby.h"
+#include "ngx_[% subsys %]_lua_pipe.h"
 
 [% ELSIF stream_subsys %]
 #include "ngx_[% subsys %]_lua_prereadby.h"
@@ -897,6 +898,13 @@ ngx_[% subsys %]_lua_init(ngx_conf_t *cf)
 
     cln->data = lmcf;
     cln->handler = ngx_[% subsys %]_lua_sema_mm_cleanup;
+
+[% IF http_subsys %]
+#ifdef HAVE_NGX_LUA_PIPE
+    ngx_[% subsys %]_lua_pipe_init();
+#endif
+[% END %]
+
 [% IF http_subsys %]
 #endif
 [% END %]
