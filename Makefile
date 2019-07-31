@@ -8,8 +8,9 @@ API_TEMPLATE_TARGETS=$(subst _subsys_,_$(SUBSYS)_, $(patsubst src/subsys/%.tt2, 
 MINI_TT2=util/mini-tt2.pl
 
 .PHONY: all
-all: $(DESTDIR)/api $(TEMPLATE_TARGETS) $(API_TEMPLATE_TARGETS) $(SUBSYS_TARGETS)
-	cp src/$(SUBSYS)/* $(DESTDIR)
+all: $(DESTDIR)/api $(TEMPLATE_TARGETS) $(API_TEMPLATE_TARGETS)
+	find src/$(SUBSYS) -type f -name '*.tt2' -exec $(MINI_TT2) -d $(DESTDIR) -s $(SUBSYS) '{}' ';'
+	$(shell cp src/$(SUBSYS)/*.{h,c} $(DESTDIR))
 
 $(DESTDIR)/api/ngx_http_%: src/subsys/api/ngx_subsys_%.tt2
 	$(MINI_TT2) -d $(DESTDIR)/api -s http $<
