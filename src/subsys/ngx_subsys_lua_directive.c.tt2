@@ -191,6 +191,23 @@ ngx_[% subsys %]_lua_code_cache(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
 
 char *
+ngx_[% subsys %]_lua_load_resty_core(ngx_conf_t *cf, ngx_command_t *cmd,
+    void *conf)
+{
+    ngx_conf_log_error(NGX_LOG_WARN, cf, 0,
+                       "lua_load_resty_core is deprecated (the lua-resty-core "
+                       "library is required since "
+[% IF http_subsys %]
+                       "ngx_lua v0.10.16)");
+[% ELSIF stream_subsys %]
+                       "ngx_stream_lua v0.0.8)");
+[% END %]
+
+    return NGX_CONF_OK;
+}
+
+
+char *
 ngx_[% subsys %]_lua_package_cpath(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ngx_[% subsys %]_lua_main_conf_t *lmcf = conf;
