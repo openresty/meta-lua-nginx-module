@@ -88,6 +88,8 @@ ngx_[% subsys %]_lua_alloc_sema(void)
     lmcf = ngx_[% subsys %]_cycle_get_module_main_conf(ngx_cycle,
                                                        ngx_[% subsys %]_lua_module);
 
+    ngx_[% subsys %]_lua_assert(lmcf != NULL);
+
     mm = lmcf->sema_mm;
 
     if (!ngx_queue_empty(&mm->free_queue)) {
@@ -173,6 +175,8 @@ ngx_[% subsys %]_lua_sema_mm_cleanup(void *data)
 
         sem = ngx_queue_data(q, ngx_[% subsys %]_lua_sema_t, chain);
         block = sem->block;
+
+        ngx_[% subsys %]_lua_assert(block != NULL);
 
         if (block->used == 0) {
             iter = (ngx_[% subsys %]_lua_sema_t *) (block + 1);
