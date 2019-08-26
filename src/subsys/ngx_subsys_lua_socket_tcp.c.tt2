@@ -25,9 +25,7 @@ static int ngx_[% subsys %]_lua_socket_tcp_connect(lua_State *L);
 static int ngx_[% subsys %]_lua_socket_tcp_sslhandshake(lua_State *L);
 #endif
 static int ngx_[% subsys %]_lua_socket_tcp_receive(lua_State *L);
-[% IF http_subsys %]
 static int ngx_[% subsys %]_lua_socket_tcp_receiveany(lua_State *L);
-[% END %]
 static int ngx_[% subsys %]_lua_socket_tcp_send(lua_State *L);
 static int ngx_[% subsys %]_lua_socket_tcp_close(lua_State *L);
 static int ngx_[% subsys %]_lua_socket_tcp_setoption(lua_State *L);
@@ -106,9 +104,7 @@ static int ngx_[% subsys %]_lua_socket_write_error_retval_handler(
 static ngx_int_t ngx_[% subsys %]_lua_socket_read_all(void *data, ssize_t bytes);
 static ngx_int_t ngx_[% subsys %]_lua_socket_read_until(void *data, ssize_t bytes);
 static ngx_int_t ngx_[% subsys %]_lua_socket_read_chunk(void *data, ssize_t bytes);
-[% IF http_subsys %]
 static ngx_int_t ngx_[% subsys %]_lua_socket_read_any(void *data, ssize_t bytes);
-[% END %]
 static int ngx_[% subsys %]_lua_socket_tcp_receiveuntil(lua_State *L);
 static int ngx_[% subsys %]_lua_socket_receiveuntil_iterator(lua_State *L);
 static ngx_int_t ngx_[% subsys %]_lua_socket_compile_pattern(u_char *data, size_t len,
@@ -371,7 +367,12 @@ ngx_[% subsys %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
     /* {{{tcp object metatable */
     lua_pushlightuserdata(L, ngx_[% subsys %]_lua_lightudata_mask(
                           tcp_socket_metatable_key));
+[% IF http_subsys %]
     lua_createtable(L, 0 /* narr */, 13 /* nrec */);
+
+[% ELSIF stream_subsys %]
+    lua_createtable(L, 0 /* narr */, 14 /* nrec */);
+[% END %]
 
     lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_connect);
     lua_setfield(L, -2, "connect");
@@ -388,6 +389,9 @@ ngx_[% subsys %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
 
     lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_receiveuntil);
     lua_setfield(L, -2, "receiveuntil");
+
+    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_receiveany);
+    lua_setfield(L, -2, "receiveany");
 
     lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_send);
     lua_setfield(L, -2, "send");
@@ -413,10 +417,6 @@ ngx_[% subsys %]_lua_inject_socket_tcp_api(ngx_log_t *log, lua_State *L)
 [% IF stream_subsys %]
     lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_shutdown);
     lua_setfield(L, -2, "shutdown");
-
-[% ELSIF http_subsys %]
-    lua_pushcfunction(L, ngx_[% subsys %]_lua_socket_tcp_receiveany);
-    lua_setfield(L, -2, "receiveany");
 [% END %]
 
     lua_pushvalue(L, -1);
@@ -2478,15 +2478,15 @@ ngx_[% subsys %]_lua_socket_tcp_receive_helper([% req_type %] *r,
 }
 
 
-[% IF http_subsys %]
 static int
 ngx_[% subsys %]_lua_socket_tcp_receiveany(lua_State *L)
 {
     int                                  n;
     lua_Integer                          bytes;
-    ngx_http_request_t                  *r;
-    ngx_http_lua_loc_conf_t             *llcf;
-    ngx_http_lua_socket_tcp_upstream_t  *u;
+    [% req_type %]                      *r;
+    ngx_[% subsys %]_lua_loc_conf_t     *llcf;
+
+    ngx_[% subsys %]_lua_socket_tcp_upstream_t  *u;
 
     n = lua_gettop(L);
     if (n != 2) {
@@ -2494,7 +2494,7 @@ ngx_[% subsys %]_lua_socket_tcp_receiveany(lua_State *L)
                           "(including the object), but got %d", n);
     }
 
-    r = ngx_http_lua_get_req(L);
+    r = ngx_[% subsys %]_lua_get_req(L);
     if (r == NULL) {
         return luaL_error(L, "no request found");
     }
@@ -2506,11 +2506,11 @@ ngx_[% subsys %]_lua_socket_tcp_receiveany(lua_State *L)
 
     if (u == NULL || u->peer.connection == NULL || u->read_closed) {
 
-        llcf = ngx_http_get_module_loc_conf(r, ngx_http_lua_module);
+        llcf = ngx_[% req_subsys %]_get_module_loc_conf(r, ngx_[% subsys %]_lua_module);
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
-                          "[% log_prefix %]attempt to receive data on a closed "
+                          "attempt to receive data on a closed "
                           "socket: u:%p, c:%p, ft:%d eof:%d",
                           u, u ? u->peer.connection : NULL,
                           u ? (int) u->ft_type : 0, u ? (int) u->eof : 0);
@@ -2525,8 +2525,8 @@ ngx_[% subsys %]_lua_socket_tcp_receiveany(lua_State *L)
         return luaL_error(L, "bad request");
     }
 
-    ngx_http_lua_socket_check_busy_connecting(r, u, L);
-    ngx_http_lua_socket_check_busy_reading(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_connecting(r, u, L);
+    ngx_[% subsys %]_lua_socket_check_busy_reading(r, u, L);
 
     if (!lua_isnumber(L, 2)) {
         return luaL_argerror(L, 2, "bad max argument");
@@ -2537,17 +2537,16 @@ ngx_[% subsys %]_lua_socket_tcp_receiveany(lua_State *L)
         return luaL_argerror(L, 2, "bad max argument");
     }
 
-    u->input_filter = ngx_http_lua_socket_read_any;
+    u->input_filter = ngx_[% subsys %]_lua_socket_read_any;
     u->rest = (size_t) bytes;
     u->length = u->rest;
 
-    ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+    ngx_log_debug1(NGX_LOG_DEBUG_[% SUBSYS %], r->connection->log, 0,
                    "[% log_prefix %]lua tcp socket calling receiveany() "
                    "method to read at most %uz bytes", u->rest);
 
-    return ngx_http_lua_socket_tcp_receive_helper(r, u, L);
+    return ngx_[% subsys %]_lua_socket_tcp_receive_helper(r, u, L);
 }
-[% END %]
 
 
 static int
@@ -2588,8 +2587,8 @@ ngx_[% subsys %]_lua_socket_tcp_receive(lua_State *L)
 
         if (llcf->log_socket_errors) {
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
-                          "attempt to receive data on a closed socket: u:%p, "
-                          "c:%p, ft:%d eof:%d",
+                          "[% log_prefix %]attempt to receive data on a closed "
+                          "socket: u:%p, c:%p, ft:%d eof:%d",
                           u, u ? u->peer.connection : NULL,
                           u ? (int) u->ft_type : 0, u ? (int) u->eof : 0);
         }
@@ -2732,7 +2731,6 @@ ngx_[% subsys %]_lua_socket_read_line(void *data, ssize_t bytes)
 }
 
 
-[% IF http_subsys %]
 static ngx_int_t
 ngx_[% subsys %]_lua_socket_read_any(void *data, ssize_t bytes)
 {
@@ -2751,7 +2749,6 @@ ngx_[% subsys %]_lua_socket_read_any(void *data, ssize_t bytes)
 
     return rc;
 }
-[% END %]
 
 
 static ngx_int_t

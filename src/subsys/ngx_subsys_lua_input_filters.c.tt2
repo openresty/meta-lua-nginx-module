@@ -55,7 +55,6 @@ ngx_[% subsys %]_lua_read_all(ngx_buf_t *src, ngx_chain_t *buf_in,
 }
 
 
-[% IF http_subsys %]
 ngx_int_t
 ngx_[% subsys %]_lua_read_any(ngx_buf_t *src, ngx_chain_t *buf_in, size_t *max,
     ssize_t bytes, ngx_log_t *log)
@@ -73,7 +72,6 @@ ngx_[% subsys %]_lua_read_any(ngx_buf_t *src, ngx_chain_t *buf_in, size_t *max,
 
     return NGX_OK;
 }
-[% END %]
 
 
 ngx_int_t
