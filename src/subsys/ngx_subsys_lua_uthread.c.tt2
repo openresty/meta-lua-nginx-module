@@ -130,6 +130,7 @@ ngx_[% subsys %]_lua_uthread_wait(lua_State *L)
 [% IF http_subsys %]
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 
 [% ELSIF stream_subsys %]
                                | NGX_STREAM_LUA_CONTEXT_PREREAD
@@ -236,6 +237,7 @@ ngx_[% subsys %]_lua_uthread_kill(lua_State *L)
 [% IF http_subsys %]
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE
                                | NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS
+                               | NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH
 
 [% ELSIF stream_subsys %]
                                | NGX_STREAM_LUA_CONTEXT_PREREAD
