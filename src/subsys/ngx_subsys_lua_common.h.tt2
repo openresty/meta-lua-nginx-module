@@ -9,13 +9,6 @@
 #define _NGX_[% SUBSYS %]_LUA_COMMON_H_INCLUDED_
 
 
-[% IF stream_subsys %]
-#ifndef NGX_LUA_NO_FFI_API
-#define NGX_LUA_NO_FFI_API
-#endif
-[% END %]
-
-
 #include <nginx.h>
 #include <ngx_core.h>
 #include <ngx_[% subsys %].h>
@@ -180,10 +173,8 @@ typedef struct {
 [% END %]
 
 
-#ifndef NGX_LUA_NO_FFI_API
 #define NGX_[% SUBSYS %]_LUA_FFI_NO_REQ_CTX         -100
 #define NGX_[% SUBSYS %]_LUA_FFI_BAD_CONTEXT        -101
-#endif
 
 
 #if (NGX_PTR_SIZE >= 8 && !defined(_WIN64))

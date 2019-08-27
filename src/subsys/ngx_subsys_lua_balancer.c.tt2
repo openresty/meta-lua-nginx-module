@@ -548,12 +548,6 @@ ngx_[% subsys %]_lua_balancer_save_session(ngx_peer_connection_t *pc, void *data
 #endif
 
 
-[% IF http_subsys %]
-[%#- if not under http, always build those APIs as a workaround for no lua-resty-core support in subsystems other than http %]
-
-#ifndef NGX_LUA_NO_FFI_API
-[% END %]
-
 int
 ngx_[% subsys %]_lua_ffi_balancer_set_current_peer([% req_type %] *r,
     const u_char *addr, size_t addr_len, int port, char **err)
@@ -951,6 +945,5 @@ ngx_[% subsys %]_lua_ffi_balancer_get_last_failure([% req_type %] *r,
     return bp->last_peer_state;
 }
 
-[% IF http_subsys %]
-#endif  /* NGX_LUA_NO_FFI_API */
-[% END %]
+
+/* vi:set ft=c ts=4 sw=4 et fdm=marker: */

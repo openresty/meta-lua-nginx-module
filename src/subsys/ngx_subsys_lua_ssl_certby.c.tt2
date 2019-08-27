@@ -602,10 +602,6 @@ ngx_[% subsys %]_lua_ssl_cert_by_chunk(lua_State *L, [% req_type %] *r)
 }
 
 
-[% IF http_subsys %]
-#ifndef NGX_LUA_NO_FFI_API
-[% END %]
-
 int
 ngx_[% subsys %]_lua_ffi_ssl_get_tls1_version([% req_type %] *r, char **err)
 {
@@ -1373,9 +1369,6 @@ failed:
 
     return NGX_ERROR;
 }
-[% IF http_subsys %]
-#endif  /* NGX_LUA_NO_FFI_API */
-[% END %]
 
 
 #endif /* NGX_[% SUBSYS %]_SSL */

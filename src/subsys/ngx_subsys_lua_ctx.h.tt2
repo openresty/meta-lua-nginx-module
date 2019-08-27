@@ -12,8 +12,6 @@
 #include "ngx_[% subsys %]_lua_common.h"
 
 
-int ngx_[% subsys %]_lua_ngx_get_ctx(lua_State *L);
-int ngx_[% subsys %]_lua_ngx_set_ctx(lua_State *L);
 int ngx_[% subsys %]_lua_ngx_set_ctx_helper(lua_State *L, [% req_type %] *r,
     ngx_[% subsys %]_lua_ctx_t *ctx, int index);
 

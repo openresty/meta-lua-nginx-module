@@ -10,14 +10,17 @@
 #include "ddebug.h"
 
 
+[% IF stream_subsys %]
 #include "ngx_[% subsys %]_lua_phase.h"
 #include "ngx_[% subsys %]_lua_util.h"
 #include "ngx_[% subsys %]_lua_ctx.h"
 
+[% ELSIF http_subsys %]
+#include "ngx_[% subsys %]_lua_common.h"
+[% END %]
 
-static int ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L);
 
-
+[% IF stream_subsys %]
 static int
 ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L)
 {
@@ -48,40 +51,9 @@ ngx_[% subsys %]_lua_ngx_get_phase(lua_State *L)
         lua_pushliteral(L, "ssl_cert");
         break;
 
-[% IF http_subsys %]
-    case NGX_[% SUBSYS %]_LUA_CONTEXT_SET:
-        lua_pushliteral(L, "set");
-        break;
-
-    case NGX_[% SUBSYS %]_LUA_CONTEXT_REWRITE:
-        lua_pushliteral(L, "rewrite");
-        break;
-
-    case NGX_[% SUBSYS %]_LUA_CONTEXT_ACCESS:
-        lua_pushliteral(L, "access");
-        break;
-
-    case NGX_[% SUBSYS %]_LUA_CONTEXT_HEADER_FILTER:
-        lua_pushliteral(L, "header_filter");
-        break;
-
-    case NGX_[% SUBSYS %]_LUA_CONTEXT_BODY_FILTER:
-        lua_pushliteral(L, "body_filter");
-        break;
-
-    case NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_STORE:
-        lua_pushliteral(L, "ssl_session_store");
-        break;
-
-    case NGX_[% SUBSYS %]_LUA_CONTEXT_SSL_SESS_FETCH:
-        lua_pushliteral(L, "ssl_session_fetch");
-        break;
-
-[% ELSIF stream_subsys %]
     case NGX_STREAM_LUA_CONTEXT_PREREAD:
         lua_pushliteral(L, "preread");
         break;
-[% END %]
 
     case NGX_[% SUBSYS %]_LUA_CONTEXT_CONTENT:
         lua_pushliteral(L, "content");
@@ -113,10 +85,10 @@ ngx_[% subsys %]_lua_inject_phase_api(lua_State *L)
     lua_pushcfunction(L, ngx_[% subsys %]_lua_ngx_get_phase);
     lua_setfield(L, -2, "get_phase");
 }
+[% END %]
 
 
 [% IF http_subsys %]
-#ifndef NGX_LUA_NO_FFI_API
 int
 ngx_[% subsys %]_lua_ffi_get_phase([% req_type %] *r, char **err)
 {
@@ -130,7 +102,6 @@ ngx_[% subsys %]_lua_ffi_get_phase([% req_type %] *r, char **err)
 
     return ctx->context;
 }
-#endif
 [% END # http %]
 
 
