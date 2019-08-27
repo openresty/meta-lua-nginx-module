@@ -66,15 +66,8 @@ extern char ngx_[% subsys %]_lua_headers_metatable_key;
 #ifndef NGX_HTTP_SWITCHING_PROTOCOLS
 #define NGX_HTTP_SWITCHING_PROTOCOLS 101
 #endif
-[% END %]
 
 
-#if defined(nginx_version) && nginx_version < 1000000
-#define ngx_memmove(dst, src, n)   (void) memmove(dst, src, n)
-#endif
-
-
-[% IF http_subsys %]
 #define ngx_http_lua_context_name(c)                                         \
     ((c) == NGX_HTTP_LUA_CONTEXT_SET ? "set_by_lua*"                         \
      : (c) == NGX_HTTP_LUA_CONTEXT_REWRITE ? "rewrite_by_lua*"               \
@@ -92,6 +85,7 @@ extern char ngx_[% subsys %]_lua_headers_metatable_key;
      : (c) == NGX_HTTP_LUA_CONTEXT_SSL_SESS_FETCH ?                          \
                                                  "ssl_session_fetch_by_lua*" \
      : "(unknown)")
+
 [% ELSIF stream_subsys %]
 #define ngx_stream_lua_context_name(c)                                       \
     ((c) == NGX_STREAM_LUA_CONTEXT_CONTENT ? "content_by_lua*"               \
@@ -567,7 +561,7 @@ ngx_[% subsys %]_lua_get_flush_chain([% req_type %] *r,
 }
 
 
-#if (nginx_version < 1011002)
+#if defined(nginx_version) && nginx_version < 1011002
 static ngx_inline in_port_t
 ngx_inet_get_port(struct sockaddr *sa)
 {

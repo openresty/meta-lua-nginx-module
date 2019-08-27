@@ -660,10 +660,7 @@ ngx_[% subsys %]_lua_timer_handler(ngx_event_t *ev)
     clcf = ngx_stream_get_module_srv_conf(s, ngx_stream_core_module);
 [% END %]
 
-#if defined(nginx_version) && nginx_version >= 1003014
-
-#   if nginx_version >= 1009000
-
+#if defined(nginx_version) && nginx_version >= 1009000
 [% IF http_subsys %]
     ngx_set_connection_log(r->connection, clcf->error_log);
 
@@ -671,22 +668,10 @@ ngx_[% subsys %]_lua_timer_handler(ngx_event_t *ev)
     ngx_set_connection_log(s->connection, clcf->error_log);
 [% END %]
 
-#   else
-
+#else
 [% IF http_subsys %]
     ngx_http_set_connection_log(r->connection, clcf->error_log);
 [% END %]
-
-#   endif
-
-#else
-
-    c->log->file = clcf->error_log->file;
-
-    if (!(c->log->log_level & NGX_LOG_DEBUG_CONNECTION)) {
-        c->log->log_level = clcf->error_log->log_level;
-    }
-
 #endif
 
     dd("lmcf: %p", lmcf);

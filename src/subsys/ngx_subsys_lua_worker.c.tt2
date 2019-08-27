@@ -23,7 +23,7 @@ ngx_[% subsys %]_lua_ffi_worker_pid(void)
 int
 ngx_[% subsys %]_lua_ffi_worker_id(void)
 {
-#if (nginx_version >= 1009001)
+#if defined(nginx_version) && nginx_version >= 1009001
     if (ngx_process != NGX_PROCESS_WORKER
         && ngx_process != NGX_PROCESS_SINGLE)
     {
@@ -59,7 +59,7 @@ ngx_[% subsys %]_lua_ffi_worker_count(void)
 int
 ngx_[% subsys %]_lua_ffi_master_pid(void)
 {
-#if (nginx_version >= 1013008)
+#if defined(nginx_version) && nginx_version >= 1013008
     if (ngx_process == NGX_PROCESS_SINGLE) {
         return (int) ngx_pid;
     }
