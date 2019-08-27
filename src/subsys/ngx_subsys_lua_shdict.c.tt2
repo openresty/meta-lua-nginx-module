@@ -117,9 +117,7 @@ ngx_[% subsys %]_lua_shdict_init_zone(ngx_shm_zone_t *shm_zone, void *data)
     ngx_sprintf(ctx->shpool->log_ctx, " in lua_shared_dict zone \"%V\"%Z",
                 &shm_zone->shm.name);
 
-#if defined(nginx_version) && nginx_version >= 1005013
     ctx->shpool->log_nomem = 0;
-#endif
 
     return NGX_OK;
 }
@@ -2106,7 +2104,7 @@ ngx_[% subsys %]_lua_ffi_shdict_capacity(ngx_shm_zone_t *zone)
 }
 
 
-#    if nginx_version >= 1011007
+#if defined(nginx_version) && nginx_version >= 1011007
 size_t
 ngx_[% subsys %]_lua_ffi_shdict_free_space(ngx_shm_zone_t *zone)
 {
@@ -2122,7 +2120,7 @@ ngx_[% subsys %]_lua_ffi_shdict_free_space(ngx_shm_zone_t *zone)
 
     return bytes;
 }
-#    endif /* nginx_version >= 1011007 */
+#endif
 
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

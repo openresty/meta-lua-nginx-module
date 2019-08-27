@@ -366,7 +366,7 @@ ngx_[% subsys %]_lua_ffi_sema_wait([% req_type %] *r,
                    "[% subsys %] lua semaphore wait: %p, timeout: %d, "
                    "resources: %d, event posted: %d",
                    sem, wait_ms, sem->resource_count,
-#if (nginx_version >= 1007005)
+#if defined(nginx_version) && nginx_version >= 1007005
                    (int) sem->sem_event.posted
 #else
                    sem->sem_event.prev ? 1 : 0

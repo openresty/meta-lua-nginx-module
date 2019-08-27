@@ -792,7 +792,7 @@ ngx_[% subsys %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
     int count, char **err)
 {
 [% IF http_subsys %]
-#if (nginx_version >= 1007005)
+#if defined(nginx_version) && nginx_version >= 1007005
 
 [% ELSIF stream_subsys %]
 #if (HAS_NGX_STREAM_PROXY_GET_NEXT_UPSTREAM_TRIES_PATCH)
@@ -842,7 +842,7 @@ ngx_[% subsys %]_lua_ffi_balancer_set_more_tries([% req_type %] *r,
     }
 
 [% IF http_subsys %]
-#if (nginx_version >= 1007005)
+#if defined(nginx_version) && nginx_version >= 1007005
     max_tries = u->conf->next_upstream_tries;
     total = bp->total_tries + u->peer.tries - 1;
 
