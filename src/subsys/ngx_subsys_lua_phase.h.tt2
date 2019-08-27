@@ -5,7 +5,9 @@
 #include "ngx_[% subsys %]_lua_common.h"
 
 
+[% IF stream_subsys %]
 void ngx_[% subsys %]_lua_inject_phase_api(lua_State *L);
+[% END %]
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_PHASE_H_INCLUDED_ */

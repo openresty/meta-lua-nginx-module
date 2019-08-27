@@ -7,11 +7,6 @@
  */
 
 
-[% IF http_subsys %]
-#ifndef NGX_LUA_NO_FFI_API
-[% END %]
-
-
 #ifndef DDEBUG
 #define DDEBUG 0
 #endif
@@ -594,9 +589,5 @@ ngx_[% subsys %]_lua_ffi_sema_gc(ngx_[% subsys %]_lua_sema_t *sem)
     ngx_[% subsys %]_lua_free_sema(sem);
 }
 
-
-[% IF http_subsys %]
-#endif /* NGX_LUA_NO_FFI_API */
-[% END %]
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

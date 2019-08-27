@@ -41,15 +41,9 @@ typedef struct ngx_[% subsys %]_lua_sema_s {
 } ngx_[% subsys %]_lua_sema_t;
 
 
-[% IF http_subsys %]
-#ifndef NGX_LUA_NO_FFI_API
-[% END %]
 void ngx_[% subsys %]_lua_sema_mm_cleanup(void *data);
 ngx_int_t ngx_[% subsys %]_lua_sema_mm_init(ngx_conf_t *cf,
     ngx_[% subsys %]_lua_main_conf_t *lmcf);
-[% IF http_subsys %]
-#endif
-[% END %]
 
 
 #endif /* _NGX_[% SUBSYS %]_LUA_SEMAPHORE_H_INCLUDED_ */
