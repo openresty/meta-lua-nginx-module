@@ -40,11 +40,13 @@ ngx_[% subsys %]_lua_ngx_req_is_internal(lua_State *L)
     lua_pushboolean(L, r->internal == 1);
     return 1;
 }
+[% END %]
 
 
 int
 ngx_[% subsys %]_lua_ffi_get_resp_status([% req_type %] *r)
 {
+[% IF http_subsys %]
     if (r->connection->fd == (ngx_socket_t) -1) {
         return NGX_[% SUBSYS %]_LUA_FFI_BAD_CONTEXT;
     }
@@ -61,9 +63,14 @@ ngx_[% subsys %]_lua_ffi_get_resp_status([% req_type %] *r)
     } else {
         return 0;
     }
+
+[% ELSIF stream_subsys %]
+    return r->session->status;
+[% END %]
 }
 
 
+[% IF http_subsys %]
 int
 ngx_[% subsys %]_lua_ffi_set_resp_status([% req_type %] *r, int status)
 {
