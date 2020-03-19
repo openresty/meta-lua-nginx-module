@@ -9,6 +9,8 @@
 #define _NGX_[% SUBSYS %]_LUA_COMMON_H_INCLUDED_
 
 
+#include "ngx_[% subsys %]_lua_autoconf.h"
+
 #include <nginx.h>
 #include <ngx_core.h>
 #include <ngx_[% subsys %].h>
