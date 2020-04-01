@@ -38,6 +38,10 @@ typedef struct {
 
 
 typedef struct {
+#if (NGX_DEBUG)
+    ngx_int_t                    isold;
+    ngx_int_t                    isinit;
+#endif
     ngx_str_t                    name;
     ngx_meta_lua_shdict_shctx_t *sh;
     ngx_slab_pool_t             *shpool;

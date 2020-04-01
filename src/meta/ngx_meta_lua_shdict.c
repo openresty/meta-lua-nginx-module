@@ -28,6 +28,9 @@ static ngx_inline ngx_queue_t *
     size_t len);
 static int ngx_meta_lua_shdict_expire(ngx_meta_lua_shdict_ctx_t *ctx,
     ngx_uint_t n);
+#if (NGX_DEBUG)
+static int ngx_meta_lua_shdict_get_info(lua_State *L);
+#endif
 static int ngx_meta_lua_shdict_push_helper(lua_State *L, int flags);
 static int ngx_meta_lua_shdict_pop_helper(lua_State *L, int flags);
 static int ngx_meta_lua_shdict_flush_expired(lua_State *L);
@@ -210,9 +213,16 @@ ngx_meta_lua_shdict_init_zone(ngx_shm_zone_t *shm_zone, void *data)
 
     ctx = shm_zone->data;
 
+#if (NGX_DEBUG)
+    ctx->isinit = 1;
+#endif
+
     if (octx) {
         ctx->sh = octx->sh;
         ctx->shpool = octx->shpool;
+#if (NGX_DEBUG)
+        ctx->isold = 1;
+#endif
 
         return NGX_OK;
     }
@@ -339,6 +349,11 @@ ngx_meta_lua_inject_shdict_api(lua_State *L, ngx_cycle_t *cycle, void *tag)
 
         lua_pushcfunction(L, ngx_meta_lua_shdict_get_keys);
         lua_setfield(L, -2, "get_keys");
+
+#if (NGX_DEBUG)
+        lua_pushcfunction(L, ngx_meta_lua_shdict_get_info);
+        lua_setfield(L, -2, "get_info");
+#endif
 
         lua_pushvalue(L, -1); /* shared mt mt */
         lua_setfield(L, -2, "__index"); /* shared mt */
@@ -1280,6 +1295,39 @@ ngx_meta_lua_shdict_llen(lua_State *L)
     lua_pushnumber(L, 0);
     return 1;
 }
+
+
+#if (NGX_DEBUG)
+static int
+ngx_meta_lua_shdict_get_info(lua_State *L)
+{
+    ngx_int_t                         n;
+    ngx_shm_zone_t                   *zone;
+    ngx_meta_lua_shdict_ctx_t        *ctx;
+
+    n = lua_gettop(L);
+
+    if (n != 1) {
+        return luaL_error(L, "expecting exactly one argument, but seen %d", n);
+    }
+
+    luaL_checktype(L, 1, LUA_TTABLE);
+
+    zone = ngx_meta_lua_shdict_get_zone(L, 1);
+    if (zone == NULL) {
+        return luaL_error(L, "bad \"zone\" argument");
+    }
+
+    ctx = (ngx_meta_lua_shdict_ctx_t *) zone->data;
+
+    lua_pushlstring(L, (char *) zone->shm.name.data, zone->shm.name.len);
+    lua_pushnumber(L, zone->shm.size);
+    lua_pushboolean(L, ctx->isinit);
+    lua_pushboolean(L, ctx->isold);
+
+    return 4;
+}
+#endif
 
 
 ngx_shm_zone_t *
