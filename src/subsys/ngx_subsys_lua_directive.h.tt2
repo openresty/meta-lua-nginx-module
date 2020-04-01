@@ -12,7 +12,7 @@
 #include "ngx_[% subsys %]_lua_common.h"
 
 
-char *ngx_[% subsys %]_lua_shared_dict(ngx_conf_t *cf, ngx_command_t *cmd,
+char *ngx_[% subsys %]_lua_shdict_directive(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf);
 char *ngx_[% subsys %]_lua_package_cpath(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf);

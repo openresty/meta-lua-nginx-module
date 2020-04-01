@@ -57,15 +57,6 @@ lua_State *ngx_[% subsys %]_lua_get_global_state(ngx_conf_t *cf);
 ngx_int_t ngx_[% subsys %]_lua_add_package_preload(ngx_conf_t *cf,
     const char *package, lua_CFunction func);
 
-ngx_int_t ngx_[% subsys %]_lua_shared_dict_get(ngx_shm_zone_t *shm_zone,
-    u_char *key_data, size_t key_len, ngx_[% subsys %]_lua_value_t *value);
-
-ngx_shm_zone_t *ngx_[% subsys %]_lua_find_zone(u_char *name_data,
-    size_t name_len);
-
-ngx_shm_zone_t *ngx_[% subsys %]_lua_shared_memory_add(ngx_conf_t *cf,
-    ngx_str_t *name, size_t size, void *tag);
-
 
 #endif /* _NGX_[% SUBSYS %]_LUA_API_H_INCLUDED_ */
 
