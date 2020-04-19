@@ -1413,6 +1413,9 @@ ngx_[% subsys %]_lua_ffi_ssl_verify_client([% req_type %] *r,
 [% END %]
         if (sscf != NULL) {
             depth = sscf->verify_depth;
+        } else {
+            /* same as the default value of ssl_verify_depth */
+            depth = 1;
         }
     }
     SSL_set_verify_depth(ssl_conn, depth);
