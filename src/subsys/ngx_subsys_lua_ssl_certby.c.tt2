@@ -1437,9 +1437,9 @@ ngx_[% subsys %]_lua_ffi_ssl_verify_client([% req_type %] *r,
     SSL_set_verify_depth(ssl_conn, depth);
 
     if (chain != NULL) {
-        ca_store = SSL_CTX_get_cert_store(SSL_get_SSL_CTX(ssl_conn));
+        ca_store = X509_STORE_new();
         if (ca_store == NULL) {
-            *err = "SSL_CTX_get_cert_store() failed";
+            *err = "X509_STORE_new() failed";
             return NGX_ERROR;
         }
 
@@ -1448,7 +1448,7 @@ ngx_[% subsys %]_lua_ffi_ssl_verify_client([% req_type %] *r,
         name_chain = sk_X509_NAME_new_null();
         if (name_chain == NULL) {
             *err = "sk_X509_NAME_new_null() failed";
-            return NGX_ERROR;
+            goto failed;
         }
 
         for (i = 0; i < sk_X509_num(chain); i++) {
@@ -1478,12 +1478,19 @@ ngx_[% subsys %]_lua_ffi_ssl_verify_client([% req_type %] *r,
             }
         }
 
+        if (SSL_set0_verify_cert_store(ssl_conn, ca_store) == 0) {
+            *err = "SSL_set0_verify_cert_store() failed";
+            goto failed;
+        }
+
         SSL_set_client_CA_list(ssl_conn, name_chain);
     }
 
     return NGX_OK;
 
 failed:
+
+    X509_STORE_free(ca_store);
 
     sk_X509_NAME_free(name_chain);
 
