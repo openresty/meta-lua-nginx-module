@@ -433,18 +433,20 @@ ngx_[% subsys %]_lua_ffi_unescape_uri(const u_char *src, size_t len, u_char *dst
 
 
 size_t
-ngx_[% subsys %]_lua_ffi_uri_escaped_length(const u_char *src, size_t len)
+ngx_[% subsys %]_lua_ffi_uri_escaped_length(const u_char *src, size_t len,
+    int type)
 {
     return len + 2 * ngx_[% subsys %]_lua_escape_uri(NULL, (u_char *) src, len,
-                                                     NGX_ESCAPE_URI_COMPONENT);
+                                                     type);
 }
 
 
 void
-ngx_[% subsys %]_lua_ffi_escape_uri(const u_char *src, size_t len, u_char *dst)
+ngx_[% subsys %]_lua_ffi_escape_uri(const u_char *src, size_t len, u_char *dst,
+    int type)
 {
     ngx_[% subsys %]_lua_escape_uri(dst, (u_char *) src, len,
-                                    NGX_ESCAPE_URI_COMPONENT);
+                                    type);
 }
 
 
