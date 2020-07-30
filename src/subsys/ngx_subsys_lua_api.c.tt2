@@ -27,11 +27,13 @@ ngx_[% subsys %]_lua_get_global_state(ngx_conf_t *cf)
 }
 
 
+[% IF http_subsys %]
 [% req_type %] *
 ngx_[% subsys %]_lua_get_request(lua_State *L)
 {
     return ngx_[% subsys %]_lua_get_req(L);
 }
+[% END %]
 
 
 static ngx_int_t ngx_[% subsys %]_lua_shared_memory_init(ngx_shm_zone_t *shm_zone,
