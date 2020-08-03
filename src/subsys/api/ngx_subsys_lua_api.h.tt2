@@ -52,7 +52,9 @@ typedef struct {
 
 lua_State *ngx_[% subsys %]_lua_get_global_state(ngx_conf_t *cf);
 
+[% IF http_subsys %]
 [% req_type %] *ngx_[% subsys %]_lua_get_request(lua_State *L);
+[% END %]
 
 ngx_int_t ngx_[% subsys %]_lua_add_package_preload(ngx_conf_t *cf,
     const char *package, lua_CFunction func);
