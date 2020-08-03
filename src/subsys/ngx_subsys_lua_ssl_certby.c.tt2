@@ -1367,24 +1367,24 @@ ngx_[% subsys %]_lua_ssl_verify_callback(int ok, X509_STORE_CTX *x509_store)
 
 int
 ngx_[% subsys %]_lua_ffi_ssl_verify_client([% req_type %] *r,
-    void *cdata, int depth, char **err)
+    void *ca_certs, int depth, char **err)
 {
-    ngx_[% subsys %]_lua_ctx_t      *ctx;
-    ngx_ssl_conn_t                  *ssl_conn;
+    ngx_[% subsys %]_lua_ctx_t  *ctx;
+    ngx_ssl_conn_t              *ssl_conn;
 [% IF http_subsys %]
-    ngx_http_ssl_srv_conf_t         *sscf;
+    ngx_http_ssl_srv_conf_t     *sscf;
 [% ELSIF stream_subsys %]
-    ngx_stream_ssl_conf_t           *sscf;
+    ngx_stream_ssl_conf_t       *sscf;
 [% END %]
-    STACK_OF(X509)                  *chain = cdata;
-    STACK_OF(X509_NAME)             *name_chain = NULL;
-    X509                            *x509 = NULL;
-    X509_NAME                       *subject = NULL;
-    X509_STORE                      *ca_store = NULL;
+    STACK_OF(X509)              *chain = ca_certs;
+    STACK_OF(X509_NAME)         *name_chain = NULL;
+    X509                        *x509 = NULL;
+    X509_NAME                   *subject = NULL;
+    X509_STORE                  *ca_store = NULL;
 #ifdef OPENSSL_IS_BORINGSSL
-    size_t                          i;
+    size_t                      i;
 #else
-    int                             i;
+    int                         i;
 #endif
 
 [% IF http_subsys %]
@@ -1438,6 +1438,8 @@ ngx_[% subsys %]_lua_ffi_ssl_verify_client([% req_type %] *r,
     }
 
     SSL_set_verify_depth(ssl_conn, depth);
+
+    /* set CA chain */
 
     if (chain != NULL) {
         ca_store = X509_STORE_new();
