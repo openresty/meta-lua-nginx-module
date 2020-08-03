@@ -1353,7 +1353,7 @@ failed:
 
 
 static int
-ngx_[%s subsys %]_lua_ssl_verify_callback(int ok, X509_STORE_CTX *x509_store)
+ngx_[% subsys %]_lua_ssl_verify_callback(int ok, X509_STORE_CTX *x509_store)
 {
     /*
      * we never terminate handshake here and user can later use
@@ -1416,7 +1416,7 @@ ngx_[% subsys %]_lua_ffi_ssl_verify_client([% req_type %] *r,
     /* enable verify */
 
     SSL_set_verify(ssl_conn, SSL_VERIFY_PEER,
-                   ngx_[%s subsys %]_lua_ssl_verify_callback);
+                   ngx_[% subsys %]_lua_ssl_verify_callback);
 
     /* set depth */
 
