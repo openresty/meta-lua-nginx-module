@@ -2287,8 +2287,6 @@ ngx_[% subsys %]_lua_socket_tcp_peek_resume([% req_type %] *r)
         return NGX_ERROR;
     }
 
-    dd("coctx: %p", coctx);
-
     u = ctx->downstream;
     c = r->connection;
     vm = ngx_[% subsys %]_lua_get_lua_vm(r, ctx);
