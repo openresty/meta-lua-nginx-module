@@ -15,6 +15,7 @@
 
 
 #include "ngx_[% subsys %]_lua_common.h"
+#include "ngx_[% subsys %]_lua_ssl.h"
 #include "ngx_[% subsys %]_lua_api.h"
 
 
