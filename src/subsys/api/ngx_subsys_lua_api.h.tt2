@@ -25,9 +25,9 @@
 
 
 [% IF http_subsys %]
-#define ngx_http_lua_version    10016
+#define ngx_http_lua_version    10018
 [% ELSIF stream_subsys %]
-#define ngx_stream_lua_version  8
+#define ngx_stream_lua_version  9
 [% END %]
 
 
