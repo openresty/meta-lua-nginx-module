@@ -584,6 +584,13 @@ ngx_[% subsys %]_lua_ffi_max_regex_cache_size(void)
 }
 
 
+const char *
+ngx_[% subsys %]_lua_ffi_pcre_version(void)
+{
+    return pcre_version();
+}
+
+
 #endif /* NGX_PCRE */
 
 
