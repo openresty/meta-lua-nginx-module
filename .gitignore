@@ -1,1 +1,5 @@
-build
+out/
+work/
+t/servroot*
+build*
+test*

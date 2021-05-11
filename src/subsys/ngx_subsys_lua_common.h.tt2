@@ -24,6 +24,9 @@
 #include <lauxlib.h>
 
 
+#include "ngx_meta_lua_api.h"
+
+
 [% IF stream_subsys %]
 #include "ngx_stream_lua_request.h"
 [% END %]
@@ -49,6 +52,11 @@
 #if !defined(nginx_version) || nginx_version < 1013006
 #error at least nginx 1.13.6 is required but found an older version
 [% END %]
+#endif
+
+
+#if !defined(ngx_meta_lua_version) || ngx_meta_lua_version < 00001
+#   error ngx_meta_lua_module 0.0.1 or above is required
 #endif
 
 
@@ -204,8 +212,6 @@ typedef struct ngx_[% subsys %]_lua_balancer_peer_data_s
 typedef struct ngx_[% subsys %]_lua_sema_mm_s  ngx_[% subsys %]_lua_sema_mm_t;
 
 
-typedef ngx_int_t (*ngx_[% subsys %]_lua_main_conf_handler_pt)(ngx_log_t *log,
-    ngx_[% subsys %]_lua_main_conf_t *lmcf, lua_State *L);
 typedef ngx_int_t (*ngx_[% subsys %]_lua_srv_conf_handler_pt)(
     [% req_type %] *r, ngx_[% subsys %]_lua_srv_conf_t *lscf, lua_State *L);
 
@@ -245,10 +251,6 @@ struct ngx_[% subsys %]_lua_main_conf_s {
 
 #endif
 
-    ngx_array_t         *shm_zones;  /* of ngx_shm_zone_t* */
-
-    ngx_array_t         *shdict_zones; /* shm zones of "shdict" */
-
     ngx_array_t         *preload_hooks; /* of ngx_[% subsys %]_lua_preload_hook_t */
 
 [% IF http_subsys %]
@@ -259,10 +261,10 @@ struct ngx_[% subsys %]_lua_main_conf_s {
     ngx_flag_t           postponed_to_preread_phase_end;
 [% END %]
 
-    ngx_[% subsys %]_lua_main_conf_handler_pt    init_handler;
+    ngx_meta_lua_main_conf_handler_pt            init_handler;
     ngx_str_t                                    init_src;
 
-    ngx_[% subsys %]_lua_main_conf_handler_pt    init_worker_handler;
+    ngx_meta_lua_main_conf_handler_pt            init_worker_handler;
     ngx_str_t                                    init_worker_src;
 
     ngx_[% subsys %]_lua_balancer_peer_data_t    *balancer_peer_data;
@@ -295,8 +297,6 @@ struct ngx_[% subsys %]_lua_main_conf_s {
                      */
 
 [% END %]
-    ngx_uint_t                      shm_zones_inited;
-
     ngx_[% subsys %]_lua_sema_mm_t         *sema_mm;
 
     ngx_uint_t           malloc_trim_cycle;  /* a cycle is defined as the number
@@ -327,7 +327,6 @@ struct ngx_[% subsys %]_lua_main_conf_s {
 [% END %]
 
     unsigned             requires_log:1;
-    unsigned             requires_shm:1;
     unsigned             requires_capture_log:1;
 };
 
