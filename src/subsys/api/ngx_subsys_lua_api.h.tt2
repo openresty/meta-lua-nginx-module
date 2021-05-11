@@ -16,6 +16,11 @@
 #include <ngx_http.h>
 [% END %]
 
+[% IF stream_subsys %]
+#include <ngx_stream.h>
+#include "../ngx_stream_lua_request.h"
+[% END %]
+
 
 #include <lua.h>
 #include <stdint.h>
