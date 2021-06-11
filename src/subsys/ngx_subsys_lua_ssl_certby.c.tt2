@@ -1404,6 +1404,13 @@ int
 ngx_[% subsys %]_lua_ffi_ssl_verify_client([% req_type %] *r,
     void *ca_certs, int depth, char **err)
 {
+#ifdef LIBRESSL_VERSION_NUMBER
+
+    *err = "LibreSSL not supported";
+    return NGX_ERROR;
+
+#else
+
     ngx_[% subsys %]_lua_ctx_t  *ctx;
     ngx_ssl_conn_t              *ssl_conn;
 [% IF http_subsys %]
@@ -1535,6 +1542,7 @@ failed:
     X509_STORE_free(ca_store);
 
     return NGX_ERROR;
+#endif
 }
 
 
