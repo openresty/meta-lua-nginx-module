@@ -1,6 +1,6 @@
 language: perl
 sudo: false
-dist: trusty
+dist: bionic
 
 os: linux
 
